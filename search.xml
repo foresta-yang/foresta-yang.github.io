@@ -4,11 +4,32 @@
   
     
     <entry>
-      <title>Hello World</title>
-      <link href="/2023/12/15/hello-world/"/>
-      <url>/2023/12/15/hello-world/</url>
+      <title>c语言混淆技术</title>
+      <link href="/2023/12/16/c%E8%AF%AD%E8%A8%80%E6%B7%B7%E6%B7%86%E6%8A%80%E6%9C%AF/"/>
+      <url>/2023/12/16/c%E8%AF%AD%E8%A8%80%E6%B7%B7%E6%B7%86%E6%8A%80%E6%9C%AF/</url>
       
-        <content type="html"><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p><h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p><h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p><h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p><h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>]]></content>
+        <content type="html"><![CDATA[<h4 id="代码混淆定义："><a href="#代码混淆定义：" class="headerlink" title="代码混淆定义："></a>代码混淆定义：</h4><p>原代码 P 通过某种变换变成代码 P’，若 P 和 P’运行结果与过程行为保持一致，该种变换就称之为混淆变换。</p><p>具体来说，当混淆转换满足以下两种情况时，这种混淆变化称之为合法的转换：</p><ul><li>（1）如果源程序 P 无法停止运行或报错结束运行，则变换后的程序 P’可以结束运行也可以继续运行。</li><li>（2）否则，目标程序 P’也结束运行并且输出与源程序相同的结果。</li><li>&#x3D;&#x3D;两个程序之间操作并不一定完全相同，且不一定有相同的效率。&#x3D;&#x3D;</li></ul><p>实际上，混淆工具预先设定若干混淆规则，并使用其它更为复杂的代码取代源代码中符合条件的代码语句，<strong>虽然源代码语义并未改变但混淆后的程序运行过程中空间复杂度往往更高，执行时间也更长，甚至有可能改变系统环境</strong>等。</p><p><img src="https://foresta.oss-cn-beijing.aliyuncs.com/imgs202312171007669.png" alt="image-20231217100733637"></p><p>图 2.1 展示了混淆编译的整体流程，</p><ul><li>首先混淆工具会对输入的源代码进行代码预处理得到&#x3D;&#x3D;程序控制流图 CFG、抽象语法树 AST&#x3D;&#x3D; 等信息，</li><li>然后对&#x3D;&#x3D;数据流、控制流&#x3D;&#x3D;等进行分析，并根据输入的混淆参数选择对应的混淆算法处理源代码，</li><li>最后输出混淆编译后的程序。</li></ul><p>尽管混淆策略多种多样，但通常按 Collberg 提出的方法将其大致分为四类[16]：</p><ul><li>布局混淆</li><li>数据流混淆</li><li>控制流混淆</li><li>预防混淆</li></ul><p>接下来将对这几类混淆策略进行详细分析。</p><h4 id="布局混淆"><a href="#布局混淆" class="headerlink" title="布局混淆"></a>布局混淆</h4><p>布局混淆是一种在不影响源程序正常运行的情况下，即<strong>不修改程序核心控制流和数据流</strong>，对程序包含有用信息的非核心代码做出修改的一种混淆策略；此处的非核心代码一般包括注释语句、多余代码片段、用于调试的代码语句以及自定义的变量名。</p>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> C/C++ </tag>
+            
+            <tag> 软件安全 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Hello World</title>
+      <link href="/2023/12/16/hello-world/"/>
+      <url>/2023/12/16/hello-world/</url>
+      
+        <content type="html"><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p><h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p><h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p><h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p><h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>]]></content>
       
       
       
