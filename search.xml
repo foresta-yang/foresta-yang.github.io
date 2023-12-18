@@ -4,6 +4,37 @@
   
     
     <entry>
+      <title>LineVD_Statement-level Vulnerability Detection using Graph Neural Networks</title>
+      <link href="/2023/12/18/LineVD-Statement-level-Vulnerability-Detection-using-Graph-Neural-Networks/"/>
+      <url>/2023/12/18/LineVD-Statement-level-Vulnerability-Detection-using-Graph-Neural-Networks/</url>
+      
+        <content type="html"><![CDATA[<h2 id="0-Abstract"><a href="#0-Abstract" class="headerlink" title="0 Abstract"></a>0 Abstract</h2><p>当前基于机器学习的软件漏洞检测方法主要在功能级别进行。然而，这些方法的一个关键限制是，它们没有指示导致漏洞的特定代码行。这限制了开发人员有效检查和解释学习模型预测的能力，这对于将基于机器学习的工具集成到软件开发工作流中至关重要。基于图的模型在功能级漏洞检测方面表现出了良好的性能，但其在语句级漏洞检测中的能力尚未得到广泛探索。<strong>虽然通过可解释的人工智能解释功能级预测是一个很有前途的方向，但我们在这里从完全监督学习的角度来考虑语句级软件漏洞检测任务。</strong>我们提出了一种新的深度学习框架LineVD，它将语句级漏洞检测定义为节点分类任务。<strong>LineVD利用图神经网络和基于转换器的模型对原始源代码标记进行编码，从而利用语句之间的控制和数据依赖性。</strong>特别是，通过解决函数级和语句级信息之间的冲突输出，LineVD显著提高了函数代码在没有漏洞状态的情况下的预测性能。我们针对从多个真实世界项目中获得的大量真实世界C&#x2F;C++漏洞进行了广泛的实验，并证明F1分数比当前最先进的技术提高了105%</p><h2 id="1-Intro-or-Overview"><a href="#1-Intro-or-Overview" class="headerlink" title="1 Intro or Overview"></a>1 Intro or Overview</h2><h4 id="1-1-Problem-and-Challenge"><a href="#1-1-Problem-and-Challenge" class="headerlink" title="1.1 Problem and Challenge"></a>1.1 Problem and Challenge</h4><p>自动化SVD大致可分为两类：</p><p>（1）传统方法，包括静态和动态分析；</p><p>（2）数据驱动解决方案，利用数据挖掘和机器学习来预测软件漏洞；</p><p>尽管当前的数据驱动方法在识别软件漏洞方面取得了成功，但它们往往局限于粗粒度水平。模型输出通常为开发人员提供有限的预测结果验证和解释信息，导致在评估和缓解软件漏洞时付出额外努力。</p><p>许多SVD解决方案已经从文件级过渡到函数级或切片级预测，其他一些工作进一步利用补充信息，如提交级别的代码更改以及附带的日志消息，来构建预测模型。虽然目标是帮助从业者对有缺陷的代码进行优先级排序，但漏洞通常可以局限于几个关键行。因此，审查大型函数仍然可能是一个相当大的负担。</p><h4 id="1-2-Motivation"><a href="#1-2-Motivation" class="headerlink" title="1.2 Motivation"></a>1.2 Motivation</h4><img src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202312182057555.png" alt="image-20231218205705483" style="zoom:67%;" /><p>为了节省空间，我们从一个较小的函数中选择一个漏洞，该函数包含Linux内核（CVE-2018-12896）中的整数溢出漏洞，该漏洞最终可能被利用来导致拒绝服务。通过显式语句级别的预测，可以更容易地解释为什么函数被预测为易受攻击（或者，验证预测是否错误）。语句级SVD模型将第22行上的加法赋值操作标记为最可疑的，该操作包含易受攻击的整数强制转换操作，使开发人员能够更有效地验证和减轻该漏洞。</p><p>先前的工作利用GNNExplainer来导出易受攻击的语句作为模型的解释，以展示在语句级的工作。然而，在我们的工作中，我们发现在对潜在的脆弱性语句进行分类和排序时，性能是不充分和有效的。或者，我们旨在探索在语句级别直接训练和预测漏洞以进行SVD粒度细化的可行性和有效性，这将允许数据驱动的解决方案以完全监督的方式直接利用任何可用的语句级别信息。</p><h4 id="1-3-Contribution"><a href="#1-3-Contribution" class="headerlink" title="1.3 Contribution"></a>1.3 Contribution</h4><ul><li>提出了一种新颖有效的语句级SVD方法，LineVD实现了显著的改进，F1得分增加了105%；</li><li>研究了构建基于GNN的语句级SVD模型的每个阶段的性能影响，包括节点嵌入方法和GNN模型选择。根据研究结果，开发LineVD是为了通过同时学习功能和语句级别的信息，在很大程度上提高性能。</li><li>LineVD是第一种通过图神经网络联合学习函数级和语句级信息以提高SVD性能的方法，在经验评估中，它显著优于仅使用一种类型信息的传统模型。</li><li>发布了数据集、源代码和带有支持脚本的模型，这为未来的基准测试和比较工作提供了一个现成的实现解决方案。<a href="https://github.com/davidhin/linevd">https://github.com/davidhin/linevd</a></li></ul><h2 id="2-Architecture-Method"><a href="#2-Architecture-Method" class="headerlink" title="2 Architecture &amp; Method"></a>2 Architecture &amp; Method</h2><h4 id="2-1-System-Overview"><a href="#2-1-System-Overview" class="headerlink" title="2.1 System Overview"></a>2.1 System Overview</h4><p><img src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202312182110490.png" alt="image-20231218211008424"></p><p>首先将问题定义为，节点$V\rightarrow Y$的映射，也就是语句是否易受攻击。</p><p>通过学习最小化损失loss:<br>$$<br>min\sum_{i&#x3D;1}^nL(f(G_i, Y_i|V_i))<br>$$<br><strong>Feature Extraction</strong></p><p>LineVD将源代码的单个函数作为原始输入。通过处理函数并将其拆分为单独的语句Vi，首先通过CodeBERT的预训练BPE标记器对每个样本进行标记。在V＝{V1，V2，…，Vn}的集合之后，整个函数和包括该函数的各个语句被传递到CodeBERT中。因此，可以获得函数级和语句级的代码表示。</p><p>具体而言，LineVD分别嵌入了函数级和语句级代码，而不是为函数级嵌入聚合语句级嵌入。CodeBERT是一个双峰模型，这意味着除了函数代码本身之外，它还基于函数的自然语言描述进行了训练。作为输入，它使用一个特殊的分隔符标记来区分自然语言描述和函数代码。虽然函数的自然语言描述是不可访问的，但在这项工作中应用了文献中规定的一般操作，在每个输入前添加一个额外的分隔符标记，使描述为空白。对于CodeBERT的输出，我们使用了分类标记的嵌入，这适用于代码摘要任务。这使我们能够更好地利用CodeBERT模型强大的预训练源代码摘要功能。</p><h4 id="2-2-Architecture"><a href="#2-2-Architecture" class="headerlink" title="2.2 Architecture"></a>2.2 Architecture</h4><h4 id="2-3-Method"><a href="#2-3-Method" class="headerlink" title="2.3 Method"></a>2.3 Method</h4><h2 id="3-Experiment-and-Evaluation"><a href="#3-Experiment-and-Evaluation" class="headerlink" title="3 Experiment and Evaluation"></a>3 Experiment and Evaluation</h2><h4 id="3-1-DataSet-and-Process"><a href="#3-1-DataSet-and-Process" class="headerlink" title="3.1 DataSet and Process"></a>3.1 DataSet and Process</h4><h4 id="3-2-Evaluation"><a href="#3-2-Evaluation" class="headerlink" title="3.2 Evaluation"></a>3.2 <strong>Evaluation</strong></h4><h2 id="4-Conclusion"><a href="#4-Conclusion" class="headerlink" title="4 Conclusion"></a>4 Conclusion</h2><h2 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h2><aside> 💡 Others<hr>]]></content>
+      
+      
+      <categories>
+          
+          <category> Papers </category>
+          
+          <category> Vulnerabilities </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Vulnerabilities </tag>
+            
+            <tag> 软件安全 </tag>
+            
+            <tag> 代码行级检测 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>c语言混淆技术</title>
       <link href="/2023/12/16/c%E8%AF%AD%E8%A8%80%E6%B7%B7%E6%B7%86%E6%8A%80%E6%9C%AF/"/>
       <url>/2023/12/16/c%E8%AF%AD%E8%A8%80%E6%B7%B7%E6%B7%86%E6%8A%80%E6%9C%AF/</url>
@@ -20,9 +51,9 @@
       
         <tags>
             
-            <tag> C/C++ </tag>
-            
             <tag> 软件安全 </tag>
+            
+            <tag> C/C++ </tag>
             
         </tags>
       
@@ -35,7 +66,7 @@
       <link href="/2023/12/16/hello-world/"/>
       <url>/2023/12/16/hello-world/</url>
       
-        <content type="html"><![CDATA[<p>这是一个指南</p><p><a href="https://gavinblog.github.io/anzhiyu-docs/">安知鱼主题指南 (gavinblog.github.io)</a></p><h3 id="布局（Layout）"><a href="#布局（Layout）" class="headerlink" title="布局（Layout）"></a>布局（Layout）</h3><p>Hexo 有三种默认布局：<code>post</code>、<code>page</code> 和 <code>draft</code>。在创建这三种不同类型的文件时，它们将会被保存到不同的路径；而您自定义的其他布局和 <code>post</code> 相同，都将储存到 <code>source/_posts</code> 文件夹。</p><table><thead><tr><th align="left">布局</th><th align="left">路径</th></tr></thead><tbody><tr><td align="left"><code>post</code></td><td align="left"><code>source/_posts</code></td></tr><tr><td align="left"><code>page</code></td><td align="left"><code>source</code></td></tr><tr><td align="left"><code>draft</code></td><td align="left"><code>source/_drafts</code></td></tr></tbody></table><h1 id="1-常用命令"><a href="#1-常用命令" class="headerlink" title="1 常用命令"></a>1 常用命令</h1><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># draft</span><br><span class="line">hexo new draft &quot;test&quot;</span><br><span class="line"></span><br><span class="line">hexo publish draft &quot;test&quot;</span><br></pre></td></tr></table></figure>]]></content>
+        <content type="html"><![CDATA[<p>这是一个指南</p><p><a href="https://gavinblog.github.io/anzhiyu-docs/">安知鱼主题指南 (gavinblog.github.io)</a></p><h3 id="布局（Layout）"><a href="#布局（Layout）" class="headerlink" title="布局（Layout）"></a>布局（Layout）</h3><p>Hexo 有三种默认布局：<code>post</code>、<code>page</code> 和 <code>draft</code>。在创建这三种不同类型的文件时，它们将会被保存到不同的路径；而您自定义的其他布局和 <code>post</code> 相同，都将储存到 <code>source/_posts</code> 文件夹。</p><table><thead><tr><th align="left">布局</th><th align="left">路径</th></tr></thead><tbody><tr><td align="left"><code>post</code></td><td align="left"><code>source/_posts</code></td></tr><tr><td align="left"><code>page</code></td><td align="left"><code>source</code></td></tr><tr><td align="left"><code>draft</code></td><td align="left"><code>source/_drafts</code></td></tr></tbody></table><h1 id="1-常用命令"><a href="#1-常用命令" class="headerlink" title="1 常用命令"></a>1 常用命令</h1><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># draft</span><br><span class="line">hexo new draft &quot;test&quot;</span><br><span class="line"></span><br><span class="line">hexo publish draft &quot;test&quot;</span><br></pre></td></tr></table></figure><h1 id="2-公式"><a href="#2-公式" class="headerlink" title="2 公式"></a>2 公式</h1><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">npm un hexo-renderer-marked --save</span><br><span class="line"># or</span><br><span class="line">npm un hexo-renderer-kramed --save</span><br><span class="line"># 安装 `hexo-renderer-markdown-it-plus`</span><br><span class="line">npm i @upupming/hexo-renderer-markdown-it-plus --save</span><br></pre></td></tr></table></figure><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 在根目录的 _config.yml 中使用下面的配置将 strict 设置为 false</span></span><br><span class="line"><span class="attr">markdown_it_plus:</span></span><br><span class="line">  <span class="attr">plugins:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">plugin:</span></span><br><span class="line">      <span class="attr">name:</span> <span class="string">&#x27;@neilsustc/markdown-it-katex&#x27;</span></span><br><span class="line">      <span class="attr">enable:</span> <span class="literal">true</span></span><br><span class="line">      <span class="attr">options:</span></span><br><span class="line">        <span class="attr">strict:</span> <span class="literal">false</span></span><br></pre></td></tr></table></figure>]]></content>
       
       
       <categories>
