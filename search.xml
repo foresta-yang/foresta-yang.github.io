@@ -112,33 +112,6 @@
     
     
     <entry>
-      <title>torch tensor 计算</title>
-      <link href="/2023/12/19/AILearning/pytorch/tensor%E8%AE%A1%E7%AE%97/"/>
-      <url>/2023/12/19/AILearning/pytorch/tensor%E8%AE%A1%E7%AE%97/</url>
-      
-        <content type="html"><![CDATA[<h4 id="torchmean"><a class="markdownIt-Anchor" href="#torchmean"></a> torch.mean()</h4><blockquote><p>mean()函数的参数：dim=0,按行求平均值，返回的形状是（1，列数）；dim=1,按列求平均值，返回的形状是（行数，1）,默认不设置dim的时候，返回的是所有元素的平均值。</p></blockquote><h4 id="torchpow"><a class="markdownIt-Anchor" href="#torchpow"></a> torch.pow()</h4><blockquote><p>功能: 实现张量和标量之间逐元素求指数操作, 或者在可广播的张量之间逐元素求指数操作.</p></blockquote><h4 id="torchstack"><a class="markdownIt-Anchor" href="#torchstack"></a> torch.stack()</h4><blockquote><p>官方解释：沿着一个新维度对输入张量序列进行连接。 序列中所有的张量都应该为相同形状。</p><p>注：<code>python</code>的序列数据只有<code>list</code>和<code>tuple</code>。</p><p>浅显说法：把多个2维的张量凑成一个3维的张量；多个3维的凑成一个4维的张量…以此类推，也就是在增加新的维度进行堆叠。</p><p>outputs = torch.stack(inputs, dim=?) → Tensor</p></blockquote><h4 id="torchclamp"><a class="markdownIt-Anchor" href="#torchclamp"></a> torch.clamp()</h4><blockquote><p>torch.clamp(input, min, max, out=None) → Tensor</p><p>将输入<code>input</code>张量每个元素的夹紧到区间 [min,max][min,max]，并返回结果到一个新张量。</p></blockquote><h4 id="torchbmm"><a class="markdownIt-Anchor" href="#torchbmm"></a> torch.bmm()</h4><blockquote><p>计算两个tensor的矩阵乘法，torch.bmm(a,b),tensor a 的size为(b,h,w),tensor b的size为(b,w,m) 也就是说两个tensor的第一维是相等的，然后第一个数组的第三维和第二个数组的第二维度要求一样，对于剩下的则不做要求，输出维度 （b,h,m）;</p></blockquote><h4 id="torchsqueeze函数"><a class="markdownIt-Anchor" href="#torchsqueeze函数"></a> torch.squeeze()函数</h4><blockquote><p>torch.squeeze(input, dim=None, out=None)</p><p>squeeze()函数的功能是维度压缩。返回一个tensor（张量），其中 input 中大小为1的所有维都已删除。</p><p>举个例子：如果 input 的形状为 (A×1×B×C×1×D)，那么返回的tensor的形状则为 (A×B×C×D)</p><p>当给定 dim 时，那么只在给定的维度（dimension）上进行压缩操作。</p><p>举个例子：如果 input 的形状为 (A×1×B)，squeeze(input, 0)后，返回的tensor不变；squeeze(input, 1)后，返回的tensor将被压缩为 (A×B)</p></blockquote><h4 id="torchunsqueeze"><a class="markdownIt-Anchor" href="#torchunsqueeze"></a> torch.unsqueeze()</h4><blockquote></blockquote><h4 id="torchspmm"><a class="markdownIt-Anchor" href="#torchspmm"></a> torch.spmm</h4><blockquote><p>torch.spmm只支持 sparse 在前，dense 在后的矩阵乘法，两个sparse相乘或者dense在前的乘法不支持，当然两个dense矩阵相乘是支持的。</p></blockquote><h4 id="torchsum"><a class="markdownIt-Anchor" href="#torchsum"></a> torch.sum</h4><blockquote><p><img src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202312191625912.png" alt="img" /></p><p>在dim这个维度上，对里面的tesnor 进行加和，如果keepdim=False，返回结果会删去dim这个维度。因为在dim上加和之后，dim=1，所以可以直接删去。</p></blockquote><h4 id="torchdiag"><a class="markdownIt-Anchor" href="#torchdiag"></a> torch.diag</h4><blockquote><p>对角矩阵</p></blockquote><h4 id="torchconcat"><a class="markdownIt-Anchor" href="#torchconcat"></a> torch.concat</h4><blockquote><p>torch.cat ( (A, B), dim=0)接受一个由两个（或多个）tensor组成的元组，按行拼接，所以两个（多个）tensor的列数要相同。</p><p>torch.cat ( (A, B), dim=1)是按列拼接，所以两个tensor的行数要相同。</p></blockquote><h4 id="torchview"><a class="markdownIt-Anchor" href="#torchview"></a> torch.view</h4><blockquote><p>在PyTorch中<strong>view</strong>函数作用为重构张量的维度，相当于numpy中的resize()的功能，但是用法不太一样;</p><p>torch.view(参数a,参数b,…)，其中参数a=3,参数b=2决定了将一维的tt1重构成3*2维的张量。<br />有时候会出现torch.view(-1)或者torch.view(参数a,-1)这种情况。则-1参数是需要估算的。</p><p><strong>view()函数的功能与reshape类似，用来转换size大小。x = x.view(batchsize, -1)中batchsize指转换后有几行，而-1指在不告诉函数有多少列的情况下，根据原tensor数据和batchsize自动分配列数。</strong></p><p>之前对于pytorch的网络编程学习都是大致理解每一层的概念，有些语法语句没有从原理上弄清楚，就比如标题的x = x.view(x.size(0), -1)  。</p><p>这句话一般出现在model类的forward函数中，具体位置一般都是在调用分类器之前。分类器是一个简单的nn.Linear()结构，输入输出都是维度为一的值，x = x.view(x.size(0), -1)  这句话的出现就是为了将前面多维度的tensor展平成一维。</p></blockquote><h4 id="torchpermute"><a class="markdownIt-Anchor" href="#torchpermute"></a> torch.permute</h4><blockquote><p>permute（dims）<br />参数dims用矩阵的维数代入，一般默认从0开始。即第0维，第1维等等<br />也可以理解为，第0块，第1块等等。当然矩阵最少是两维才能使用permute<br />如是两维，dims分别为是0和1<br />可以写成permute（0,1）这里不做任何变化，维数与之前相同<br />如果写成permute（1,0）得到的就是矩阵的转置<br />如果三维是permute(0,1,2)<br />0代表共有几块维度：本例中0对应着3块矩阵<br />1代表每一块中有多少行：本例中1对应着每块有2行<br />2代表每一块中有多少列：本例中2对应着每块有5列<br />所以是3块2行5列的三维矩阵</p></blockquote>]]></content>
-      
-      
-      <categories>
-          
-          <category> Pytorch </category>
-          
-      </categories>
-      
-      
-        <tags>
-            
-            <tag> Pytorch </tag>
-            
-            <tag> tensor </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
       <title>Pytorch学习率衰减方法</title>
       <link href="/2023/12/19/AILearning/pytorch/%E5%AD%A6%E4%B9%A0%E7%8E%87%E8%A1%B0%E5%87%8F/"/>
       <url>/2023/12/19/AILearning/pytorch/%E5%AD%A6%E4%B9%A0%E7%8E%87%E8%A1%B0%E5%87%8F/</url>
@@ -158,6 +131,33 @@
             <tag> Pytorch </tag>
             
             <tag> 学习率 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>torch tensor 计算</title>
+      <link href="/2023/12/19/AILearning/pytorch/tensor%E8%AE%A1%E7%AE%97/"/>
+      <url>/2023/12/19/AILearning/pytorch/tensor%E8%AE%A1%E7%AE%97/</url>
+      
+        <content type="html"><![CDATA[<h4 id="torchmean"><a class="markdownIt-Anchor" href="#torchmean"></a> torch.mean()</h4><blockquote><p>mean()函数的参数：dim=0,按行求平均值，返回的形状是（1，列数）；dim=1,按列求平均值，返回的形状是（行数，1）,默认不设置dim的时候，返回的是所有元素的平均值。</p></blockquote><h4 id="torchpow"><a class="markdownIt-Anchor" href="#torchpow"></a> torch.pow()</h4><blockquote><p>功能: 实现张量和标量之间逐元素求指数操作, 或者在可广播的张量之间逐元素求指数操作.</p></blockquote><h4 id="torchstack"><a class="markdownIt-Anchor" href="#torchstack"></a> torch.stack()</h4><blockquote><p>官方解释：沿着一个新维度对输入张量序列进行连接。 序列中所有的张量都应该为相同形状。</p><p>注：<code>python</code>的序列数据只有<code>list</code>和<code>tuple</code>。</p><p>浅显说法：把多个2维的张量凑成一个3维的张量；多个3维的凑成一个4维的张量…以此类推，也就是在增加新的维度进行堆叠。</p><p>outputs = torch.stack(inputs, dim=?) → Tensor</p></blockquote><h4 id="torchclamp"><a class="markdownIt-Anchor" href="#torchclamp"></a> torch.clamp()</h4><blockquote><p>torch.clamp(input, min, max, out=None) → Tensor</p><p>将输入<code>input</code>张量每个元素的夹紧到区间 [min,max][min,max]，并返回结果到一个新张量。</p></blockquote><h4 id="torchbmm"><a class="markdownIt-Anchor" href="#torchbmm"></a> torch.bmm()</h4><blockquote><p>计算两个tensor的矩阵乘法，torch.bmm(a,b),tensor a 的size为(b,h,w),tensor b的size为(b,w,m) 也就是说两个tensor的第一维是相等的，然后第一个数组的第三维和第二个数组的第二维度要求一样，对于剩下的则不做要求，输出维度 （b,h,m）;</p></blockquote><h4 id="torchsqueeze函数"><a class="markdownIt-Anchor" href="#torchsqueeze函数"></a> torch.squeeze()函数</h4><blockquote><p>torch.squeeze(input, dim=None, out=None)</p><p>squeeze()函数的功能是维度压缩。返回一个tensor（张量），其中 input 中大小为1的所有维都已删除。</p><p>举个例子：如果 input 的形状为 (A×1×B×C×1×D)，那么返回的tensor的形状则为 (A×B×C×D)</p><p>当给定 dim 时，那么只在给定的维度（dimension）上进行压缩操作。</p><p>举个例子：如果 input 的形状为 (A×1×B)，squeeze(input, 0)后，返回的tensor不变；squeeze(input, 1)后，返回的tensor将被压缩为 (A×B)</p></blockquote><h4 id="torchunsqueeze"><a class="markdownIt-Anchor" href="#torchunsqueeze"></a> torch.unsqueeze()</h4><blockquote></blockquote><h4 id="torchspmm"><a class="markdownIt-Anchor" href="#torchspmm"></a> torch.spmm</h4><blockquote><p>torch.spmm只支持 sparse 在前，dense 在后的矩阵乘法，两个sparse相乘或者dense在前的乘法不支持，当然两个dense矩阵相乘是支持的。</p></blockquote><h4 id="torchsum"><a class="markdownIt-Anchor" href="#torchsum"></a> torch.sum</h4><blockquote><p><img src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202312191625912.png" alt="img" /></p><p>在dim这个维度上，对里面的tesnor 进行加和，如果keepdim=False，返回结果会删去dim这个维度。因为在dim上加和之后，dim=1，所以可以直接删去。</p></blockquote><h4 id="torchdiag"><a class="markdownIt-Anchor" href="#torchdiag"></a> torch.diag</h4><blockquote><p>对角矩阵</p></blockquote><h4 id="torchconcat"><a class="markdownIt-Anchor" href="#torchconcat"></a> torch.concat</h4><blockquote><p>torch.cat ( (A, B), dim=0)接受一个由两个（或多个）tensor组成的元组，按行拼接，所以两个（多个）tensor的列数要相同。</p><p>torch.cat ( (A, B), dim=1)是按列拼接，所以两个tensor的行数要相同。</p></blockquote><h4 id="torchview"><a class="markdownIt-Anchor" href="#torchview"></a> torch.view</h4><blockquote><p>在PyTorch中<strong>view</strong>函数作用为重构张量的维度，相当于numpy中的resize()的功能，但是用法不太一样;</p><p>torch.view(参数a,参数b,…)，其中参数a=3,参数b=2决定了将一维的tt1重构成3*2维的张量。<br />有时候会出现torch.view(-1)或者torch.view(参数a,-1)这种情况。则-1参数是需要估算的。</p><p><strong>view()函数的功能与reshape类似，用来转换size大小。x = x.view(batchsize, -1)中batchsize指转换后有几行，而-1指在不告诉函数有多少列的情况下，根据原tensor数据和batchsize自动分配列数。</strong></p><p>之前对于pytorch的网络编程学习都是大致理解每一层的概念，有些语法语句没有从原理上弄清楚，就比如标题的x = x.view(x.size(0), -1)  。</p><p>这句话一般出现在model类的forward函数中，具体位置一般都是在调用分类器之前。分类器是一个简单的nn.Linear()结构，输入输出都是维度为一的值，x = x.view(x.size(0), -1)  这句话的出现就是为了将前面多维度的tensor展平成一维。</p></blockquote><h4 id="torchpermute"><a class="markdownIt-Anchor" href="#torchpermute"></a> torch.permute</h4><blockquote><p>permute（dims）<br />参数dims用矩阵的维数代入，一般默认从0开始。即第0维，第1维等等<br />也可以理解为，第0块，第1块等等。当然矩阵最少是两维才能使用permute<br />如是两维，dims分别为是0和1<br />可以写成permute（0,1）这里不做任何变化，维数与之前相同<br />如果写成permute（1,0）得到的就是矩阵的转置<br />如果三维是permute(0,1,2)<br />0代表共有几块维度：本例中0对应着3块矩阵<br />1代表每一块中有多少行：本例中1对应着每块有2行<br />2代表每一块中有多少列：本例中2对应着每块有5列<br />所以是3块2行5列的三维矩阵</p></blockquote>]]></content>
+      
+      
+      <categories>
+          
+          <category> Pytorch </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Pytorch </tag>
+            
+            <tag> tensor </tag>
             
         </tags>
       
@@ -305,6 +305,31 @@
     
     
     <entry>
+      <title>Hexo bug</title>
+      <link href="/2023/12/16/hello-bug/"/>
+      <url>/2023/12/16/hello-bug/</url>
+      
+        <content type="html"><![CDATA[<p>这是一个bug指南，在使用Hexo的时候遇到了一些bug，自己在这里对解决过的bug做以记录。</p><h4 id="nunjucks-error-line-26-column-109-parseaggregate-expected-comma-after-expression"><a class="markdownIt-Anchor" href="#nunjucks-error-line-26-column-109-parseaggregate-expected-comma-after-expression"></a> Nunjucks Error: [Line 26, Column 109] parseAggregate: expected comma after expression</h4><p>这个自己是hexo在render公式的时候产生的问题，不能两个”{“紧接着放在一起，应该{ {…} }在<strong>之间加空格</strong>。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 指南 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Hexo </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Hello World</title>
       <link href="/2023/12/16/hello-world/"/>
       <url>/2023/12/16/hello-world/</url>
@@ -407,31 +432,6 @@
     
     
     <entry>
-      <title>overleaf 问题</title>
-      <link href="/2023/12/16/Manuscripts/overleaf/overleaf%E9%97%AE%E9%A2%98%20/"/>
-      <url>/2023/12/16/Manuscripts/overleaf/overleaf%E9%97%AE%E9%A2%98%20/</url>
-      
-        <content type="html"><![CDATA[<h1 id="algorithm最后出现0"><a class="markdownIt-Anchor" href="#algorithm最后出现0"></a> algorithm最后出现=0</h1><p><strong>解决方法：</strong></p><p>注释掉&quot;\usepackage{algpseudocode}&quot;</p><p>因为<code>\usepackage&#123;algpseudocode&#125; %This introduces extra zero at the end of algorithm</code></p><h1 id="table位置问题"><a class="markdownIt-Anchor" href="#table位置问题"></a> table位置问题</h1><p>如果table默认置顶，在.sty文件中定义了table环境，那么可尝试将</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">\begin&#123;table&#125;[h] </span><br></pre></td></tr></table></figure><p>改为</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">\begin&#123;table&#125;[pos=h] </span><br></pre></td></tr></table></figure>]]></content>
-      
-      
-      <categories>
-          
-          <category> Manuscripts </category>
-          
-      </categories>
-      
-      
-        <tags>
-            
-            <tag> overleaf </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
       <title>Computers&amp;Security</title>
       <link href="/2023/12/16/Manuscripts/sci/Computers&amp;Security/"/>
       <url>/2023/12/16/Manuscripts/sci/Computers&amp;Security/</url>
@@ -449,6 +449,31 @@
         <tags>
             
             <tag> sci投稿 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>overleaf 问题</title>
+      <link href="/2023/12/16/Manuscripts/overleaf/overleaf%E9%97%AE%E9%A2%98%20/"/>
+      <url>/2023/12/16/Manuscripts/overleaf/overleaf%E9%97%AE%E9%A2%98%20/</url>
+      
+        <content type="html"><![CDATA[<h1 id="algorithm最后出现0"><a class="markdownIt-Anchor" href="#algorithm最后出现0"></a> algorithm最后出现=0</h1><p><strong>解决方法：</strong></p><p>注释掉&quot;\usepackage{algpseudocode}&quot;</p><p>因为<code>\usepackage&#123;algpseudocode&#125; %This introduces extra zero at the end of algorithm</code></p><h1 id="table位置问题"><a class="markdownIt-Anchor" href="#table位置问题"></a> table位置问题</h1><p>如果table默认置顶，在.sty文件中定义了table环境，那么可尝试将</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">\begin&#123;table&#125;[h] </span><br></pre></td></tr></table></figure><p>改为</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">\begin&#123;table&#125;[pos=h] </span><br></pre></td></tr></table></figure>]]></content>
+      
+      
+      <categories>
+          
+          <category> Manuscripts </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> overleaf </tag>
             
         </tags>
       
@@ -574,31 +599,6 @@
         <tags>
             
             <tag> DL知识点 </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>Hexo bug</title>
-      <link href="/2023/12/16/hello-bug/"/>
-      <url>/2023/12/16/hello-bug/</url>
-      
-        <content type="html"><![CDATA[<p>这是一个bug指南，在使用Hexo的时候遇到了一些bug，自己在这里对解决过的bug做以记录。</p><h4 id="nunjucks-error-line-26-column-109-parseaggregate-expected-comma-after-expression"><a class="markdownIt-Anchor" href="#nunjucks-error-line-26-column-109-parseaggregate-expected-comma-after-expression"></a> Nunjucks Error: [Line 26, Column 109] parseAggregate: expected comma after expression</h4><p>这个自己是hexo在render公式的时候产生的问题，不能两个”{“紧接着放在一起，应该{ {…} }在<strong>之间加空格</strong>。</p>]]></content>
-      
-      
-      <categories>
-          
-          <category> 指南 </category>
-          
-      </categories>
-      
-      
-        <tags>
-            
-            <tag> Hexo </tag>
             
         </tags>
       

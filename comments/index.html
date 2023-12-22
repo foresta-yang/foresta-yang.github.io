@@ -5,7 +5,7 @@
   diytitle: undefined,
   LA51: undefined,
   greetingBox: undefined,
-  twikooEnvId: 'mytwikoo-omega.vercel.app',
+  twikooEnvId: 'https://mytwikoo-omega.vercel.app',
   commentBarrageConfig:undefined,
   root: '/',
   preloader: {"source":3},
@@ -59,7 +59,7 @@
   isHome: false,
   isHighlightShrink: false,
   isToc: false,
-  postUpdate: '2023-12-22 11:06:52',
+  postUpdate: '2023-12-22 11:12:56',
   postMainColor: '',
 }</script><noscript><style type="text/css">
   #nav {
@@ -357,7 +357,7 @@ queueMicrotask(() => {
   const init = () => {
     twikoo.init(Object.assign({
       el: '#twikoo-wrap',
-      envId: 'mytwikoo-omega.vercel.app',
+      envId: 'https://mytwikoo-omega.vercel.app',
       region: '',
       onCommentLoaded: () => {
         anzhiyu.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
@@ -374,7 +374,7 @@ queueMicrotask(() => {
     const countELement = document.getElementById('twikoo-count')
     if(!countELement) return
     twikoo.getCommentsCount({
-      envId: 'mytwikoo-omega.vercel.app',
+      envId: 'https://mytwikoo-omega.vercel.app',
       region: '',
       urls: [window.location.pathname],
       includeReply: false
@@ -416,7 +416,7 @@ queueMicrotask(() => {
   const getComment = () => {
     const runTwikoo = () => {
       twikoo.getRecentComments({
-        envId: 'mytwikoo-omega.vercel.app',
+        envId: 'https://mytwikoo-omega.vercel.app',
         region: '',
         pageSize: 6,
         includeReply: true
