@@ -1,0 +1,577 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"><title>GAT浅入 | foresta</title><meta name="keywords" content="GNN"><meta name="author" content="foresta.yang"><meta name="copyright" content="foresta.yang"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#f7f9fe"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-touch-fullscreen" content="yes"><meta name="apple-mobile-web-app-title" content="GAT浅入"><meta name="application-name" content="GAT浅入"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="#f7f9fe"><meta property="og:type" content="article"><meta property="og:title" content="GAT浅入"><meta property="og:url" content="https://foresta-yang.github.io/2023/10/10/AILearning/GNN/GAT%E6%B5%85%E5%85%A5/index.html"><meta property="og:site_name" content="foresta"><meta property="og:description" content="前言 在之前介绍的GraphSAGE[3]文章中，通过融合当前节点的邻居节点来获得这个节点的特征表示，从而将GCN扩展到了归纳学习的领域。在GraphSAGE中，各个邻居节点被等同的看待，然而在实际场景中，不同的邻居节点可能对核心节点起着不同的作用。这一部分要介绍的GAT（Graph Attent"><meta property="og:locale" content="zh-CN"><meta property="og:image" content="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404241722489.png"><meta property="article:author" content="foresta.yang"><meta property="article:tag"><meta name="twitter:card" content="summary"><meta name="twitter:image" content="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404241722489.png"><meta name="description" content="前言 在之前介绍的GraphSAGE[3]文章中，通过融合当前节点的邻居节点来获得这个节点的特征表示，从而将GCN扩展到了归纳学习的领域。在GraphSAGE中，各个邻居节点被等同的看待，然而在实际场景中，不同的邻居节点可能对核心节点起着不同的作用。这一部分要介绍的GAT（Graph Attent"><link rel="shortcut icon" href="/img/foresta.png"><link rel="canonical" href="https://foresta-yang.github.io/2023/10/10/AILearning/GNN/GAT%E6%B5%85%E5%85%A5/"><link rel="preconnect" href="//cdn.cbd.int"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="google-site-verification" content="xxx"/><meta name="baidu-site-verification" content="code-xxx"/><meta name="msvalidate.01" content="xxx"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.cbd.int/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.cbd.int/@fancyapps/ui@5.0.28/dist/fancybox/fancybox.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/anzhiyu-theme-static@1.0.0/swiper/swiper.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  linkPageTop: undefined,
+  peoplecanvas: undefined,
+  postHeadAiDescription: undefined,
+  diytitle: undefined,
+  LA51: undefined,
+  greetingBox: undefined,
+  twikooEnvId: 'https://mytwikoo-omega.vercel.app',
+  commentBarrageConfig:undefined,
+  root: '/',
+  preloader: {"source":3},
+  friends_vue_info: undefined,
+  navMusic: true,
+  mainTone: undefined,
+  authorStatus: undefined,
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"简","rightMenuMsgToTraditionalChinese":"转为繁体","rightMenuMsgToSimplifiedChinese":"转为简体"},
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":330},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    simplehomepage: true,
+    post: false
+  },
+  runtime: '天',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"copy":true,"copyrightEbable":false,"limitCount":66,"languages":{"author":"作者: foresta.yang","link":"链接: ","source":"来源: foresta","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。","copySuccess":"复制成功，复制和转载请标注本文地址"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#425AEF","bgDark":"#1f1f1f","position":"top-center"},
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.cbd.int/flickr-justified-gallery@2.1.2/dist/fjGallery.min.js',
+      css: 'https://cdn.cbd.int/flickr-justified-gallery@2.1.2/dist/fjGallery.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isAnchor: false,
+  shortcutKey: undefined,
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  configTitle: 'foresta',
+  title: 'GAT浅入',
+  postAI: '',
+  pageFillDescription: ' 前言,  1. GAT详解,  1.1 图注意力层,  1.2 多头图注意力层,  2. GAT的属性,  3. 总结,  reference前言在之前介绍的文章中通过融合当前节点的邻居节点来获得这个节点的特征表示从而将扩展到了归纳学习的领域在中各个邻居节点被等同的看待然而在实际场景中不同的邻居节点可能对核心节点起着不同的作用这一部分要介绍的就是通过自注意力机制来对邻居节点进行聚合实现了对不同邻居的权值自适应匹配从而提高了模型的准确率在归纳学习和转导学习的任务中均取得了不错的效果源代码参考详解和很多深度学习方法类似由若干个功能相同的组成这个叫做首先我们先介绍的结构图注意力层图注意力层的输入时节点的特征值其中是节点的个数是节点特征的维度经过一个后输出一个新的特征向量假设这个特征向量的节点特征的维度为可以为任意值这个特征可以表示为如图所示图中的注意力层这里使用的目的就是提高的表达能力在中首先使用一个权值矩阵作用到每个节点然后对每个节点使用来计算一个系数这里使用的共享的机制表示为表示节点对于节点的重要性理论上我们可以计算图中任意一个节点到中心节点的权值中为了简化计算将节点限制在了中心节点的一跳邻居内另外节点也将自己作为邻居节点考虑了进去的选择有多种方式论文中作者选择了一个参数为的单层前馈神经网络然后使用了做非线性化因此可以写做最后使用了对中心节点的邻居节点做了归一化最终通过对输入特征的加权得到输出特征在源码中作者添加了以及残差结构的超参供结构调整这一部分的核心代码如下我们对上面的重点几行代码进行解读首先是这个函数的三个输入输入节点的特征矩阵维度为输出特征的维度也就是的维度图经过过变换后的掩码矩阵维度为第行是对原始的节点特征利用卷积核大小为的一维卷积得到维度为的特征向量接着第行对得到的分别使用两个独立的卷积核大小为的卷积核进行一维卷积得到节点本身的投影以及其邻居的投影这里对应的是公式中的第行是使用广播机制将转置后与叠加得到注意力矩阵最后通过第行的归一化便得到了注意力的权重需要注意的是在计算之前加了一个矩阵那么这个是个什么东西呢它的作用是让非互为邻居的注意力不要进入计算当进行权值加权时一个最简单的思想便是使用一个只有的邻接矩阵和得到的矩阵进行单位乘的运算但是因为有指数运算这种运算方式会有问题例如一个节点的邻接向量为权值向量为经过得到再送入到归一化变为这里需要被掉的变成了这个非邻居节点还是参与到了权值的计算所以我们需要将非邻居节点的权值变为即加上了矩阵这个矩阵的生成方式为的函数这个函数的解析见下面代码的注释部分个图输出矩阵的形状和相同图的转换与形状相同的对角矩阵通过构建阶邻接矩阵即这里大于的置小于等于的保持不变中的位置为位置为的返回很小的负数多头图注意力层为了提高注意力机制的泛化能力选择使用了多头注意力层即使用组相互独立的中的单头注意力层然后将它们的结果拼接在一起如图所示图中的多头注意力层其中表示拼接操作表示第组注意力机制计算出来的权重系数是第个模块的权重系数为了减少特征向量的维度我们也可以使用平均操作代替拼接操作如式在图中不同颜色的箭头代表了不同的注意力头从图中我们可以看出为了增加多头注意力层的表达能力我们可以使用不同形式的注意力机制在作者本人的博客中它提到了在的权重系数上施加将大大提升模型的泛化能力尤其是数据集比较小的时候这种方式本质上其实就是对邻居节点的随机采样中预设了层隐藏层表示每一层中的隐藏单元个数输出层推理模块由个循环组成第一个循环是对的聚合输入维度是每个注意力头的输出维度为将所有的节点聚合得到的输出特征维度为第二个循环是中间层的更新层数是第层有个注意力头最后一个循环是输出层为了使输出维度是因此使用了平均的聚合方式的属性根据我们对算法的分析我们可以总结出的下述属性高效因为注意力层的参数对于整张图是共享的因此注意力机制的权值可以并行计算同样节点的属性值也可以并行计算同时因为计算中心节点的特征只需要遍历其一阶邻居节点这也大幅减少了搜索节点需要的时间低存储可以使用稀疏矩阵对的图进行存储因此需要的最大存储空间为同时因为使用了参数共享的方式也大幅减少了存储计算参数需要占用的存储空间归纳学习因为是基于邻居节点的计算方式因此也是可归纳的全图访问的采样方式是采样固定数量的邻居而是采样所有的邻居节点得到的特征更稳定以及更具表征性总结这篇文章介绍了一个基于机制的图神经网络和中的机制类似的也是非常直观的同一样也是一个基于空域的而且是可以进行归纳学习的的一个问题是因为只归纳了一阶邻居导致的感受野必须依赖非常深的网络才能扩展到很大为了解决这个问题作者在源码中也添加了一个残差机制',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-04-24 17:33:32',
+  postMainColor: '',
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#18171d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f7f9fe')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+          const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+          const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+          const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+          if (t === undefined) {
+            if (isLightMode) activateLightMode()
+            else if (isDarkMode) activateDarkMode()
+            else if (isNotSpecified || hasNoSupport) {
+              const now = new Date()
+              const hour = now.getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addListener(e => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else if (t === 'light') activateLightMode()
+          else activateDarkMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 7.0.0"></head><body data-type="anzhiyu"><div id="web_bg"></div><div id="an_music_bg"></div><div id="loading-box" onclick="document.getElementById(&quot;loading-box&quot;).classList.add(&quot;loaded&quot;)"><div class="loading-bg"><img class="loading-img nolazyload" alt="加载头像" src="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/head.jpg"/><div class="loading-image-dot"></div></div></div><script>const preloader = {
+  endLoading: () => {
+    document.getElementById('loading-box').classList.add("loaded");
+  },
+  initLoading: () => {
+    document.getElementById('loading-box').classList.remove("loaded")
+  }
+}
+window.addEventListener('load',()=> { preloader.endLoading() })
+setTimeout(function(){preloader.endLoading();},10000)
+
+if (true) {
+  document.addEventListener('pjax:send', () => { preloader.initLoading() })
+  document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+}</script><link rel="stylesheet" href="https://cdn.cbd.int/anzhiyu-theme-static@1.1.10/progress_bar/progress_bar.css"/><script async="async" src="https://cdn.cbd.int/pace-js@1.2.4/pace.min.js" data-pace-options="{ &quot;restartOnRequestAfter&quot;:false,&quot;eventLag&quot;:false}"></script><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><div id="nav-group"><span id="blog_name"><a id="site-name" href="/" accesskey="h"><div class="title">foresta</div><i class="anzhiyufont anzhiyu-icon-house-chimney"></i></a></span><div class="mask-name-container"><div id="name-container"><a id="page-name" href="javascript:anzhiyu.scrollToDest(0, 500)">PAGE_NAME</a></div></div><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 文章</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/archives/"><i class="anzhiyufont anzhiyu-icon-box-archive faa-tada" style="font-size: 0.9em;"></i><span> 隧道</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/categories/"><i class="anzhiyufont anzhiyu-icon-shapes faa-tada" style="font-size: 0.9em;"></i><span> 分类</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/tags/"><i class="anzhiyufont anzhiyu-icon-tags faa-tada" style="font-size: 0.9em;"></i><span> 标签</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 友链</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/link/"><i class="anzhiyufont anzhiyu-icon-link faa-tada" style="font-size: 0.9em;"></i><span> 友人帐</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/comments/"><i class="anzhiyufont anzhiyu-icon-envelope faa-tada" style="font-size: 0.9em;"></i><span> 留言板</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 我的</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/music/"><i class="anzhiyufont anzhiyu-icon-music faa-tada" style="font-size: 0.9em;"></i><span> 音乐</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/album/"><i class="anzhiyufont anzhiyu-icon-images faa-tada" style="font-size: 0.9em;"></i><span> 相册</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/essay/"><i class="anzhiyufont anzhiyu-icon-lightbulb faa-tada" style="font-size: 0.9em;"></i><span> 即刻emo</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 关于</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/about/"><i class="anzhiyufont anzhiyu-icon-paper-plane faa-tada" style="font-size: 0.9em;"></i><span> 关于本人</span></a></li></ul></div></div></div><div id="nav-right"><div class="nav-button" id="randomPost_button"><a class="site-page" onclick="toRandomPost()" title="随机前往一个文章" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-dice"></i></a></div><div class="nav-button" id="search-button"><a class="site-page social-icon search" href="javascript:void(0);" title="搜索🔍" accesskey="s"><i class="anzhiyufont anzhiyu-icon-magnifying-glass"></i><span> 搜索</span></a></div><input id="center-console" type="checkbox"/><label class="widget" for="center-console" title="中控台" onclick="anzhiyu.switchConsole();"><i class="left"></i><i class="widget center"></i><i class="widget right"></i></label><div id="console"><div class="console-card-group-reward"><ul class="reward-all console-card"><li class="reward-item"><a href="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/wechat.jpg" target="_blank"><img class="post-qr-code-img" alt="微信" src="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/wechat.jpg"/></a><div class="post-qr-code-desc">微信</div></li><li class="reward-item"><a href="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/alipay.jpg" target="_blank"><img class="post-qr-code-img" alt="支付宝" src="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/alipay.jpg"/></a><div class="post-qr-code-desc">支付宝</div></li></ul></div><div class="console-card-group"><div class="console-card-group-left"><div class="console-card" id="card-newest-comments"><div class="card-content"><div class="author-content-item-tips">互动</div><span class="author-content-item-title"> 最新评论</span></div><div class="aside-list"><span>正在加载中...</span></div></div></div><div class="console-card-group-right"><div class="console-card tags"><div class="card-content"><div class="author-content-item-tips">兴趣点</div><span class="author-content-item-title">寻找你感兴趣的领域</span><div class="card-tags"><div class="item-headline"></div><div class="card-tag-cloud"><a href="/tags/Binary/" style="font-size: 1.05rem;">Binary<sup>1</sup></a><a href="/tags/C-C/" style="font-size: 1.05rem;">C/C++<sup>2</sup></a><a href="/tags/CNN/" style="font-size: 1.05rem;">CNN<sup>6</sup></a><a href="/tags/DGL/" style="font-size: 1.05rem;">DGL<sup>2</sup></a><a href="/tags/DL%E7%9F%A5%E8%AF%86/" style="font-size: 1.05rem;">DL知识<sup>1</sup></a><a href="/tags/DL%E7%9F%A5%E8%AF%86%E7%82%B9/" style="font-size: 1.05rem;">DL知识点<sup>5</sup></a><a href="/tags/GNN/" style="font-size: 1.05rem;">GNN<sup>7</sup></a><a href="/tags/Hexo/" style="font-size: 1.05rem;">Hexo<sup>2</sup></a><a href="/tags/LLM/" style="font-size: 1.05rem;">LLM<sup>1</sup></a><a href="/tags/LaTex/" style="font-size: 1.05rem;">LaTex<sup>1</sup></a><a href="/tags/PowerShell/" style="font-size: 1.05rem;">PowerShell<sup>1</sup></a><a href="/tags/Python/" style="font-size: 1.05rem;">Python<sup>1</sup></a><a href="/tags/Pytorch/" style="font-size: 1.05rem;">Pytorch<sup>6</sup></a><a href="/tags/Vulnerabilities/" style="font-size: 1.05rem;">Vulnerabilities<sup>19</sup></a><a href="/tags/conda/" style="font-size: 1.05rem;">conda<sup>1</sup></a><a href="/tags/git/" style="font-size: 1.05rem;">git<sup>1</sup></a><a href="/tags/overleaf/" style="font-size: 1.05rem;">overleaf<sup>2</sup></a><a href="/tags/pip/" style="font-size: 1.05rem;">pip<sup>1</sup></a><a href="/tags/sci%E6%8A%95%E7%A8%BF/" style="font-size: 1.05rem;">sci投稿<sup>1</sup></a><a href="/tags/tensor/" style="font-size: 1.05rem;">tensor<sup>2</sup></a><a href="/tags/tree-sitter/" style="font-size: 1.05rem;">tree-sitter<sup>1</sup></a><a href="/tags/%E4%BB%A3%E7%A0%81%E8%A1%8C%E7%BA%A7%E6%A3%80%E6%B5%8B/" style="font-size: 1.05rem;">代码行级检测<sup>1</sup></a><a href="/tags/%E5%9F%BA%E6%9C%AC%E6%9C%AF%E8%AF%AD/" style="font-size: 1.05rem;">基本术语<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0%E7%8E%87/" style="font-size: 1.05rem;">学习率<sup>1</sup></a><a href="/tags/%E5%AE%A1%E7%A8%BF/" style="font-size: 1.05rem;">审稿<sup>1</sup></a><a href="/tags/%E6%B3%A8%E6%84%8F%E5%8A%9B/" style="font-size: 1.05rem;">注意力<sup>1</sup></a><a href="/tags/%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/" style="font-size: 1.05rem;">漏洞分析<sup>1</sup></a><a href="/tags/%E7%8E%AF%E5%A2%83/" style="font-size: 1.05rem;">环境<sup>2</sup></a><a href="/tags/%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90/" style="font-size: 1.05rem;">软件分析<sup>5</sup></a><a href="/tags/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8/" style="font-size: 1.05rem;">软件安全<sup>23</sup></a><a href="/tags/%E8%BF%87%E7%A8%8B%E9%97%B4%E5%88%86%E6%9E%90/" style="font-size: 1.05rem;">过程间分析<sup>1</sup></a><a href="/tags/%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90/" style="font-size: 1.05rem;">静态分析<sup>2</sup></a></div></div><hr/></div></div><div class="console-card history"><div class="item-headline"><i class="anzhiyufont anzhiyu-icon-box-archiv"></i><span>文章</span></div><div class="card-archives"><div class="item-headline"><i class="anzhiyufont anzhiyu-icon-archive"></i><span>归档</span></div><ul class="card-archive-list"><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2024/04/"><span class="card-archive-list-date">四月 2024</span><div class="card-archive-list-count-group"><span class="card-archive-list-count">1</span><span>篇</span></div></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2023/12/"><span class="card-archive-list-date">十二月 2023</span><div class="card-archive-list-count-group"><span class="card-archive-list-count">51</span><span>篇</span></div></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2023/10/"><span class="card-archive-list-date">十月 2023</span><div class="card-archive-list-count-group"><span class="card-archive-list-count">11</span><span>篇</span></div></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2022/12/"><span class="card-archive-list-date">十二月 2022</span><div class="card-archive-list-count-group"><span class="card-archive-list-count">7</span><span>篇</span></div></a></li></ul></div><hr/></div></div></div><div class="button-group"><div class="console-btn-item"><a class="darkmode_switchbutton" title="显示模式切换" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-moon"></i></a></div><div class="console-btn-item" id="consoleHideAside" onclick="anzhiyu.hideAsideBtn()" title="边栏显示控制"><a class="asideSwitch"><i class="anzhiyufont anzhiyu-icon-arrows-left-right"></i></a></div><div class="console-btn-item" id="consoleMusic" onclick="anzhiyu.musicToggle()" title="音乐开关"><a class="music-switch"><i class="anzhiyufont anzhiyu-icon-music"></i></a></div></div><div class="console-mask" onclick="anzhiyu.hideConsole()" href="javascript:void(0);"></div></div><div class="nav-button" id="nav-totop"><a class="totopbtn" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-arrow-up"></i><span id="percent" onclick="anzhiyu.scrollToDest(0,500)">0</span></a></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);" title="切换"><i class="anzhiyufont anzhiyu-icon-bars"></i></a></div></div></div></nav><div id="post-info"><div id="post-firstinfo"><div class="meta-firstline"><a class="post-meta-original">原创</a><span class="post-meta-categories"><span class="post-meta-separator"></span><i class="anzhiyufont anzhiyu-icon-inbox post-meta-icon"></i><a class="post-meta-categories" href="/categories/GNN/" itemprop="url">GNN</a></span><span class="article-meta tags"><a class="article-meta__tags" href="/tags/GNN/" tabindex="-1" itemprop="url"> <span> <i class="anzhiyufont anzhiyu-icon-hashtag"></i>GNN</span></a></span></div></div><h1 class="post-title" itemprop="name headline">GAT浅入</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="anzhiyufont anzhiyu-icon-calendar-days post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" itemprop="dateCreated datePublished" datetime="2023-10-10T07:46:15.000Z" title="发表于 2023-10-10 15:46:15">2023-10-10</time><span class="post-meta-separator"></span><i class="anzhiyufont anzhiyu-icon-history post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" itemprop="dateCreated datePublished" datetime="2024-04-24T09:33:32.109Z" title="更新于 2024-04-24 17:33:32">2024-04-24</time></span></div><div class="meta-secondline"><span class="post-meta-separator"></span><span class="post-meta-pv-cv" id="" data-flag-title="GAT浅入"><i class="anzhiyufont anzhiyu-icon-fw-eye post-meta-icon"></i><span class="post-meta-label" title="阅读量">阅读量:</span><span id="busuanzi_value_page_pv"><i class="anzhiyufont anzhiyu-icon-spinner anzhiyu-spin"></i></span></span><span class="post-meta-separator">       </span><span class="post-meta-position" title="作者IP属地为河北秦皇岛"><i class="anzhiyufont anzhiyu-icon-location-dot"></i>河北秦皇岛</span><span class="post-meta-separator"></span><span class="post-meta-commentcount"><i class="anzhiyufont anzhiyu-icon-comments post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/2023/10/10/AILearning/GNN/GAT%E6%B5%85%E5%85%A5/#post-comment" tabindex="-1"><span id="twikoo-count"><i class="anzhiyufont anzhiyu-icon-spinner anzhiyu-spin"></i></span></a></span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section><div id="post-top-cover"><img class="nolazyload" id="post-top-bg" src="/img/home.jpg"></div></header><main id="blog-container"><div class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container" itemscope itemtype="https://foresta-yang.github.io/2023/10/10/AILearning/GNN/GAT%E6%B5%85%E5%85%A5/"><header><a class="post-meta-categories" href="/categories/GNN/" itemprop="url">GNN</a><a href="/tags/GNN/" tabindex="-1" itemprop="url">GNN</a><h1 id="CrawlerTitle" itemprop="name headline">GAT浅入</h1><span itemprop="author" itemscope itemtype="http://schema.org/Person">foresta.yang</span><time itemprop="dateCreated datePublished" datetime="2023-10-10T07:46:15.000Z" title="发表于 2023-10-10 15:46:15">2023-10-10</time><time itemprop="dateCreated datePublished" datetime="2024-04-24T09:33:32.109Z" title="更新于 2024-04-24 17:33:32">2024-04-24</time></header><h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
+<p>在之前介绍的<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/336195862">GraphSAGE</a>[3]文章中，通过融合当前节点的邻居节点来获得这个节点的特征表示，从而将GCN扩展到了归纳学习的领域。在GraphSAGE中，各个邻居节点被等同的看待，然而在实际场景中，不同的邻居节点可能对核心节点起着不同的作用。这一部分要介绍的GAT（Graph Attention Network）[1]就是通过自注意力机制（<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/48508221">self-attention</a>）[2] 来对邻居节点进行聚合，实现了对不同邻居的权值自适应匹配，从而提高了模型的准确率。GAT在归纳学习和转导学习的任务中均取得了不错的效果。源代码参考：<a href="https://link.zhihu.com/?target=https%3A//github.com/PetarV-/GAT">https://github.com/PetarV-/GAT</a></p>
+<h2 id="1-gat详解"><a class="markdownIt-Anchor" href="#1-gat详解"></a> 1. GAT详解</h2>
+<p>和很多深度学习方法类似，GAT由若干个功能相同的block组成，这个block叫做Graph Attention Layer，首先我们先介绍Graph Attention Layer的结构。</p>
+<h3 id="11-图注意力层"><a class="markdownIt-Anchor" href="#11-图注意力层"></a> 1.1 图注意力层</h3>
+<p>图注意力层（Graph attention layer）的输入时节点的特征值 <img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://www.zhihu.com/equation?tex=%5Cvec%7B%5Cmathbf%7Bh%7D%7D%3D%7B%5Cvec%7Bh%7D_1%2C+%5Cvec%7Bh%7D_2%2C+%5Ccdots%2C+%5Cvec%7Bh%7D_N%7D%2C+%5Cvec%7Bh%7D_i+%5Cin+%5Cmathbb%7BR%7D%5EF" alt="[公式]" /> ，其中 <img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://www.zhihu.com/equation?tex=N" alt="[公式]" /> 是节点的个数， <img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://www.zhihu.com/equation?tex=F" alt="[公式]" /> 是节点特征的维度。经过一个Graph Attention Layer后输出一个新的特征向量，假设这个特征向量的节点特征的维度为 <img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://www.zhihu.com/equation?tex=F'" alt="[公式]" /> （可以为任意值），这个特征可以表示为 <img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://www.zhihu.com/equation?tex=%5Cvec%7B%5Cmathbf%7Bh'%7D%7D%3D%7B%5Cvec%7Bh'%7D_1%2C+%5Cvec%7Bh'%7D_2%2C+...%2C+%5Cvec%7Bh'%7D_N%7D%2C+%5Cvec%7Bh'%7D_i+%5Cin+%5Cmathbb%7BR%7D%5E%7BF'%7D" alt="[公式]" /> ，如图1所示。</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404241731141.jpeg" alt="img" />图1：GAT中的注意力层</p>
+<p>这里使用Self-attention的目的就是提高 <img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://www.zhihu.com/equation?tex=%5Cvec%7B%5Cmathbf%7Bh'%7D%7D" alt="[公式]" /> 的表达能力。在Graph Attention Layer中，首先使用一个权值矩阵 <img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://www.zhihu.com/equation?tex=%5Cmathbf%7BW%7D+%5Cin+%5Cmathbb%7BR%7D%5E%7BF'+%5Ctimes+F%7D" alt="[公式]" /> 作用到每个节点，然后对每个节点使用self-attention来计算一个attention系数，这里使用的共享的self-attention机制，表示为 <img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://www.zhihu.com/equation?tex=a" alt="[公式]" /> ：</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://www.zhihu.com/equation?tex=e_%7Bij%7D+%3D+a(%5Cmathbf%7BW%7D%5Cvec%7Bh_i%7D%2C+%5Cmathbf%7BW%7D%5Cvec%7Bh_j%7D)+%5Ctag1" alt="[公式]" /></p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://www.zhihu.com/equation?tex=+e_%7Bij%7D" alt="[公式]" /> 表示节点 <img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://www.zhihu.com/equation?tex=j" alt="[公式]" /> 对于节点 <img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://www.zhihu.com/equation?tex=i" alt="[公式]" /> 的重要性。理论上我们可以计算图中任意一个节点到中心节点的权值，GAT中为了简化计算，将节点限制在了中心节点的一跳邻居内，另外节点也将自己作为邻居节点考虑了进去。</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://www.zhihu.com/equation?tex=a" alt="[公式]" /> 的选择有多种方式，论文中作者选择了一个参数为 <img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://www.zhihu.com/equation?tex=%5Cvec%7Ba%7D+%5Cin+%5Cmathbb%7BR%7D%5E%7B2F'%7D" alt="[公式]" /> 的单层前馈神经网络，然后使用了 <img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://www.zhihu.com/equation?tex=%5Ctext%7BLeakyReLU%7D" alt="[公式]" /> 做非线性化，因此 <img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://www.zhihu.com/equation?tex=e_%7Bij%7D" alt="[公式]" /> 可以写做：</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://www.zhihu.com/equation?tex=+e_%7Bij%7D+%3D+%5Ctext%7BLeakyReLU%7D(%5Cvec%7B%5Cmathbf%7Ba%7D%7D%5ET%5Cleft%5B%5Cmathbf%7BW%7D+%5Cvec%7Bh%7D_i+%7C+%5Cmathbf%7BW%7D+%5Cvec%7Bh%7D_j%5Cright%5D)+%5Ctag2+" alt="[公式]" /></p>
+<p><em>最后使用了</em> <img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://www.zhihu.com/equation?tex=%5Ctext%7Bsoftmax%7D" alt="[公式]" /> <em>对中心节点的邻居节点做了归一化：</em></p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://www.zhihu.com/equation?tex=+%5Calpha_%7Bij%7D+%3D+%5Ctext%7Bsoftmax%7Dj(e_%7Bij%7D)+%3D+%5Cfrac%7B%5Cexp(e_%7Bij%7D)%7D%7B%5Csum_%7Bk%5Cin%5Cmathcal%7BN%7Di%7D%5Cexp(e_%7Bik%7D)%7D+%5Ctag3" alt="[公式]" /></p>
+<p>最终通过对输入特征的加权得到输出特征 <img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://www.zhihu.com/equation?tex=%5Cvec%7Bh%7D_i'" alt="[公式]" /> ：</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://www.zhihu.com/equation?tex=+%5Cvec%7Bh%7D_i'+%3D+%5Csigma%5Cleft(+%5Csum_%7Bj+%5Cin+%5Cmathcal%7BN%7D_i%7D+%5Calpha_%7Bij%7D+%5Cvec%7Bh%7D_j%5Cright)+%5Ctag4" alt="[公式]" /></p>
+<p>在源码中，作者添加了Dropout以及残差结构的超参供结构调整，这一部分的核心代码如下：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">attn_head</span>(<span class="params">seq, out_sz, bias_mat, activation, in_drop=<span class="number">0.0</span>, coef_drop=<span class="number">0.0</span>, residual=<span class="literal">False</span></span>):</span><br><span class="line">    <span class="keyword">with</span> tf.name_scope(<span class="string">&#x27;my_attn&#x27;</span>):</span><br><span class="line">        <span class="keyword">if</span> in_drop != <span class="number">0.0</span>:</span><br><span class="line">            seq = tf.nn.dropout(seq, <span class="number">1.0</span> - in_drop)</span><br><span class="line">        seq_fts = tf.layers.conv1d(seq, out_sz, <span class="number">1</span>, use_bias=<span class="literal">False</span>)</span><br><span class="line">        <span class="comment"># simplest self-attention possible</span></span><br><span class="line">        f_1 = tf.layers.conv1d(seq_fts, <span class="number">1</span>, <span class="number">1</span>)</span><br><span class="line">        f_2 = tf.layers.conv1d(seq_fts, <span class="number">1</span>, <span class="number">1</span>)</span><br><span class="line">        logits = f_1 + tf.transpose(f_2, [<span class="number">0</span>, <span class="number">2</span>, <span class="number">1</span>])</span><br><span class="line">        coefs = tf.nn.softmax(tf.nn.leaky_relu(logits) + bias_mat)</span><br><span class="line">        <span class="keyword">if</span> coef_drop != <span class="number">0.0</span>:</span><br><span class="line">            coefs = tf.nn.dropout(coefs, <span class="number">1.0</span> - coef_drop)</span><br><span class="line">        <span class="keyword">if</span> in_drop != <span class="number">0.0</span>:</span><br><span class="line">            seq_fts = tf.nn.dropout(seq_fts, <span class="number">1.0</span> - in_drop)</span><br><span class="line">        vals = tf.matmul(coefs, seq_fts)</span><br><span class="line">        ret = tf.contrib.layers.bias_add(vals)</span><br><span class="line">        <span class="comment"># residual connection</span></span><br><span class="line">        <span class="keyword">if</span> residual:</span><br><span class="line">            <span class="keyword">if</span> seq.shape[-<span class="number">1</span>] != ret.shape[-<span class="number">1</span>]:</span><br><span class="line">                ret = ret + conv1d(seq, ret.shape[-<span class="number">1</span>], <span class="number">1</span>) <span class="comment"># activation</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                ret = ret + seq</span><br><span class="line">        <span class="keyword">return</span> activation(ret)  <span class="comment"># activation</span></span><br></pre></td></tr></table></figure>
+<p>我们对上面的重点几行代码进行解读。首先是这个函数的三个输入：</p>
+<ul>
+<li><code>seq</code>: 输入节点的特征矩阵，维度为<code>[num_graph, num_node, fea_size]</code>；</li>
+<li><code>out_sz</code>: 输出特征的维度，也就是 <img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://www.zhihu.com/equation?tex=%5Cmathbf%7BW%7D%5Cvec%7Bh_i%7D" alt="[公式]" /> 的维度；</li>
+<li><code>bias_mat</code>：图经过过变换后的掩码矩阵，维度为<code>[num_node, num_node]</code>。</li>
+</ul>
+<p>第5行是对原始的节点特征<code>seq</code>利用卷积核大小为1的一维卷积得到维度为<code>[num_graph, num_node, out_sz]</code>的特征向量。</p>
+<p>接着第7，8行对得到的<code>seq_fts</code>分别使用两个独立的卷积核大小为1的卷积核进行一维卷积，得到节点本身的投影<code>f_1</code>以及其邻居的投影<code>f_2</code>。这里对应的是公式1中的 <img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://www.zhihu.com/equation?tex=a(%5Cmathbf%7BW%7D%5Cvec%7Bh_i%7D%2C+%5Cmathbf%7BW%7D%5Cvec%7Bh_j%7D)" alt="[公式]" /> 。</p>
+<p>第9行是使用广播机制将<code>f_2</code>转置后与<code>f_1</code>叠加，得到注意力矩阵 <img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://www.zhihu.com/equation?tex=%5Cvec%7B%5Cmathbf%7Ba%7D%7D%5ET%5Cleft%5B%5Cmathbf%7BW%7D+%5Cvec%7Bh%7D_i+%7C+%5Cmathbf%7BW%7D+%5Cvec%7Bh%7D_j%5Cright%5D" alt="[公式]" /> 。</p>
+<p>最后通过第10行的<code>softmax</code>归一化便得到了注意力的权重。需要注意的是在计算<code>softmax</code>之前加了一个<code>bias_mat</code>矩阵，那么这个<code>bias_mat</code>是个什么东西呢？它的作用是让非互为邻居的注意力 <img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://www.zhihu.com/equation?tex=e_%7Bij%7D" alt="[公式]" /> 不要进入softmax计算。</p>
+<p>当进行权值加权时，一个最简单的思想便是使用一个只有0，1的邻接矩阵和得到的矩阵进行单位乘的运算。但是因为softmax有exp指数运算，这种运算方式会有问题。例如一个节点的邻接向量为 <img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://www.zhihu.com/equation?tex=%5B1%2C+1%2C+0%5D" alt="[公式]" /> ，权值向量为 <img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://www.zhihu.com/equation?tex=%5B0.5%2C+1.2%2C+0.1%5D" alt="[公式]" /> ，经过mask得到 <img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://www.zhihu.com/equation?tex=%5B0.5%2C+1.2%2C+0%5D" alt="[公式]" /> ，再送入到softmax归一化，变为 <img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://www.zhihu.com/equation?tex=%5Be%5E%7B0.5%7D%2C+e%5E%7B1.2%7D%2C+e%5E0%5D" alt="[公式]" /> ，这里需要被mask掉的1.2变成了 <img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://www.zhihu.com/equation?tex=e%5E0%3D1" alt="[公式]" /> 。这个非邻居节点还是参与到了权值的计算。所以我们需要将非邻居节点的权值变为0，即加上了<code>bias_mat</code>矩阵。</p>
+<p>这个矩阵的生成方式为<code>utils/process.py</code>的<code>adj_to_bias</code>函数，这个函数的解析见下面代码的注释部分：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">adj_to_bias</span>(<span class="params">adj, sizes, nhood=<span class="number">1</span></span>):</span><br><span class="line">    nb_graphs = adj.shape[<span class="number">0</span>] <span class="comment"># num_graph个图</span></span><br><span class="line">    mt = np.empty(adj.shape) <span class="comment"># 输出矩阵的形状和adj相同</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 图g的转换</span></span><br><span class="line">    <span class="keyword">for</span> g <span class="keyword">in</span> <span class="built_in">range</span>(nb_graphs):</span><br><span class="line">        mt[g] = np.eye(adj.shape[<span class="number">1</span>]) <span class="comment"># 与g形状相同的对角矩阵</span></span><br><span class="line">        <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(nhood): <span class="comment"># 通过self-loop构建K阶邻接矩阵，即A^(K),这里K=1</span></span><br><span class="line">            mt[g] = np.matmul(mt[g], (adj[g] + np.eye(adj.shape[<span class="number">1</span>])))</span><br><span class="line">        <span class="comment"># 大于0的置1，小于等于0的保持不变</span></span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(sizes[g]):</span><br><span class="line">            <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(sizes[g]):</span><br><span class="line">                <span class="keyword">if</span> mt[g][i][j] &gt; <span class="number">0.0</span>:</span><br><span class="line">                    mt[g][i][j] = <span class="number">1.0</span></span><br><span class="line">    <span class="comment"># mt中1的位置为0，位置为0的返回很小的负数-1e9</span></span><br><span class="line">    <span class="keyword">return</span> -<span class="number">1e9</span> * (<span class="number">1.0</span> - mt)</span><br></pre></td></tr></table></figure>
+<h3 id="12-多头图注意力层"><a class="markdownIt-Anchor" href="#12-多头图注意力层"></a> 1.2 多头图注意力层</h3>
+<p>为了提高注意力机制的泛化能力，GAT选择使用了多头注意力层，即使用K组相互独立的1.1中的单头注意力层，然后将它们的结果拼接在一起，如图2所示。</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://www.zhihu.com/equation?tex=+%5Cmathbf%7Bh%7D'_i+%3D+%7C+%5E+K+_+%7Bk%3D1%7D+%5Csigma%5Cleft(+%5Csum%7Bv_j+%5Cin+%5Ctilde%7B%5Cmathcal%7BN%7D%7D(v_i)%7D+%5Calpha_%7Bij%7D%5E%7B(k)%7D%5Cmathbf%7BW%7D%5E%7Bk%7D+%5Cmathbf%7Bh%7D_j%5Cright)+%5Ctag5" alt="[公式]" /></p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404241731953.jpeg" alt="img" />图2：GAT中的多头注意力层</p>
+<p>其中 <img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://www.zhihu.com/equation?tex=%7C" alt="[公式]" /> 表示拼接操作， <img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://www.zhihu.com/equation?tex=%5Calpha_%7Bij%7D%5E%7B(k)%7D" alt="[公式]" /> 表示第 <img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://www.zhihu.com/equation?tex=k" alt="[公式]" /> 组注意力机制计算出来的权重系数， <img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://www.zhihu.com/equation?tex=%5Cmathbf%7BW%7D%5E%7B(k)%7D" alt="[公式]" /> 是第 <img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://www.zhihu.com/equation?tex=k" alt="[公式]" /> 个模块的权重系数。为了减少特征向量的维度，我们也可以使用平均操作代替拼接操作，如式（6）。在图2中，不同颜色的箭头代表了不同的注意力头，从图中我们可以看出 <img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://www.zhihu.com/equation?tex=K%3D3" alt="[公式]" /> 。为了增加多头注意力层的表达能力，我们可以使用不同形式的注意力机制。</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://www.zhihu.com/equation?tex=%5Cvec%7Bh%7D_i'+%3D+%5Csigma+%5Cleft(+%5Cfrac1K+%5Csum_%7Bk%3D1%7D%5EK+%5Csum_%7Bj+%5Cin+%5Cmathcal%7BN%7Dj%7D+%5Calpha_%7Bij%7D%5Ek+%5Cmathbf%7BW%7D%5Ek+%5Cvec%7Bh%7D_j+%5Cright)+%5Ctag6" alt="[公式]" /></p>
+<p>在作者本人的博客中[4]，它提到了在Attention的权重系数 <img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://www.zhihu.com/equation?tex=%5Calpha_%7Bij%7D" alt="[公式]" /> 上施加Dropout[5]将大大提升模型的泛化能力，尤其是数据集比较小的时候。这种方式本质上其实就是对邻居节点的随机采样。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">inference</span>(<span class="params">inputs, nb_classes, nb_nodes, training, attn_drop, ffd_drop, bias_mat, hid_units, n_heads, activation=tf.nn.elu, residual=<span class="literal">False</span></span>):</span><br><span class="line">    attns = []</span><br><span class="line">    <span class="comment"># GAT中预设了8层attention head</span></span><br><span class="line">    <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(n_heads[<span class="number">0</span>]):</span><br><span class="line">        attns.append(layers.attn_head(inputs, bias_mat=bias_mat,</span><br><span class="line">            out_sz=hid_units[<span class="number">0</span>], activation=activation,</span><br><span class="line">            in_drop=ffd_drop, coef_drop=attn_drop, residual=<span class="literal">False</span>))</span><br><span class="line">    h_1 = tf.concat(attns, axis=-<span class="number">1</span>)</span><br><span class="line">    <span class="comment"># 隐藏层，hid_units表示每一层attention head中的隐藏单元个数</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, <span class="built_in">len</span>(hid_units)):</span><br><span class="line">        h_old = h_1</span><br><span class="line">        attns = []</span><br><span class="line">        <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(n_heads[i]):</span><br><span class="line">            attns.append(layers.attn_head(h_1, bias_mat=bias_mat,</span><br><span class="line">                out_sz=hid_units[i], activation=activation,</span><br><span class="line">                in_drop=ffd_drop, coef_drop=attn_drop, residual=residual))</span><br><span class="line">        h_1 = tf.concat(attns, axis=-<span class="number">1</span>)</span><br><span class="line">    out = []</span><br><span class="line">    <span class="comment"># 输出层</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(n_heads[-<span class="number">1</span>]):</span><br><span class="line">        out.append(layers.attn_head(h_1, bias_mat=bias_mat,</span><br><span class="line">            out_sz=nb_classes, activation=<span class="keyword">lambda</span> x: x,</span><br><span class="line">            in_drop=ffd_drop, coef_drop=attn_drop, residual=<span class="literal">False</span>))</span><br><span class="line">    logits = tf.add_n(out) / n_heads[-<span class="number">1</span>]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> logits</span><br></pre></td></tr></table></figure>
+<p>推理模块由3个循环组成，第一个循环是对attention head的聚合，输入维度是<code>[batch_size, num_node, fea_size]</code>，每个注意力头的输出维度为<code>[batch_size, num_node, out_sz]</code>，将所有的节点聚合，得到的输出特征维度为<code>[batch_size, num_node, out_sz * 8]</code>。第二个循环是中间层的更新，层数是<code>len(hid_units)-1</code>，第 <img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://www.zhihu.com/equation?tex=i" alt="[公式]" /> 层有<code>n_heads[i]</code>个注意力头。最后一个循环是输出层，为了使输出维度是<code>[batch_size, num_node, nb_classes]</code>，因此使用了平均的聚合方式。</p>
+<h2 id="2-gat的属性"><a class="markdownIt-Anchor" href="#2-gat的属性"></a> 2. GAT的属性</h2>
+<p>根据我们对GAT算法的分析，我们可以总结出GAT的下述属性：</p>
+<ul>
+<li><strong>高效</strong>：因为注意力层的参数对于整张图是共享的，因此注意力机制的权值可以并行计算，同样节点的属性值也可以并行计算。同时因为计算中心节点的特征只需要遍历其一阶邻居节点，这也大幅减少了搜索节点需要的时间。</li>
+<li><strong>低存储</strong>：可以使用稀疏矩阵对GAT的图进行存储，因此需要的最大存储空间为 <img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://www.zhihu.com/equation?tex=O(V%2BE)" alt="[公式]" /> 。同时因为GAT使用了参数共享的方式，也大幅减少了存储计算参数需要占用的存储空间。</li>
+<li><strong>归纳学习</strong>：因为GAT是基于邻居节点的计算方式，因此也是可归纳的（Inductive）。</li>
+<li><strong>全图访问</strong>：GraphSAGE的采样方式是采样固定数量的邻居，而GAT是采样所有的邻居节点，得到的特征更稳定以及更具表征性。</li>
+</ul>
+<h2 id="3-总结"><a class="markdownIt-Anchor" href="#3-总结"></a> 3. 总结</h2>
+<p>这篇文章介绍了一个基于Attention机制的图神经网络，和NLP中的Attention机制类似，GAT的Attention也是非常直观的。同GraphSAGE一样，GAT也是一个基于空域的GNN，而且是可以进行归纳学习的。GAT的一个问题是因为只归纳了一阶邻居，导致GAT的感受野必须依赖非常深的网络才能扩展到很大，为了解决这个问题，作者在源码中也添加了一个残差机制。</p>
+<h2 id="reference"><a class="markdownIt-Anchor" href="#reference"></a> reference</h2>
+<p>[1] Veličković, Petar, et al. “Graph attention networks.” <em>arXiv preprint arXiv:1710.10903</em> (2017).</p>
+<p>[2] Vaswani A, Shazeer N, Parmar N, et al. Attention is all you need [C]//Advances in Neural Information Processing Systems. 2017: 5998-6008.</p>
+<p>[3] Hamilton, Will, Zhitao Ying, and Jure Leskovec. “Inductive representation learning on large graphs.” <em>Advances in neural information processing systems</em>. 2017.</p>
+<p>[4] <a href="https://link.zhihu.com/?target=https%3A//petar-v.com/GAT/">https://petar-v.com/GAT/</a></p>
+<p>[5] Srivastava, Nitish, et al. “Dropout: a simple way to prevent neural networks from overfitting.” <em>The journal of machine learning research</em> 15.1 (2014): 1929-1958.</p>
+</article><div class="post-copyright"><div class="copyright-cc-box"><i class="anzhiyufont anzhiyu-icon-copyright"></i></div><div class="post-copyright__author_box"><a class="post-copyright__author_img" target="_blank" rel="noopener" href="https://github.com/foresta-yang.github.io" title="头像"><img class="post-copyright__author_img_back" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/head.jpg" title="头像" alt="头像"><img class="post-copyright__author_img_front" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/head.jpg" title="头像" alt="头像"></a><div class="post-copyright__author_name">foresta.yang</div><div class="post-copyright__author_desc"></div></div><div class="post-copyright__post__info"><a class="post-copyright__original" title="该文章为原创文章，注意版权协议" href="https://foresta-yang.github.io/2023/10/10/AILearning/GNN/GAT%E6%B5%85%E5%85%A5/">原创</a><a class="post-copyright-title"><span onclick="rm.copyPageUrl('https://foresta-yang.github.io/2023/10/10/AILearning/GNN/GAT%E6%B5%85%E5%85%A5/')">GAT浅入</span></a></div><div class="post-tools" id="post-tools"><div class="post-tools-left"><div class="rewardLeftButton"><div class="post-reward" onclick="anzhiyu.addRewardMask()"><div class="reward-button button--animated" title="赞赏作者"><i class="anzhiyufont anzhiyu-icon-hand-heart-fill"></i>打赏作者</div><div class="reward-main"><div class="reward-all"><span class="reward-title">感谢你赐予我前进的力量</span><ul class="reward-group"><li class="reward-item"><a href="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/wechat.jpg" target="_blank"><img class="post-qr-code-img" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/wechat.jpg" alt="微信"/></a><div class="post-qr-code-desc">微信</div></li><li class="reward-item"><a href="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/alipay.jpg" target="_blank"><img class="post-qr-code-img" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/alipay.jpg" alt="支付宝"/></a><div class="post-qr-code-desc">支付宝</div></li></ul><a class="reward-main-btn" href="/about/#about-reward" target="_blank"><div class="reward-text">赞赏者名单</div><div class="reward-dec">因为你们的支持让我意识到写文章的价值🙏</div></a></div></div></div><div id="quit-box" onclick="anzhiyu.removeRewardMask()" style="display: none"></div></div><div class="shareRight"><div class="share-link mobile"><div class="share-qrcode"><div class="share-button" title="使用手机访问这篇文章"><i class="anzhiyufont anzhiyu-icon-qrcode"></i></div><div class="share-main"><div class="share-main-all"><div id="qrcode" title="https://foresta-yang.github.io/2023/10/10/AILearning/GNN/GAT%E6%B5%85%E5%85%A5/"></div><div class="reward-dec">使用手机访问这篇文章</div></div></div></div></div><script>function copyCurrentPageUrl() {
+  var currentPageUrl = window.location.href;
+  var input = document.createElement("input");
+  input.setAttribute("value", currentPageUrl);
+  document.body.appendChild(input);
+  input.select();
+  input.setSelectionRange(0, 99999);
+  document.execCommand("copy");
+  document.body.removeChild(input);
+}</script><div class="share-link copyurl"><div class="share-button" id="post-share-url" title="复制链接" onclick="copyCurrentPageUrl()"><i class="anzhiyufont anzhiyu-icon-link"></i></div></div></div></div></div><div class="post-copyright__notice"><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://foresta-yang.github.io" target="_blank">foresta</a>！</span></div></div><div class="post-tools-right"><div class="tag_share"><div class="post-meta__box"><div class="post-meta__box__tag-list"><a class="post-meta__box__tags" href="/tags/GNN/"><span class="tags-punctuation"> <i class="anzhiyufont anzhiyu-icon-tag"></i></span>GNN<span class="tagsPageCount">7</span></a></div></div></div><div class="post_share"><div class="social-share" data-image="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/head.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.cbd.int/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"/><script src="https://cdn.cbd.int/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer="defer"></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2023/10/10/AILearning/GNN/GCN%E6%B5%85%E5%85%A5/"><img class="prev-cover" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404241722489.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">GCN浅入</div></div></a></div><div class="next-post pull-right"><a href="/2023/10/10/AILearning/GNN/GCN%20GAT%20GGNN/"><img class="next-cover" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404241722489.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">GCN,GAT,GGNN</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="anzhiyufont anzhiyu-icon-thumbs-up fa-fw" style="font-size: 1.5rem; margin-right: 4px"></i><span>喜欢这篇文章的人也看了</span></div><div class="relatedPosts-list"><div><a href="/2023/10/10/AILearning/GNN/GCN%E6%B5%85%E5%85%A5/" title="GCN浅入"><img class="cover" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404241722489.png" alt="cover"><div class="content is-center"><div class="date"><i class="anzhiyufont anzhiyu-icon-calendar-days fa-fw"></i> 2023-10-10</div><div class="title">GCN浅入</div></div></a></div><div><a href="/2023/10/10/AILearning/GNN/GNNExplainer/" title="GNNExplainer"><img class="cover" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404241750221.png" alt="cover"><div class="content is-center"><div class="date"><i class="anzhiyufont anzhiyu-icon-calendar-days fa-fw"></i> 2023-10-10</div><div class="title">GNNExplainer</div></div></a></div><div><a href="/2023/10/10/AILearning/GNN/Laplace/" title="拉普拉斯矩阵"><img class="cover" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404241722489.png" alt="cover"><div class="content is-center"><div class="date"><i class="anzhiyufont anzhiyu-icon-calendar-days fa-fw"></i> 2023-10-10</div><div class="title">拉普拉斯矩阵</div></div></a></div><div><a href="/2023/10/10/AILearning/GNN/VGAE%E6%B5%85%E5%85%A5/" title="VGAE浅入"><img class="cover" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404241722489.png" alt="cover"><div class="content is-center"><div class="date"><i class="anzhiyufont anzhiyu-icon-calendar-days fa-fw"></i> 2023-10-10</div><div class="title">VGAE浅入</div></div></a></div><div><a href="/2023/10/10/AILearning/GNN/%E4%BB%80%E4%B9%88%E6%98%AF%E5%9B%BE%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/" title="图神经网络"><img class="cover" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404241722489.png" alt="cover"><div class="content is-center"><div class="date"><i class="anzhiyufont anzhiyu-icon-calendar-days fa-fw"></i> 2023-10-10</div><div class="title">图神经网络</div></div></a></div><div><a href="/2023/10/10/AILearning/GNN/%E5%9B%BE%E7%B1%BB%E5%9E%8B/" title="图类型"><img class="cover" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404241722489.png" alt="cover"><div class="content is-center"><div class="date"><i class="anzhiyufont anzhiyu-icon-calendar-days fa-fw"></i> 2023-10-10</div><div class="title">图类型</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="anzhiyufont anzhiyu-icon-comments"></i><span> 评论</span></div><div class="comment-randomInfo"><a onclick="anzhiyu.addRandomCommentInfo()" href="javascript:void(0)">匿名评论</a><a href="/privacy" style="margin-left: 4px">隐私政策</a></div><div class="comment-tips" id="comment-tips"><span>✅ 你无需删除空行，直接评论以获取最佳展示效果</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div><div class="comment-barrage"></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="card-content"><div class="author-info-avatar"><img class="avatar-img" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/head.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__description">享受孤独</div><div class="author-info__bottom-group"><a class="author-info__bottom-group-left" href="/"><h1 class="author-info__name">foresta.yang</h1><div class="author-info__desc"></div></a><div class="card-info-social-icons is-center"><a class="social-icon faa-parent animated-hover" href="https://github.com/foresta-yang.github.io" target="_blank" title="Github"><i class="anzhiyufont anzhiyu-icon-github"></i></a></div></div></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="anzhiyufont anzhiyu-icon-bars"></i><span>文章目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text"> 前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-gat%E8%AF%A6%E8%A7%A3"><span class="toc-number">2.</span> <span class="toc-text"> 1. GAT详解</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#11-%E5%9B%BE%E6%B3%A8%E6%84%8F%E5%8A%9B%E5%B1%82"><span class="toc-number">2.1.</span> <span class="toc-text"> 1.1 图注意力层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#12-%E5%A4%9A%E5%A4%B4%E5%9B%BE%E6%B3%A8%E6%84%8F%E5%8A%9B%E5%B1%82"><span class="toc-number">2.2.</span> <span class="toc-text"> 1.2 多头图注意力层</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-gat%E7%9A%84%E5%B1%9E%E6%80%A7"><span class="toc-number">3.</span> <span class="toc-text"> 2. GAT的属性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%80%BB%E7%BB%93"><span class="toc-number">4.</span> <span class="toc-text"> 3. 总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#reference"><span class="toc-number">5.</span> <span class="toc-text"> reference</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="anzhiyufont anzhiyu-icon-history"></i><span>最近发布</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/04/18/Security/C_C++%E6%BC%8F%E6%B4%9E%E6%95%B0%E6%8D%AE%E9%9B%86/" title="C/C++漏洞数据集">C/C++漏洞数据集</a><time datetime="2024-04-18T09:46:15.000Z" title="发表于 2024-04-18 17:46:15">2024-04-18</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/12/19/Papers/Vul/Cross-domain%20vulnerability%20detection%20using%20graph%20embedding%20and%20domain%20adaptation/" title="Cross-domain vulnerability detection using graph embedding and domain adaptation"><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202312191750331.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Cross-domain vulnerability detection using graph embedding and domain adaptation"/></a><div class="content"><a class="title" href="/2023/12/19/Papers/Vul/Cross-domain%20vulnerability%20detection%20using%20graph%20embedding%20and%20domain%20adaptation/" title="Cross-domain vulnerability detection using graph embedding and domain adaptation">Cross-domain vulnerability detection using graph embedding and domain adaptation</a><time datetime="2023-12-19T07:32:24.000Z" title="发表于 2023-12-19 15:32:24">2023-12-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/12/19/AILearning/pytorch/pytorch/" title="pytorch入门"><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202312191226420.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="pytorch入门"/></a><div class="content"><a class="title" href="/2023/12/19/AILearning/pytorch/pytorch/" title="pytorch入门">pytorch入门</a><time datetime="2023-12-19T03:30:36.000Z" title="发表于 2023-12-19 11:30:36">2023-12-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/12/19/AILearning/pytorch/tensor%E8%AE%A1%E7%AE%97/" title="torch tensor 计算"><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202312191226420.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="torch tensor 计算"/></a><div class="content"><a class="title" href="/2023/12/19/AILearning/pytorch/tensor%E8%AE%A1%E7%AE%97/" title="torch tensor 计算">torch tensor 计算</a><time datetime="2023-12-19T03:30:36.000Z" title="发表于 2023-12-19 11:30:36">2023-12-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/12/19/AILearning/pytorch/conv2d/" title="Conv2d"><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202312191226420.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Conv2d"/></a><div class="content"><a class="title" href="/2023/12/19/AILearning/pytorch/conv2d/" title="Conv2d">Conv2d</a><time datetime="2023-12-19T03:30:36.000Z" title="发表于 2023-12-19 11:30:36">2023-12-19</time></div></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2023 - 2024 By foresta.yang</div></div></footer></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="sidebar-site-data site-data is-center"><a href="/archives/" title="archive"><div class="headline">文章</div><div class="length-num">70</div></a><a href="/tags/" title="tag"><div class="headline">标签</div><div class="length-num">32</div></a><a href="/categories/" title="category"><div class="headline">分类</div><div class="length-num">18</div></a></div><span class="sidebar-menu-item-title">功能</span><div class="sidebar-menu-item"><a class="darkmode_switchbutton menu-child" href="javascript:void(0);" title="显示模式"><i class="anzhiyufont anzhiyu-icon-circle-half-stroke"></i><span>显示模式</span></a></div><div class="back-menu-list-groups"><div class="back-menu-list-group"><div class="back-menu-list-title">网页</div><div class="back-menu-list"><a class="back-menu-item" target="_blank" rel="noopener" href="https://blog.anheyu.com/" title="博客"><img class="back-menu-item-icon" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="/img/favicon.ico" alt="博客"/><span class="back-menu-item-text">博客</span></a></div></div><div class="back-menu-list-group"><div class="back-menu-list-title">项目</div><div class="back-menu-list"><a class="back-menu-item" target="_blank" rel="noopener" href="https://image.anheyu.com/" title="安知鱼图床"><img class="back-menu-item-icon" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://image.anheyu.com/favicon.ico" alt="安知鱼图床"/><span class="back-menu-item-text">安知鱼图床</span></a></div></div></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 文章</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/archives/"><i class="anzhiyufont anzhiyu-icon-box-archive faa-tada" style="font-size: 0.9em;"></i><span> 隧道</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/categories/"><i class="anzhiyufont anzhiyu-icon-shapes faa-tada" style="font-size: 0.9em;"></i><span> 分类</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/tags/"><i class="anzhiyufont anzhiyu-icon-tags faa-tada" style="font-size: 0.9em;"></i><span> 标签</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 友链</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/link/"><i class="anzhiyufont anzhiyu-icon-link faa-tada" style="font-size: 0.9em;"></i><span> 友人帐</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/comments/"><i class="anzhiyufont anzhiyu-icon-envelope faa-tada" style="font-size: 0.9em;"></i><span> 留言板</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 我的</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/music/"><i class="anzhiyufont anzhiyu-icon-music faa-tada" style="font-size: 0.9em;"></i><span> 音乐</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/album/"><i class="anzhiyufont anzhiyu-icon-images faa-tada" style="font-size: 0.9em;"></i><span> 相册</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/essay/"><i class="anzhiyufont anzhiyu-icon-lightbulb faa-tada" style="font-size: 0.9em;"></i><span> 即刻emo</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 关于</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/about/"><i class="anzhiyufont anzhiyu-icon-paper-plane faa-tada" style="font-size: 0.9em;"></i><span> 关于本人</span></a></li></ul></div></div><span class="sidebar-menu-item-title">标签</span><div class="card-tags"><div class="item-headline"></div><div class="card-tag-cloud"><a href="/tags/Binary/" style="font-size: 0.88rem;">Binary<sup>1</sup></a><a href="/tags/C-C/" style="font-size: 0.88rem;">C/C++<sup>2</sup></a><a href="/tags/CNN/" style="font-size: 0.88rem;">CNN<sup>6</sup></a><a href="/tags/DGL/" style="font-size: 0.88rem;">DGL<sup>2</sup></a><a href="/tags/DL%E7%9F%A5%E8%AF%86/" style="font-size: 0.88rem;">DL知识<sup>1</sup></a><a href="/tags/DL%E7%9F%A5%E8%AF%86%E7%82%B9/" style="font-size: 0.88rem;">DL知识点<sup>5</sup></a><a href="/tags/GNN/" style="font-size: 0.88rem;">GNN<sup>7</sup></a><a href="/tags/Hexo/" style="font-size: 0.88rem;">Hexo<sup>2</sup></a><a href="/tags/LLM/" style="font-size: 0.88rem;">LLM<sup>1</sup></a><a href="/tags/LaTex/" style="font-size: 0.88rem;">LaTex<sup>1</sup></a><a href="/tags/PowerShell/" style="font-size: 0.88rem;">PowerShell<sup>1</sup></a><a href="/tags/Python/" style="font-size: 0.88rem;">Python<sup>1</sup></a><a href="/tags/Pytorch/" style="font-size: 0.88rem;">Pytorch<sup>6</sup></a><a href="/tags/Vulnerabilities/" style="font-size: 0.88rem;">Vulnerabilities<sup>19</sup></a><a href="/tags/conda/" style="font-size: 0.88rem;">conda<sup>1</sup></a><a href="/tags/git/" style="font-size: 0.88rem;">git<sup>1</sup></a><a href="/tags/overleaf/" style="font-size: 0.88rem;">overleaf<sup>2</sup></a><a href="/tags/pip/" style="font-size: 0.88rem;">pip<sup>1</sup></a><a href="/tags/sci%E6%8A%95%E7%A8%BF/" style="font-size: 0.88rem;">sci投稿<sup>1</sup></a><a href="/tags/tensor/" style="font-size: 0.88rem;">tensor<sup>2</sup></a><a href="/tags/tree-sitter/" style="font-size: 0.88rem;">tree-sitter<sup>1</sup></a><a href="/tags/%E4%BB%A3%E7%A0%81%E8%A1%8C%E7%BA%A7%E6%A3%80%E6%B5%8B/" style="font-size: 0.88rem;">代码行级检测<sup>1</sup></a><a href="/tags/%E5%9F%BA%E6%9C%AC%E6%9C%AF%E8%AF%AD/" style="font-size: 0.88rem;">基本术语<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0%E7%8E%87/" style="font-size: 0.88rem;">学习率<sup>1</sup></a><a href="/tags/%E5%AE%A1%E7%A8%BF/" style="font-size: 0.88rem;">审稿<sup>1</sup></a><a href="/tags/%E6%B3%A8%E6%84%8F%E5%8A%9B/" style="font-size: 0.88rem;">注意力<sup>1</sup></a><a href="/tags/%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/" style="font-size: 0.88rem;">漏洞分析<sup>1</sup></a><a href="/tags/%E7%8E%AF%E5%A2%83/" style="font-size: 0.88rem;">环境<sup>2</sup></a><a href="/tags/%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90/" style="font-size: 0.88rem;">软件分析<sup>5</sup></a><a href="/tags/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8/" style="font-size: 0.88rem;">软件安全<sup>23</sup></a><a href="/tags/%E8%BF%87%E7%A8%8B%E9%97%B4%E5%88%86%E6%9E%90/" style="font-size: 0.88rem;">过程间分析<sup>1</sup></a><a href="/tags/%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90/" style="font-size: 0.88rem;">静态分析<sup>2</sup></a></div></div><hr/></div></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="anzhiyufont anzhiyu-icon-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="anzhiyufont anzhiyu-icon-circle-half-stroke"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="anzhiyufont anzhiyu-icon-arrows-left-right"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="anzhiyufont anzhiyu-icon-gear"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="anzhiyufont anzhiyu-icon-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="anzhiyufont anzhiyu-icon-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="anzhiyufont anzhiyu-icon-arrow-up"></i></button></div></div><div id="nav-music"><a id="nav-music-hoverTips" onclick="anzhiyu.musicToggle()" accesskey="m">播放音乐</a><div id="console-music-bg"></div><meting-js id="8152976493" server="netease" type="playlist" mutex="true" preload="none" theme="var(--anzhiyu-main)" data-lrctype="0" order="random" volume="0.7"></meting-js></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="anzhiyufont anzhiyu-icon-xmark"></i></button></nav><div class="is-center" id="loading-database"><i class="anzhiyufont anzhiyu-icon-spinner anzhiyu-pulse-icon"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div id="rightMenu"><div class="rightMenu-group rightMenu-small"><div class="rightMenu-item" id="menu-backward"><i class="anzhiyufont anzhiyu-icon-arrow-left"></i></div><div class="rightMenu-item" id="menu-forward"><i class="anzhiyufont anzhiyu-icon-arrow-right"></i></div><div class="rightMenu-item" id="menu-refresh"><i class="anzhiyufont anzhiyu-icon-arrow-rotate-right" style="font-size: 1rem;"></i></div><div class="rightMenu-item" id="menu-top"><i class="anzhiyufont anzhiyu-icon-arrow-up"></i></div></div><div class="rightMenu-group rightMenu-line rightMenuPlugin"><div class="rightMenu-item" id="menu-copytext"><i class="anzhiyufont anzhiyu-icon-copy"></i><span>复制选中文本</span></div><div class="rightMenu-item" id="menu-pastetext"><i class="anzhiyufont anzhiyu-icon-paste"></i><span>粘贴文本</span></div><a class="rightMenu-item" id="menu-commenttext"><i class="anzhiyufont anzhiyu-icon-comment-medical"></i><span>引用到评论</span></a><div class="rightMenu-item" id="menu-newwindow"><i class="anzhiyufont anzhiyu-icon-window-restore"></i><span>新窗口打开</span></div><div class="rightMenu-item" id="menu-copylink"><i class="anzhiyufont anzhiyu-icon-link"></i><span>复制链接地址</span></div><div class="rightMenu-item" id="menu-copyimg"><i class="anzhiyufont anzhiyu-icon-images"></i><span>复制此图片</span></div><div class="rightMenu-item" id="menu-downloadimg"><i class="anzhiyufont anzhiyu-icon-download"></i><span>下载此图片</span></div><div class="rightMenu-item" id="menu-newwindowimg"><i class="anzhiyufont anzhiyu-icon-window-restore"></i><span>新窗口打开图片</span></div><div class="rightMenu-item" id="menu-search"><i class="anzhiyufont anzhiyu-icon-magnifying-glass"></i><span>站内搜索</span></div><div class="rightMenu-item" id="menu-searchBaidu"><i class="anzhiyufont anzhiyu-icon-magnifying-glass"></i><span>百度搜索</span></div><div class="rightMenu-item" id="menu-music-toggle"><i class="anzhiyufont anzhiyu-icon-play"></i><span>播放音乐</span></div><div class="rightMenu-item" id="menu-music-back"><i class="anzhiyufont anzhiyu-icon-backward"></i><span>切换到上一首</span></div><div class="rightMenu-item" id="menu-music-forward"><i class="anzhiyufont anzhiyu-icon-forward"></i><span>切换到下一首</span></div><div class="rightMenu-item" id="menu-music-playlist" onclick="window.open(&quot;https://y.qq.com/n/ryqq/playlist/8802438608&quot;, &quot;_blank&quot;);" style="display: none;"><i class="anzhiyufont anzhiyu-icon-radio"></i><span>查看所有歌曲</span></div><div class="rightMenu-item" id="menu-music-copyMusicName"><i class="anzhiyufont anzhiyu-icon-copy"></i><span>复制歌名</span></div></div><div class="rightMenu-group rightMenu-line rightMenuOther"><a class="rightMenu-item menu-link" id="menu-randomPost"><i class="anzhiyufont anzhiyu-icon-shuffle"></i><span>随便逛逛</span></a><a class="rightMenu-item menu-link" href="/categories/"><i class="anzhiyufont anzhiyu-icon-cube"></i><span>博客分类</span></a><a class="rightMenu-item menu-link" href="/tags/"><i class="anzhiyufont anzhiyu-icon-tags"></i><span>文章标签</span></a></div><div class="rightMenu-group rightMenu-line rightMenuOther"><a class="rightMenu-item" id="menu-copy" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-copy"></i><span>复制地址</span></a><a class="rightMenu-item" id="menu-commentBarrage" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-message"></i><span class="menu-commentBarrage-text">关闭热评</span></a><a class="rightMenu-item" id="menu-darkmode" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-circle-half-stroke"></i><span class="menu-darkmode-text">深色模式</span></a><a class="rightMenu-item" id="menu-translate" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-language"></i><span>轉為繁體</span></a></div></div><div id="rightmenu-mask"></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.cbd.int/@fancyapps/ui@5.0.28/dist/fancybox/fancybox.umd.js"></script><script src="https://cdn.cbd.int/instant.page@5.2.0/instantpage.js" type="module"></script><script src="https://cdn.cbd.int/vanilla-lazyload@17.8.5/dist/lazyload.iife.min.js"></script><script src="https://cdn.cbd.int/node-snackbar@0.1.16/dist/snackbar.min.js"></script><canvas id="universe"></canvas><script async src="https://npm.elemecdn.com/anzhiyu-theme-static@1.0.0/dark/dark.js"></script><script>// 消除控制台打印
+var HoldLog = console.log;
+console.log = function () {};
+let now1 = new Date();
+queueMicrotask(() => {
+  const Log = function () {
+    HoldLog.apply(console, arguments);
+  }; //在恢复前输出日志
+  const grt = new Date("04/01/2023 00:00:00"); //此处修改你的建站时间或者网站上线时间
+  now1.setTime(now1.getTime() + 250);
+  const days = (now1 - grt) / 1000 / 60 / 60 / 24;
+  const dnum = Math.floor(days);
+  const ascll = [
+    `欢迎使用安知鱼!`,
+    `生活明朗, 万物可爱`,
+    `
+        
+       █████╗ ███╗   ██╗███████╗██╗  ██╗██╗██╗   ██╗██╗   ██╗
+      ██╔══██╗████╗  ██║╚══███╔╝██║  ██║██║╚██╗ ██╔╝██║   ██║
+      ███████║██╔██╗ ██║  ███╔╝ ███████║██║ ╚████╔╝ ██║   ██║
+      ██╔══██║██║╚██╗██║ ███╔╝  ██╔══██║██║  ╚██╔╝  ██║   ██║
+      ██║  ██║██║ ╚████║███████╗██║  ██║██║   ██║   ╚██████╔╝
+      ╚═╝  ╚═╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝╚═╝   ╚═╝    ╚═════╝
+        
+        `,
+    "已上线",
+    dnum,
+    "天",
+    "©2023 By 安知鱼 V1.6.12",
+  ];
+  const ascll2 = [`NCC2-036`, `调用前置摄像头拍照成功，识别为【小笨蛋】.`, `Photo captured: `, `🤪`];
+
+  setTimeout(
+    Log.bind(
+      console,
+      `\n%c${ascll[0]} %c ${ascll[1]} %c ${ascll[2]} %c${ascll[3]}%c ${ascll[4]}%c ${ascll[5]}\n\n%c ${ascll[6]}\n`,
+      "color:#425AEF",
+      "",
+      "color:#425AEF",
+      "color:#425AEF",
+      "",
+      "color:#425AEF",
+      ""
+    )
+  );
+  setTimeout(
+    Log.bind(
+      console,
+      `%c ${ascll2[0]} %c ${ascll2[1]} %c \n${ascll2[2]} %c\n${ascll2[3]}\n`,
+      "color:white; background-color:#4fd953",
+      "",
+      "",
+      'background:url("https://npm.elemecdn.com/anzhiyu-blog@1.1.6/img/post/common/tinggge.gif") no-repeat;font-size:450%'
+    )
+  );
+
+  setTimeout(Log.bind(console, "%c WELCOME %c 你好，小笨蛋.", "color:white; background-color:#4f90d9", ""));
+
+  setTimeout(
+    console.warn.bind(
+      console,
+      "%c ⚡ Powered by 安知鱼 %c 你正在访问 foresta.yang 的博客.",
+      "color:white; background-color:#f0ad4e",
+      ""
+    )
+  );
+
+  setTimeout(Log.bind(console, "%c W23-12 %c 你已打开控制台.", "color:white; background-color:#4f90d9", ""));
+
+  setTimeout(
+    console.warn.bind(console, "%c S013-782 %c 你现在正处于监控中.", "color:white; background-color:#d9534f", "")
+  );
+});</script><script async src="/anzhiyu/random.js"></script><script src="/js/search/local-search.js"></script><div class="js-pjax"><script>if (!window.MathJax) {
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      tags: 'ams'
+    },
+    chtml: {
+      scale: 1.1
+    },
+    options: {
+      renderActions: {
+        findScript: [10, doc => {
+          for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+            const display = !!node.type.match(/; *mode=display/)
+            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+            const text = document.createTextNode('')
+            node.parentNode.replaceChild(text, node)
+            math.start = {node: text, delim: '', n: 0}
+            math.end = {node: text, delim: '', n: 0}
+            doc.math.push(math)
+          }
+        }, '']
+      }
+    }
+  }
+  
+  const script = document.createElement('script')
+  script.src = 'https://cdn.cbd.int/mathjax@3.2.2/es5/tex-mml-chtml.js'
+  script.id = 'MathJax-script'
+  script.async = true
+  document.head.appendChild(script)
+} else {
+  MathJax.startup.document.state(0)
+  MathJax.texReset()
+  MathJax.typesetPromise()
+}</script><link rel="stylesheet" type="text/css" href="https://cdn.cbd.int/katex@0.16.0/dist/katex.min.css"><script src="https://cdn.cbd.int/katex@0.16.0/dist/contrib/copy-tex.min.js"></script><script>(() => {
+  document.querySelectorAll('#article-container span.katex-display').forEach(item => {
+    anzhiyu.wrap(item, 'div', { class: 'katex-wrap'})
+  })
+})()</script><script>(() => {
+  const init = () => {
+    twikoo.init(Object.assign({
+      el: '#twikoo-wrap',
+      envId: 'https://mytwikoo-omega.vercel.app',
+      region: '',
+      onCommentLoaded: () => {
+        anzhiyu.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      }
+    }, null))
+  }
+
+  const loadTwikoo = () => {
+    if (typeof twikoo === 'object') setTimeout(runFn,0)
+    else getScript('https://cdn.cbd.int/twikoo@1.6.25/dist/twikoo.all.min.js').then(runFn)
+  }
+
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://mytwikoo-omega.vercel.app',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(res => {
+      countELement.textContent = res[0].count
+    }).catch(err => {
+      console.error(err)
+    })
+  }
+
+  const runFn = () => {
+    init();
+    GLOBAL_CONFIG_SITE.isPost && getCount()
+  }
+
+  if ('Twikoo' === 'Twikoo' || !false) {
+    if (false) anzhiyu.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else {
+      loadTwikoo()
+    }
+  } else {
+    window.loadOtherComment = loadTwikoo
+  }
+})()</script><input type="hidden" name="page-type" id="page-type" value="post"></div><script>window.addEventListener('load', () => {
+  const changeContent = (content) => {
+    if (content === '') return content
+
+    content = content.replace(/<img.*?src="(.*?)"?[^\>]+>/ig, '[图片]') // replace image link
+    content = content.replace(/<a[^>]+?href=["']?([^"']+)["']?[^>]*>([^<]+)<\/a>/gi, '[链接]') // replace url
+    content = content.replace(/<pre><code>.*?<\/pre>/gi, '[代码]') // replace code
+    content = content.replace(/<[^>]+>/g,"") // remove html tag
+
+    if (content.length > 150) {
+      content = content.substring(0,150) + '...'
+    }
+    return content
+  }
+
+  const getComment = () => {
+    const runTwikoo = () => {
+      twikoo.getRecentComments({
+        envId: 'https://mytwikoo-omega.vercel.app',
+        region: '',
+        pageSize: 6,
+        includeReply: true
+      }).then(function (res) {
+        const twikooArray = res.map(e => {
+          return {
+            'content': changeContent(e.comment),
+            'avatar': e.avatar,
+            'nick': e.nick,
+            'url': e.url + '#' + e.id,
+            'date': new Date(e.created).toISOString()
+          }
+        })
+
+        saveToLocal.set('twikoo-newest-comments', JSON.stringify(twikooArray), 10/(60*24))
+        generateHtml(twikooArray)
+      }).catch(function (err) {
+        const $dom = document.querySelector('#card-newest-comments .aside-list')
+        $dom.textContent= "无法获取评论，请确认相关配置是否正确"
+      })
+    }
+
+    if (typeof twikoo === 'object') {
+      runTwikoo()
+    } else {
+      getScript('https://cdn.cbd.int/twikoo@1.6.25/dist/twikoo.all.min.js').then(runTwikoo)
+    }
+  }
+
+  const generateHtml = array => {
+    let result = ''
+
+    if (array.length) {
+      for (let i = 0; i < array.length; i++) {
+        result += '<div class=\'aside-list-item\'>'
+
+        if (true) {
+          const name = 'data-lazy-src'
+          result += `<a href='${array[i].url}' class='thumbnail'><img ${name}='${array[i].avatar}' alt='${array[i].nick}'><div class='name'><span>${array[i].nick} </span></div></a>`
+        }
+        
+        result += `<div class='content'>
+        <a class='comment' href='${array[i].url}' title='${array[i].content}'>${array[i].content}</a>
+        <time datetime="${array[i].date}">${anzhiyu.diffDate(array[i].date, true)}</time></div>
+        </div>`
+      }
+    } else {
+      result += '没有评论'
+    }
+
+    let $dom = document.querySelector('#card-newest-comments .aside-list')
+    $dom && ($dom.innerHTML= result)
+    window.lazyLoadInstance && window.lazyLoadInstance.update()
+    window.pjax && window.pjax.refresh($dom)
+  }
+
+  const newestCommentInit = () => {
+    if (document.querySelector('#card-newest-comments .aside-list')) {
+      const data = saveToLocal.get('twikoo-newest-comments')
+      if (data) {
+        generateHtml(JSON.parse(data))
+      } else {
+        getComment()
+      }
+    }
+  }
+
+  newestCommentInit()
+  document.addEventListener('pjax:complete', newestCommentInit)
+})</script><script>var visitorMail = "";
+</script><script async data-pjax src="https://cdn.cbd.int/anzhiyu-theme-static@1.0.0/waterfall/waterfall.js"></script><script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/qrcodejs/1.0.0/qrcode.min.js"></script><script src="/js/anzhiyu/right_click_menu.js"></script><link rel="stylesheet" href="https://cdn.cbd.int/anzhiyu-theme-static@1.1.9/icon/ali_iconfont_css.css"><link rel="stylesheet" href="https://cdn.cbd.int/anzhiyu-theme-static@1.0.0/aplayer/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.cbd.int/anzhiyu-blog-static@1.0.1/js/APlayer.min.js"></script><script src="https://cdn.cbd.int/hexo-anzhiyu-music@1.0.1/assets/js/Meting2.min.js"></script><script src="https://cdn.cbd.int/pjax@0.2.8/pjax.min.js"></script><script>let pjaxSelectors = ["meta[property=\"og:image\"]","meta[property=\"og:title\"]","meta[property=\"og:url\"]","meta[property=\"og:type\"]","meta[property=\"og:site_name\"]","meta[property=\"og:description\"]","head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+  // removeEventListener scroll 
+  anzhiyu.removeGlobalFnEvent('pjax')
+  anzhiyu.removeGlobalFnEvent('themeChange')
+
+  document.getElementById('rightside').classList.remove('rightside-show')
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+})
+
+document.addEventListener('pjax:error', e => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/404.html')
+  }
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><script charset="UTF-8" src="https://cdn.cbd.int/anzhiyu-theme-static@1.1.5/accesskey/accesskey.js"></script></div><div id="popup-window"><div class="popup-window-title">通知</div><div class="popup-window-divider"></div><div class="popup-window-content"><div class="popup-tip">你好呀</div><div class="popup-link"><i class="anzhiyufont anzhiyu-icon-arrow-circle-right"></i></div></div></div></body></html>
