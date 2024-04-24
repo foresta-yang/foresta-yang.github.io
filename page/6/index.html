@@ -59,7 +59,7 @@
   isHome: true,
   isHighlightShrink: false,
   isToc: false,
-  postUpdate: '2024-04-24 21:07:20',
+  postUpdate: '2024-04-24 21:20:59',
   postMainColor: '',
 }</script><noscript><style type="text/css">
   #nav {
@@ -209,9 +209,9 @@ if (true) {
       </a>
     </div>
     
-    <div class="catalog-list-item" id="/categories/Manuscripts/">
-      <a href="/categories/Manuscripts/">
-        Manuscripts
+    <div class="catalog-list-item" id="/categories/Vulnerabilities/">
+      <a href="/categories/Vulnerabilities/">
+        Vulnerabilities
       </a>
     </div>
     
@@ -221,15 +221,15 @@ if (true) {
       </a>
     </div>
     
-    <div class="catalog-list-item" id="/categories/Vulnerabilities/">
-      <a href="/categories/Vulnerabilities/">
-        Vulnerabilities
-      </a>
-    </div>
-    
     <div class="catalog-list-item" id="/categories/Tools/">
       <a href="/categories/Tools/">
         Tools
+      </a>
+    </div>
+    
+    <div class="catalog-list-item" id="/categories/Manuscripts/">
+      <a href="/categories/Manuscripts/">
+        Manuscripts
       </a>
     </div>
     
@@ -263,6 +263,12 @@ if (true) {
       </a>
     </div>
     
+    <div class="catalog-list-item" id="/categories/Papers/">
+      <a href="/categories/Papers/">
+        Papers
+      </a>
+    </div>
+    
     <div class="catalog-list-item" id="/categories/C-C/">
       <a href="/categories/C-C/">
         C/C++
@@ -290,12 +296,6 @@ if (true) {
     <div class="catalog-list-item" id="/categories/软件分析/">
       <a href="/categories/软件分析/">
         软件分析
-      </a>
-    </div>
-    
-    <div class="catalog-list-item" id="/categories/Papers/">
-      <a href="/categories/Papers/">
-        Papers
       </a>
     </div>
     
@@ -356,31 +356,7 @@ L1 &amp; L2 正则化会使模型偏好于更小的权值。更小的权值意�
 Adadelta 是一个基于梯度下降的学习算法，可以随时间调整适应每个参数的学习率。它是作为 Adagrad 的改进版提出的，它比超参数（hyperparameter）更敏感而且可能会太过严重地降低学习率。Adadelta 类似于 rmsprop，而且可被用来替代 vanilla SGD。
 论文：Adadelta：一种自适应学习率方法（ADADELTA: An Adaptive Learning Rate Method）
 技术博客：斯坦福 CS231n：优化算法（http://cs231n.github.io/neural-networks-3/）
-技术博客：梯度下降优化算法概述（http://sebastianruder.com/optimizing-gradien ...</div></div></div><div class="recent-post-item" onclick="pjax.loadUrl('/2023/10/10/AILearning/DL/%E7%9B%B8%E4%BC%BC%E6%80%A7%E8%AE%A1%E7%AE%97/')"><div class="post_cover right"><a href="/2023/10/10/AILearning/DL/%E7%9B%B8%E4%BC%BC%E6%80%A7%E8%AE%A1%E7%AE%97/" title="Similarity" style="display: flex;height: 100%;"><img class="post_bg" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="/img/cover-default.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Similarity" style="pointer-events: none"></a></div><div class="recent-post-info"><div class="recent-post-info-top"><div class="recent-post-info-top-tips"><div class="article-categories-original">Deep Learning</div><a class="unvisited-post" href="/2023/10/10/AILearning/DL/%E7%9B%B8%E4%BC%BC%E6%80%A7%E8%AE%A1%E7%AE%97/" title="Similarity">未读</a></div><a class="article-title" href="/2023/10/10/AILearning/DL/%E7%9B%B8%E4%BC%BC%E6%80%A7%E8%AE%A1%E7%AE%97/" title="Similarity">Similarity</a></div><div class="article-meta-wrap"><span class="post-meta-date"><i class="anzhiyufont anzhiyu-icon-calendar-days" style="font-size: 15px; display:none"></i><span class="article-meta-label">发表于</span><time datetime="2023-10-10T07:46:15.000Z" title="发表于 2023-10-10 15:46:15" time="2023-10-10 15:46:15">2023-10-10</time><time class="time_hidden" datetime="2024-04-24T12:53:57.092Z" title="更新于 2024-04-24 20:53:57" time="2024-04-24 20:53:57">2024-04-24</time></span><span class="article-meta tags"><a class="article-meta__tags" href="/tags/DL/" event.cancelbubble onclick="window.event.cancelBubble=true;"><span> <i class="anzhiyufont anzhiyu-icon-hashtag"></i>DL</span></a></span></div><div class="content"> CosineSimilarity
- DotProductSimilarity
- ProjectedDotProductSimilarity
- BiLinearSimilarity
- TriLinearSimilarity
- MultiHeadedSimilarity
- 1、余弦相似度
-余弦相似度用向量空间中两个向量夹角的余弦值作为衡量两个个体间差异的大小。余弦值越接近1，就表明夹角越接近0度，也就是两个向量越相似，称为&quot;余弦相似性&quot;
-import torchimport torch.nn as nnimport mathtorch.cosine_similarity()
-class CosineSimilarity(nn.Module):     def forward(self, tensor_1, tensor_2):        normalized_tensor_1 = tensor_1 / tensor_1.norm(dim=-1, keepdim=True)        normalized_tensor_2 = tensor_2 / tensor ...</div></div></div><div class="recent-post-item" onclick="pjax.loadUrl('/2023/10/10/AILearning/DL/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E6%9C%AF%E8%AF%ADbaseline%E3%80%81benchmark%E3%80%81groundtruth/')"><div class="post_cover left"><a href="/2023/10/10/AILearning/DL/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E6%9C%AF%E8%AF%ADbaseline%E3%80%81benchmark%E3%80%81groundtruth/" title="baseline、benchmark、groundtruth" style="display: flex;height: 100%;"><img class="post_bg" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="/img/cover-default.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="baseline、benchmark、groundtruth" style="pointer-events: none"></a></div><div class="recent-post-info"><div class="recent-post-info-top"><div class="recent-post-info-top-tips"><div class="article-categories-original">Deep Learning</div><a class="unvisited-post" href="/2023/10/10/AILearning/DL/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E6%9C%AF%E8%AF%ADbaseline%E3%80%81benchmark%E3%80%81groundtruth/" title="baseline、benchmark、groundtruth">未读</a></div><a class="article-title" href="/2023/10/10/AILearning/DL/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E6%9C%AF%E8%AF%ADbaseline%E3%80%81benchmark%E3%80%81groundtruth/" title="baseline、benchmark、groundtruth">baseline、benchmark、groundtruth</a></div><div class="article-meta-wrap"><span class="post-meta-date"><i class="anzhiyufont anzhiyu-icon-calendar-days" style="font-size: 15px; display:none"></i><span class="article-meta-label">发表于</span><time datetime="2023-10-10T07:46:15.000Z" title="发表于 2023-10-10 15:46:15" time="2023-10-10 15:46:15">2023-10-10</time><time class="time_hidden" datetime="2024-04-24T13:06:43.475Z" title="更新于 2024-04-24 21:06:43" time="2024-04-24 21:06:43">2024-04-24</time></span><span class="article-meta tags"><a class="article-meta__tags" href="/tags/Term/" event.cancelbubble onclick="window.event.cancelBubble=true;"><span> <i class="anzhiyufont anzhiyu-icon-hashtag"></i>Term</span></a></span></div><div class="content"> 论文阅读术语
-
-baseline、benchmark、groundtruth
-
- 1. benchmark
-benchmark是一种评价方式。在计算机领域应用最多的就是针对不同Model的性能测试。
-对于benchmark过程，有三个步骤：
-设置：这部分我们最常听到的就是数据集，说白了就是输入。
-数据又分为结构化数据、半结构化数据和非结构化数据。其中非结构化数据包含各种文档、图片、视频和音频等。典型的应用有视频网站、图片相册、交通视频监控等等。
-执行：对于自己提出的模型进行试验。
-分析度量指标：
-常用的指标：
-（1）从架构角度度量：浮点型操作密度、整数型操作密度、指令中断、cache命中率、TLB命中；
-（2）从Spark系统执行时间和吞吐的角度度量：Job作业执行时间、Job吞吐量、Stage执行时间、Stage吞吐量、Task执行时间、Task吞吐量；
-（3）从Spark系统资源利用率的角度度量：CPU在指定时间段的利用率、内存在指定时间段的利用率、磁盘在指定时间段的利用率、网络带宽在指定时间段的利用率；
-（4）从扩展性的角度度量：数据量扩展、集群节点数据扩展（scale out ...</div></div></div><div class="recent-post-item" onclick="pjax.loadUrl('/2023/10/10/AILearning/DL/%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0_/')"><div class="post_cover right"><a href="/2023/10/10/AILearning/DL/%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0_/" title="激活函数" style="display: flex;height: 100%;"><img class="post_bg" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="/img/cover-default.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="激活函数" style="pointer-events: none"></a></div><div class="recent-post-info"><div class="recent-post-info-top"><div class="recent-post-info-top-tips"><div class="article-categories-original">Deep Learning</div><a class="unvisited-post" href="/2023/10/10/AILearning/DL/%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0_/" title="激活函数">未读</a></div><a class="article-title" href="/2023/10/10/AILearning/DL/%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0_/" title="激活函数">激活函数</a></div><div class="article-meta-wrap"><span class="post-meta-date"><i class="anzhiyufont anzhiyu-icon-calendar-days" style="font-size: 15px; display:none"></i><span class="article-meta-label">发表于</span><time datetime="2023-10-10T07:46:15.000Z" title="发表于 2023-10-10 15:46:15" time="2023-10-10 15:46:15">2023-10-10</time><time class="time_hidden" datetime="2024-04-24T13:06:32.088Z" title="更新于 2024-04-24 21:06:32" time="2024-04-24 21:06:32">2024-04-24</time></span><span class="article-meta tags"><a class="article-meta__tags" href="/tags/Activation/" event.cancelbubble onclick="window.event.cancelBubble=true;"><span> <i class="anzhiyufont anzhiyu-icon-hashtag"></i>Activation</span></a></span></div><div class="content">
+技术博客：梯度下降优化算法概述（http://sebastianruder.com/optimizing-gradien ...</div></div></div><div class="recent-post-item" onclick="pjax.loadUrl('/2023/10/10/AILearning/DL/%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0_/')"><div class="post_cover right"><a href="/2023/10/10/AILearning/DL/%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0_/" title="激活函数" style="display: flex;height: 100%;"><img class="post_bg" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="/img/cover-default.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="激活函数" style="pointer-events: none"></a></div><div class="recent-post-info"><div class="recent-post-info-top"><div class="recent-post-info-top-tips"><div class="article-categories-original">Deep Learning</div><a class="unvisited-post" href="/2023/10/10/AILearning/DL/%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0_/" title="激活函数">未读</a></div><a class="article-title" href="/2023/10/10/AILearning/DL/%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0_/" title="激活函数">激活函数</a></div><div class="article-meta-wrap"><span class="post-meta-date"><i class="anzhiyufont anzhiyu-icon-calendar-days" style="font-size: 15px; display:none"></i><span class="article-meta-label">发表于</span><time datetime="2023-10-10T07:46:15.000Z" title="发表于 2023-10-10 15:46:15" time="2023-10-10 15:46:15">2023-10-10</time><time class="time_hidden" datetime="2024-04-24T13:06:32.088Z" title="更新于 2024-04-24 21:06:32" time="2024-04-24 21:06:32">2024-04-24</time></span><span class="article-meta tags"><a class="article-meta__tags" href="/tags/Activation/" event.cancelbubble onclick="window.event.cancelBubble=true;"><span> <i class="anzhiyufont anzhiyu-icon-hashtag"></i>Activation</span></a></span></div><div class="content">
 激活函数对神经网络的重要性自不必多言，机器之心也曾发布过一些相关的介绍文章，比如《一文概览深度学习中的激活函数》。本文同样关注的是激活函数。来自丹麦技术大学的 Casper Hansen 通过公式、图表和代码实验介绍了 sigmoid、ReLU、ELU 以及更新的 Leaky ReLU、SELU、GELU 这些激活函数，并比较了它们的优势和短板。
 
 选自mlfromscratch，作者：Casper Hansen，机器之心编译，参与：熊猫、杜伟。
@@ -402,7 +378,31 @@ benchmark是一种评价方式。在计算机领域应用最多的就是针对�
 
 5.指数线性单元（ELU）
 6.渗漏型整流线性单元（Leaky ReLU）
-7. ...</div></div></div><div class="recent-post-item" onclick="pjax.loadUrl('/2023/10/10/AILearning/GNN/DGL%E6%95%B4%E5%9B%BE%E5%88%86%E7%B1%BB/')"><div class="post_cover left"><a href="/2023/10/10/AILearning/GNN/DGL%E6%95%B4%E5%9B%BE%E5%88%86%E7%B1%BB/" title="DGL整图分类" style="display: flex;height: 100%;"><img class="post_bg" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404241722489.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="DGL整图分类" style="pointer-events: none"></a></div><div class="recent-post-info"><div class="recent-post-info-top"><div class="recent-post-info-top-tips"><div class="article-categories-original">GNN</div><a class="unvisited-post" href="/2023/10/10/AILearning/GNN/DGL%E6%95%B4%E5%9B%BE%E5%88%86%E7%B1%BB/" title="DGL整图分类">未读</a></div><a class="article-title" href="/2023/10/10/AILearning/GNN/DGL%E6%95%B4%E5%9B%BE%E5%88%86%E7%B1%BB/" title="DGL整图分类">DGL整图分类</a></div><div class="article-meta-wrap"><span class="post-meta-date"><i class="anzhiyufont anzhiyu-icon-calendar-days" style="font-size: 15px; display:none"></i><span class="article-meta-label">发表于</span><time datetime="2023-10-10T07:46:15.000Z" title="发表于 2023-10-10 15:46:15" time="2023-10-10 15:46:15">2023-10-10</time><time class="time_hidden" datetime="2024-04-24T12:33:34.244Z" title="更新于 2024-04-24 20:33:34" time="2024-04-24 20:33:34">2024-04-24</time></span><span class="article-meta tags"><a class="article-meta__tags" href="/tags/DGL/" event.cancelbubble onclick="window.event.cancelBubble=true;"><span> <i class="anzhiyufont anzhiyu-icon-hashtag"></i>DGL</span></a></span></div><div class="content">许多场景中的图数据是由多个图组成，而不是单个的大图数据。例如不同类型的人群社区。 通过用图刻画同一社区里人与人间的友谊，可以得到多张用于分类的图。 在这个场景里，整图分类模型可以识别社区的类型，即根据结构和整体信息对图进行分类。
+7. ...</div></div></div><div class="recent-post-item" onclick="pjax.loadUrl('/2023/10/10/AILearning/DL/%E7%9B%B8%E4%BC%BC%E6%80%A7%E8%AE%A1%E7%AE%97/')"><div class="post_cover left"><a href="/2023/10/10/AILearning/DL/%E7%9B%B8%E4%BC%BC%E6%80%A7%E8%AE%A1%E7%AE%97/" title="Similarity" style="display: flex;height: 100%;"><img class="post_bg" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="/img/cover-default.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Similarity" style="pointer-events: none"></a></div><div class="recent-post-info"><div class="recent-post-info-top"><div class="recent-post-info-top-tips"><div class="article-categories-original">Deep Learning</div><a class="unvisited-post" href="/2023/10/10/AILearning/DL/%E7%9B%B8%E4%BC%BC%E6%80%A7%E8%AE%A1%E7%AE%97/" title="Similarity">未读</a></div><a class="article-title" href="/2023/10/10/AILearning/DL/%E7%9B%B8%E4%BC%BC%E6%80%A7%E8%AE%A1%E7%AE%97/" title="Similarity">Similarity</a></div><div class="article-meta-wrap"><span class="post-meta-date"><i class="anzhiyufont anzhiyu-icon-calendar-days" style="font-size: 15px; display:none"></i><span class="article-meta-label">发表于</span><time datetime="2023-10-10T07:46:15.000Z" title="发表于 2023-10-10 15:46:15" time="2023-10-10 15:46:15">2023-10-10</time><time class="time_hidden" datetime="2024-04-24T12:53:57.092Z" title="更新于 2024-04-24 20:53:57" time="2024-04-24 20:53:57">2024-04-24</time></span><span class="article-meta tags"><a class="article-meta__tags" href="/tags/DL/" event.cancelbubble onclick="window.event.cancelBubble=true;"><span> <i class="anzhiyufont anzhiyu-icon-hashtag"></i>DL</span></a></span></div><div class="content"> CosineSimilarity
+ DotProductSimilarity
+ ProjectedDotProductSimilarity
+ BiLinearSimilarity
+ TriLinearSimilarity
+ MultiHeadedSimilarity
+ 1、余弦相似度
+余弦相似度用向量空间中两个向量夹角的余弦值作为衡量两个个体间差异的大小。余弦值越接近1，就表明夹角越接近0度，也就是两个向量越相似，称为&quot;余弦相似性&quot;
+import torchimport torch.nn as nnimport mathtorch.cosine_similarity()
+class CosineSimilarity(nn.Module):     def forward(self, tensor_1, tensor_2):        normalized_tensor_1 = tensor_1 / tensor_1.norm(dim=-1, keepdim=True)        normalized_tensor_2 = tensor_2 / tensor ...</div></div></div><div class="recent-post-item" onclick="pjax.loadUrl('/2023/10/10/AILearning/DL/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E6%9C%AF%E8%AF%ADbaseline%E3%80%81benchmark%E3%80%81groundtruth/')"><div class="post_cover right"><a href="/2023/10/10/AILearning/DL/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E6%9C%AF%E8%AF%ADbaseline%E3%80%81benchmark%E3%80%81groundtruth/" title="baseline、benchmark、groundtruth" style="display: flex;height: 100%;"><img class="post_bg" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="/img/cover-default.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="baseline、benchmark、groundtruth" style="pointer-events: none"></a></div><div class="recent-post-info"><div class="recent-post-info-top"><div class="recent-post-info-top-tips"><div class="article-categories-original">Deep Learning</div><a class="unvisited-post" href="/2023/10/10/AILearning/DL/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E6%9C%AF%E8%AF%ADbaseline%E3%80%81benchmark%E3%80%81groundtruth/" title="baseline、benchmark、groundtruth">未读</a></div><a class="article-title" href="/2023/10/10/AILearning/DL/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E6%9C%AF%E8%AF%ADbaseline%E3%80%81benchmark%E3%80%81groundtruth/" title="baseline、benchmark、groundtruth">baseline、benchmark、groundtruth</a></div><div class="article-meta-wrap"><span class="post-meta-date"><i class="anzhiyufont anzhiyu-icon-calendar-days" style="font-size: 15px; display:none"></i><span class="article-meta-label">发表于</span><time datetime="2023-10-10T07:46:15.000Z" title="发表于 2023-10-10 15:46:15" time="2023-10-10 15:46:15">2023-10-10</time><time class="time_hidden" datetime="2024-04-24T13:06:43.475Z" title="更新于 2024-04-24 21:06:43" time="2024-04-24 21:06:43">2024-04-24</time></span><span class="article-meta tags"><a class="article-meta__tags" href="/tags/Term/" event.cancelbubble onclick="window.event.cancelBubble=true;"><span> <i class="anzhiyufont anzhiyu-icon-hashtag"></i>Term</span></a></span></div><div class="content"> 论文阅读术语
+
+baseline、benchmark、groundtruth
+
+ 1. benchmark
+benchmark是一种评价方式。在计算机领域应用最多的就是针对不同Model的性能测试。
+对于benchmark过程，有三个步骤：
+设置：这部分我们最常听到的就是数据集，说白了就是输入。
+数据又分为结构化数据、半结构化数据和非结构化数据。其中非结构化数据包含各种文档、图片、视频和音频等。典型的应用有视频网站、图片相册、交通视频监控等等。
+执行：对于自己提出的模型进行试验。
+分析度量指标：
+常用的指标：
+（1）从架构角度度量：浮点型操作密度、整数型操作密度、指令中断、cache命中率、TLB命中；
+（2）从Spark系统执行时间和吞吐的角度度量：Job作业执行时间、Job吞吐量、Stage执行时间、Stage吞吐量、Task执行时间、Task吞吐量；
+（3）从Spark系统资源利用率的角度度量：CPU在指定时间段的利用率、内存在指定时间段的利用率、磁盘在指定时间段的利用率、网络带宽在指定时间段的利用率；
+（4）从扩展性的角度度量：数据量扩展、集群节点数据扩展（scale out ...</div></div></div><div class="recent-post-item" onclick="pjax.loadUrl('/2023/10/10/AILearning/GNN/DGL%E6%95%B4%E5%9B%BE%E5%88%86%E7%B1%BB/')"><div class="post_cover left"><a href="/2023/10/10/AILearning/GNN/DGL%E6%95%B4%E5%9B%BE%E5%88%86%E7%B1%BB/" title="DGL整图分类" style="display: flex;height: 100%;"><img class="post_bg" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404241722489.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="DGL整图分类" style="pointer-events: none"></a></div><div class="recent-post-info"><div class="recent-post-info-top"><div class="recent-post-info-top-tips"><div class="article-categories-original">GNN</div><a class="unvisited-post" href="/2023/10/10/AILearning/GNN/DGL%E6%95%B4%E5%9B%BE%E5%88%86%E7%B1%BB/" title="DGL整图分类">未读</a></div><a class="article-title" href="/2023/10/10/AILearning/GNN/DGL%E6%95%B4%E5%9B%BE%E5%88%86%E7%B1%BB/" title="DGL整图分类">DGL整图分类</a></div><div class="article-meta-wrap"><span class="post-meta-date"><i class="anzhiyufont anzhiyu-icon-calendar-days" style="font-size: 15px; display:none"></i><span class="article-meta-label">发表于</span><time datetime="2023-10-10T07:46:15.000Z" title="发表于 2023-10-10 15:46:15" time="2023-10-10 15:46:15">2023-10-10</time><time class="time_hidden" datetime="2024-04-24T12:33:34.244Z" title="更新于 2024-04-24 20:33:34" time="2024-04-24 20:33:34">2024-04-24</time></span><span class="article-meta tags"><a class="article-meta__tags" href="/tags/DGL/" event.cancelbubble onclick="window.event.cancelBubble=true;"><span> <i class="anzhiyufont anzhiyu-icon-hashtag"></i>DGL</span></a></span></div><div class="content">许多场景中的图数据是由多个图组成，而不是单个的大图数据。例如不同类型的人群社区。 通过用图刻画同一社区里人与人间的友谊，可以得到多张用于分类的图。 在这个场景里，整图分类模型可以识别社区的类型，即根据结构和整体信息对图进行分类。
  概述¶
 整图分类与节点分类或链接预测的主要区别是：预测结果刻画了整个输入图的属性。 与之前的任务类似，用户还是在节点或边上进行消息传递。但不同的是，整图分类任务还需要得到整个图的表示。
 整图分类的处理流程如下图所示：
