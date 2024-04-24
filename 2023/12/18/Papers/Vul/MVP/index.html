@@ -1,0 +1,637 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"><title>Detecting Vulnerabilities using Patch-Enhanced Vulnerability Signatures | foresta</title><meta name="keywords" content="Vulnerabilities,软件安全"><meta name="author" content="foresta.yang"><meta name="copyright" content="foresta.yang"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#f7f9fe"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-touch-fullscreen" content="yes"><meta name="apple-mobile-web-app-title" content="Detecting Vulnerabilities using Patch-Enhanced Vulnerability Signatures"><meta name="application-name" content="Detecting Vulnerabilities using Patch-Enhanced Vulnerability Signatures"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="#f7f9fe"><meta property="og:type" content="article"><meta property="og:title" content="Detecting Vulnerabilities using Patch-Enhanced Vulnerability Signatures"><meta property="og:url" content="https://foresta-yang.github.io/2023/12/18/Papers/Vul/MVP/index.html"><meta property="og:site_name" content="foresta"><meta property="og:description" content="Paper MVP: Detecting Vulnerabilities using Patch-Enhanced Vulnerability Signatures：USENIX 2020，Yang Xiao et al.  Abstract 重复漏洞（Recurring Vulnerabilit"><meta property="og:locale" content="zh-CN"><meta property="og:image" content="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/head.jpg"><meta property="article:author" content="foresta.yang"><meta property="article:tag"><meta name="twitter:card" content="summary"><meta name="twitter:image" content="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/head.jpg"><meta name="description" content="Paper MVP: Detecting Vulnerabilities using Patch-Enhanced Vulnerability Signatures：USENIX 2020，Yang Xiao et al.  Abstract 重复漏洞（Recurring Vulnerabilit"><link rel="shortcut icon" href="/img/foresta.png"><link rel="canonical" href="https://foresta-yang.github.io/2023/12/18/Papers/Vul/MVP/"><link rel="preconnect" href="//cdn.cbd.int"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="google-site-verification" content="xxx"/><meta name="baidu-site-verification" content="code-xxx"/><meta name="msvalidate.01" content="xxx"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.cbd.int/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.cbd.int/@fancyapps/ui@5.0.28/dist/fancybox/fancybox.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/anzhiyu-theme-static@1.0.0/swiper/swiper.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  linkPageTop: undefined,
+  peoplecanvas: undefined,
+  postHeadAiDescription: undefined,
+  diytitle: undefined,
+  LA51: undefined,
+  greetingBox: undefined,
+  twikooEnvId: 'https://mytwikoo-omega.vercel.app',
+  commentBarrageConfig:undefined,
+  root: '/',
+  preloader: {"source":3},
+  friends_vue_info: undefined,
+  navMusic: true,
+  mainTone: undefined,
+  authorStatus: undefined,
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"简","rightMenuMsgToTraditionalChinese":"转为繁体","rightMenuMsgToSimplifiedChinese":"转为简体"},
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":330},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    simplehomepage: true,
+    post: false
+  },
+  runtime: '天',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"copy":true,"copyrightEbable":false,"limitCount":66,"languages":{"author":"作者: foresta.yang","link":"链接: ","source":"来源: foresta","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。","copySuccess":"复制成功，复制和转载请标注本文地址"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#425AEF","bgDark":"#1f1f1f","position":"top-center"},
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.cbd.int/flickr-justified-gallery@2.1.2/dist/fjGallery.min.js',
+      css: 'https://cdn.cbd.int/flickr-justified-gallery@2.1.2/dist/fjGallery.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isAnchor: false,
+  shortcutKey: undefined,
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  configTitle: 'foresta',
+  title: 'Detecting Vulnerabilities using Patch-Enhanced Vulnerability Signatures',
+  postAI: '',
+  pageFillDescription: ' Paper,  Abstract,  Introduction,  Motivation,  Method,  Evaluation,  Limitation,  Conclusion重复漏洞广泛存在于真实的系统中这些漏洞通常由可重用的代码库或共享的代码逻辑导致因此同样的漏洞很可能在其他地方也存在而未被发现本文提出了一种新的方法来检测具有低假阳性和低假阴性的重复漏洞首先利用新的程序切片技术从漏洞函数及其补丁函数中提取漏洞和补丁的语法和语义特征如果目标函数匹配漏洞特征但不匹配补丁特征则该目标函数会被识别为存在漏洞本文在个开源系统上对方法进行实验结果表明显著优于目前的基于克隆和基于功能匹配的重复漏洞检测的方法检测到了通用的漏洞检测方法无法检测到的重复漏洞检测到个新的漏洞并获得了个认证由于软件系统中代码库的重用或代码逻辑的共享对不同用途的相似对象使用相似的处理逻辑使得具有相似特征的重复漏洞广泛存在但在现实程序中却无法检测到因此重复漏洞检测得到了广泛的普及本文的目的就是检测重复出现的漏洞也即给定一个在程序中以一种特定的方式运行的漏洞检测其他程序是否可能存在这种同样形式的漏洞现有的检测重复漏洞的方法可以分为两种一种是基于代码克隆的方法该方法将重复漏洞的检测问题视为代码克隆的检测问题从已知的漏洞中提取或语法级的并将该的克隆代码视作漏洞另一种是基于函数匹配的方法该方法不考虑任何漏洞特征直接将已知的漏洞函数作为检测是否存在这些的克隆函数该领域目前存在的两个主要挑战是如何区分已经修补完成的漏洞减少假阳性率以及如何精确的生成一个已知漏洞的来减少假阳性和假阴性本文提出了一个针对重复漏洞的漏洞检测方法为了解决第一个挑战不仅生成漏洞的还同时生成补丁的利用漏洞特征来检测可能存在的漏洞并利用补丁特征来区分这些漏洞是否已经打过补丁为了解决第二个挑战我们提出了一种新的切片方法只提取与漏洞和补丁相关的语句在语法和语义级别生成更加精确的漏洞和补丁的此外我们采用语句抽象和基于熵的语句选择来进一步提高的准确性本文在个开源项目上对方法进行了实验发现了个尚未被发现的安全漏洞并获得了个认证同时将与四种现有的方法进行比较发现在准确率上明显更胜一筹本文在个项目的对漏洞和补丁函数上进行了实验使用同一对漏洞函数和补丁函数的相似度发现有的样本对二者相似度均超过了而实验证明有的真实漏洞目标函数与原漏洞函数的相似度小于所以很难通过仅仅计算目标函数与漏洞函数的相似度来判断是否有漏洞还要计算目标函数与补丁函数的相似度来综合判断上图是本文模型的架构图一个以函数为检测粒度的重复漏洞检测框架主要包含以下个步骤以下用代指生成目标函数的输入待检测的目标系统为系统中的每个目标函数生成生成漏洞代码和补丁代码的输入安全补丁程序生成漏洞和补丁的从漏洞产生和漏洞修复的角度反映漏洞得到一个具有众多漏洞和补丁的待匹配集合将目标系统中的每个函数的与漏洞和补丁进行匹配如果在待匹配集合中发现了与目标函数相匹配的漏洞但不存在相匹配的补丁则认为目标函数存在重复漏洞接下来进行详细解读首先定义函数签名给定一个函数将的签名定义为一个元组其中是函数中所有语句的哈希值的集合是由一系列元组构成的集合和表示任意两个语句的哈希值表示哈希值为的语句和哈希值为的语句具有数据依赖或控制依赖关系捕获目标函数的语句作为语法签名捕获目标函数语句之间的数据依赖和控制依赖关系作为语义签名二者提供了一个函数的补充信息以帮助提高匹配精度其次使用来代表一对漏洞函数和对应的补丁函数给定一对函数由一个或多个块组成是中的一个基本单元它由上下文行已删除的代码行和已添加的代码行组成删除的行在中但不再中添加的行不在中但在中生成目标函数的该过程有个步骤首先是过程使用来代码生成代码属性图一个联合的数据结构以获取目标系统的所有函数对每个目标函数生成和然后对函数做规范化处理对形参局部变量和字符串常量替换为同一形式删除所有注释大括号空白最后进行函数签名的生成首先对规范化后的函数中的每个语句计算值得到接着从函数的中提取两个语句之间的数据和控制依赖关系每一组关系表示成一个三元组的形式下图展示了一个从原始目标函数到生成的完整过程生成漏洞代码和补丁代码的给定一对和下面阐述如何生成来捕获与漏洞相关的关键语句而不是将和中的所有语句都包含在内以此获得小而准确的来进行有效匹配首先识别代码变化通过解析安全补丁的头文件文件来识别更改的文件通过解析文件来查找已删除和添加的语句及其行号同时找到所有函数的起始和结束地址如果一个语句包括一个或多个已删除已添加的代码行则认为该语句已删除已添加通过比较语句行号和函数行号的关系来确定哪些函数被更改以此可以获得已添加的语句集合已删除的语句集合漏洞函数语句补丁函数语句利用切片技术可以提取相关的语句并排除无关的语句本文在上执行前向和后向切片使用和作为切片的标准传统的程序切片方法存在一定的问题比如下图的例子如果将第行的条件语句作为切片标准那么前向切片包含了太多的语句其中会包含很多与该漏洞无关的噪声语句而如果将标准严格到与行直接相关的前向切片则只有和行真正的漏洞行行又没有包含在内也就是说如果要求直接相关则切片可能不包含漏洞语句而如果允许间接相关切片又存在太多的噪声再比如说下图的例子如果以第行的函数调用作为切片标准由于其没有返回值因此只能得到后向切片而无法得到前向切片基于以上的问题本文提出了一种新的切片方法将和中的每个语句作为切片的标准对于后向切片正常的基于进行后向切片获取与标准句相数据依赖和控制依赖的所有语句对于前向切片根据不同的语句类型执行不同的切片准则赋值语句正常按照数据流进行前向切片即可条件语句前向切片过程中只针对条件语句中使用的变量或参数切片只考虑数据依赖只有当这样产生的切片为空时才考虑控制依赖返回语句不需要进行前向切片因为返回值和返回语句与后面的语句无依赖关系其他包括未使用返回值的函数调用语句对变量和参数的数据依赖语句切片注上面条件语句和其他语句指的数据依赖并不是严格意义上的数据依赖而是先回溯到变量和参数的定义语句再求数据依赖比如上图正常来说第行和第行不存在数据依赖但在上面的语境下是存在的第行在第行的前向切片中将以及其对应的前向后向切片放在一起构成了蕴含着该函数已删除的语句的语义信息同理接下来分别从语法和语义级别上计算漏洞和补丁即和漏洞与漏洞的产生相关补丁与漏洞的修补相关首先是计算包含了漏洞产生的语义信息但有漏洞的修改过程不涉及删除语句只有增加语句因此还要补上与增加的语句数据或控制依赖的原漏洞函数语句也就是式然后根据图由得到由得到接着将和做差集找到只存在于补丁函数中的语句即为然后先根据图计算漏洞函数的三元组集用和做差集就可以得到只存在于补丁函数中的语句新加的语句的三元组集然而按照上述方式生成还是会发现存在噪声而且发现这与删除添加语句远的语句更有可能是噪声因此本文提出了一种基于信息熵的漏洞语句选择方法设目标系统中语句的总个数为中某个语句在目标系统中出现的次数为则信息熵为对中的所有语句的信息熵求和得到总信息熵如果高于某一阈值就不断的删除离删除添加语句最远的语句直到低于该阈值或者直到剩余的语句均为与改动代码直接数据或控制依赖的语句接着对和进行如上文所述的规范化处理和计算值得到漏洞和补丁对所有的漏洞补丁代码对处理后得到待检测集合将目标系统中的每个函数的与漏洞和补丁进行匹配那么有了目标系统中每个目标函数的以及删除的语句漏洞的补丁的根据以下原则判断目标函数是否具有漏洞与漏洞匹配但与补丁不匹配规则有以下条目标函数必须包含所有已删除的语句目标函数的签名与漏洞签名在语法层次上匹配和的交集大于某一阈值目标函数的签名与补丁签名在语法层次上不匹配和的交集小于某一阈值目标函数的签名与漏洞签名在语义层次上匹配和的交集大于某一阈值目标函数的签名与补丁签名在语义层次上不匹配和的交集小于某一阈值实验回答以下五个问题与最先进的方法相比在检测重复漏洞方面的准确性如何与最先进的方法相比在检测重复漏洞方面的开销程度如何在的匹配过程中如何配置阈值语句抽象和语句信息的采样对结果的影响有多大其他漏洞检测方法检测重复漏洞的性能如何本文作者对个开源的项目代码进行测试包含了个和个有变动的函数具体数据集如下表所示本文将模型与两类方法进行对比一类是基于代码克隆的重复漏洞检测方法比如和另一类是基于函数匹配的方法比如和最后还对比了和这两种方法都是目前漏洞检测领域非常优秀的方法与最先进的方法相比在检测重复漏洞方面的准确性如何由上图可见在个开源系统上模型的准确率和召回率都大幅领先与最先进的方法相比在检测重复漏洞方面的开销程度如何由上图可见该类方法都可以分为系统分析补丁分析匹配三部分简单来说时间花销与方法的规模是成比例的是基于的是基于语法的是基于语义的因此所花费的时间也是以此递增在的匹配过程中如何配置阈值由上图可见当匹配的漏洞大于且补丁小于时可以达到较高的准确率当匹配的漏洞大于时召回率会大幅下降而匹配的补丁比例不影响召回率因为其实相当于不考虑补丁的话主要问题是假阳性率对召回率影响不大语句抽象和语句信息的采样对结果的影响有多大如上图所示其含义是采样时信息熵阈值的大小对结果的影响有图可见该采样的效果还是非常明显的阈值在时准确率和召回率最高其他漏洞检测方法检测重复漏洞的性能如何本文还对比了和这两种方法发现的结果远远好于这两种方法召回率仅为召回率为只专注于重复漏洞使用生成代码属性图只适用于通过宏来修复的漏洞代码无法进行检测对形式参数局部变量和字符串进行抽象无法发现有相似函数调用或相似数据类型的漏洞本文提出了一个重复漏洞检测模型该模型通过同时生成漏洞和补丁的方式来区分漏洞函数是否打过补丁同时提出了一种新的函数切片方法只提取与漏洞和补丁相关的语句在语法和语义级别生成更加精确的漏洞和补丁的方法过程如下首先对于待检测的目标系统为系统中的每个目标函数生成接着生成安全补丁数据集中每一个漏洞补丁对对应的漏洞和补丁最后将目标系统中的每个目标函数的与漏洞和补丁进行匹配如果在待匹配集合中发现了与目标函数相匹配的漏洞但不存在相匹配的补丁则认为目标函数存在重复漏洞该方法以函数为检测粒度针对代码',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-04-22 16:19:05',
+  postMainColor: '',
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#18171d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f7f9fe')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+          const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+          const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+          const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+          if (t === undefined) {
+            if (isLightMode) activateLightMode()
+            else if (isDarkMode) activateDarkMode()
+            else if (isNotSpecified || hasNoSupport) {
+              const now = new Date()
+              const hour = now.getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addListener(e => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else if (t === 'light') activateLightMode()
+          else activateDarkMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 7.0.0"></head><body data-type="anzhiyu"><div id="web_bg"></div><div id="an_music_bg"></div><div id="loading-box" onclick="document.getElementById(&quot;loading-box&quot;).classList.add(&quot;loaded&quot;)"><div class="loading-bg"><img class="loading-img nolazyload" alt="加载头像" src="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/head.jpg"/><div class="loading-image-dot"></div></div></div><script>const preloader = {
+  endLoading: () => {
+    document.getElementById('loading-box').classList.add("loaded");
+  },
+  initLoading: () => {
+    document.getElementById('loading-box').classList.remove("loaded")
+  }
+}
+window.addEventListener('load',()=> { preloader.endLoading() })
+setTimeout(function(){preloader.endLoading();},10000)
+
+if (true) {
+  document.addEventListener('pjax:send', () => { preloader.initLoading() })
+  document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+}</script><link rel="stylesheet" href="https://cdn.cbd.int/anzhiyu-theme-static@1.1.10/progress_bar/progress_bar.css"/><script async="async" src="https://cdn.cbd.int/pace-js@1.2.4/pace.min.js" data-pace-options="{ &quot;restartOnRequestAfter&quot;:false,&quot;eventLag&quot;:false}"></script><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><div id="nav-group"><span id="blog_name"><a id="site-name" href="/" accesskey="h"><div class="title">foresta</div><i class="anzhiyufont anzhiyu-icon-house-chimney"></i></a></span><div class="mask-name-container"><div id="name-container"><a id="page-name" href="javascript:anzhiyu.scrollToDest(0, 500)">PAGE_NAME</a></div></div><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 文章</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/archives/"><i class="anzhiyufont anzhiyu-icon-box-archive faa-tada" style="font-size: 0.9em;"></i><span> 隧道</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/categories/"><i class="anzhiyufont anzhiyu-icon-shapes faa-tada" style="font-size: 0.9em;"></i><span> 分类</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/tags/"><i class="anzhiyufont anzhiyu-icon-tags faa-tada" style="font-size: 0.9em;"></i><span> 标签</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 友链</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/link/"><i class="anzhiyufont anzhiyu-icon-link faa-tada" style="font-size: 0.9em;"></i><span> 友人帐</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/comments/"><i class="anzhiyufont anzhiyu-icon-envelope faa-tada" style="font-size: 0.9em;"></i><span> 留言板</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 我的</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/music/"><i class="anzhiyufont anzhiyu-icon-music faa-tada" style="font-size: 0.9em;"></i><span> 音乐</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/album/"><i class="anzhiyufont anzhiyu-icon-images faa-tada" style="font-size: 0.9em;"></i><span> 相册</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/essay/"><i class="anzhiyufont anzhiyu-icon-lightbulb faa-tada" style="font-size: 0.9em;"></i><span> 即刻emo</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 关于</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/about/"><i class="anzhiyufont anzhiyu-icon-paper-plane faa-tada" style="font-size: 0.9em;"></i><span> 关于本人</span></a></li></ul></div></div></div><div id="nav-right"><div class="nav-button" id="randomPost_button"><a class="site-page" onclick="toRandomPost()" title="随机前往一个文章" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-dice"></i></a></div><div class="nav-button" id="search-button"><a class="site-page social-icon search" href="javascript:void(0);" title="搜索🔍" accesskey="s"><i class="anzhiyufont anzhiyu-icon-magnifying-glass"></i><span> 搜索</span></a></div><input id="center-console" type="checkbox"/><label class="widget" for="center-console" title="中控台" onclick="anzhiyu.switchConsole();"><i class="left"></i><i class="widget center"></i><i class="widget right"></i></label><div id="console"><div class="console-card-group-reward"><ul class="reward-all console-card"><li class="reward-item"><a href="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/wechat.jpg" target="_blank"><img class="post-qr-code-img" alt="微信" src="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/wechat.jpg"/></a><div class="post-qr-code-desc">微信</div></li><li class="reward-item"><a href="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/alipay.jpg" target="_blank"><img class="post-qr-code-img" alt="支付宝" src="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/alipay.jpg"/></a><div class="post-qr-code-desc">支付宝</div></li></ul></div><div class="console-card-group"><div class="console-card-group-left"><div class="console-card" id="card-newest-comments"><div class="card-content"><div class="author-content-item-tips">互动</div><span class="author-content-item-title"> 最新评论</span></div><div class="aside-list"><span>正在加载中...</span></div></div></div><div class="console-card-group-right"><div class="console-card tags"><div class="card-content"><div class="author-content-item-tips">兴趣点</div><span class="author-content-item-title">寻找你感兴趣的领域</span><div class="card-tags"><div class="item-headline"></div><div class="card-tag-cloud"><a href="/tags/C-C/" style="font-size: 1.05rem;">C/C++<sup>2</sup></a><a href="/tags/CNN/" style="font-size: 1.05rem;">CNN<sup>1</sup></a><a href="/tags/DGL/" style="font-size: 1.05rem;">DGL<sup>1</sup></a><a href="/tags/DL%E7%9F%A5%E8%AF%86/" style="font-size: 1.05rem;">DL知识<sup>1</sup></a><a href="/tags/DL%E7%9F%A5%E8%AF%86%E7%82%B9/" style="font-size: 1.05rem;">DL知识点<sup>3</sup></a><a href="/tags/Hexo/" style="font-size: 1.05rem;">Hexo<sup>2</sup></a><a href="/tags/LaTex/" style="font-size: 1.05rem;">LaTex<sup>1</sup></a><a href="/tags/PowerShell/" style="font-size: 1.05rem;">PowerShell<sup>1</sup></a><a href="/tags/Python/" style="font-size: 1.05rem;">Python<sup>1</sup></a><a href="/tags/Pytorch/" style="font-size: 1.05rem;">Pytorch<sup>6</sup></a><a href="/tags/Vulnerabilities/" style="font-size: 1.05rem;">Vulnerabilities<sup>19</sup></a><a href="/tags/conda/" style="font-size: 1.05rem;">conda<sup>1</sup></a><a href="/tags/git/" style="font-size: 1.05rem;">git<sup>1</sup></a><a href="/tags/overleaf/" style="font-size: 1.05rem;">overleaf<sup>2</sup></a><a href="/tags/pip/" style="font-size: 1.05rem;">pip<sup>1</sup></a><a href="/tags/sci%E6%8A%95%E7%A8%BF/" style="font-size: 1.05rem;">sci投稿<sup>1</sup></a><a href="/tags/tensor/" style="font-size: 1.05rem;">tensor<sup>2</sup></a><a href="/tags/tree-sitter/" style="font-size: 1.05rem;">tree-sitter<sup>1</sup></a><a href="/tags/%E4%BB%A3%E7%A0%81%E8%A1%8C%E7%BA%A7%E6%A3%80%E6%B5%8B/" style="font-size: 1.05rem;">代码行级检测<sup>1</sup></a><a href="/tags/%E5%9F%BA%E6%9C%AC%E6%9C%AF%E8%AF%AD/" style="font-size: 1.05rem;">基本术语<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0%E7%8E%87/" style="font-size: 1.05rem;">学习率<sup>1</sup></a><a href="/tags/%E5%AE%A1%E7%A8%BF/" style="font-size: 1.05rem;">审稿<sup>1</sup></a><a href="/tags/%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/" style="font-size: 1.05rem;">漏洞分析<sup>1</sup></a><a href="/tags/%E7%8E%AF%E5%A2%83/" style="font-size: 1.05rem;">环境<sup>2</sup></a><a href="/tags/%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90/" style="font-size: 1.05rem;">软件分析<sup>5</sup></a><a href="/tags/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8/" style="font-size: 1.05rem;">软件安全<sup>23</sup></a><a href="/tags/%E8%BF%87%E7%A8%8B%E9%97%B4%E5%88%86%E6%9E%90/" style="font-size: 1.05rem;">过程间分析<sup>1</sup></a><a href="/tags/%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90/" style="font-size: 1.05rem;">静态分析<sup>2</sup></a></div></div><hr/></div></div><div class="console-card history"><div class="item-headline"><i class="anzhiyufont anzhiyu-icon-box-archiv"></i><span>文章</span></div><div class="card-archives"><div class="item-headline"><i class="anzhiyufont anzhiyu-icon-archive"></i><span>归档</span></div><ul class="card-archive-list"><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2024/04/"><span class="card-archive-list-date">四月 2024</span><div class="card-archive-list-count-group"><span class="card-archive-list-count">1</span><span>篇</span></div></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2023/12/"><span class="card-archive-list-date">十二月 2023</span><div class="card-archive-list-count-group"><span class="card-archive-list-count">47</span><span>篇</span></div></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2022/12/"><span class="card-archive-list-date">十二月 2022</span><div class="card-archive-list-count-group"><span class="card-archive-list-count">7</span><span>篇</span></div></a></li></ul></div><hr/></div></div></div><div class="button-group"><div class="console-btn-item"><a class="darkmode_switchbutton" title="显示模式切换" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-moon"></i></a></div><div class="console-btn-item" id="consoleHideAside" onclick="anzhiyu.hideAsideBtn()" title="边栏显示控制"><a class="asideSwitch"><i class="anzhiyufont anzhiyu-icon-arrows-left-right"></i></a></div><div class="console-btn-item" id="consoleMusic" onclick="anzhiyu.musicToggle()" title="音乐开关"><a class="music-switch"><i class="anzhiyufont anzhiyu-icon-music"></i></a></div></div><div class="console-mask" onclick="anzhiyu.hideConsole()" href="javascript:void(0);"></div></div><div class="nav-button" id="nav-totop"><a class="totopbtn" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-arrow-up"></i><span id="percent" onclick="anzhiyu.scrollToDest(0,500)">0</span></a></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);" title="切换"><i class="anzhiyufont anzhiyu-icon-bars"></i></a></div></div></div></nav><div id="post-info"><div id="post-firstinfo"><div class="meta-firstline"><a class="post-meta-original">原创</a><span class="post-meta-categories"><span class="post-meta-separator"></span><i class="anzhiyufont anzhiyu-icon-inbox post-meta-icon"></i><a class="post-meta-categories" href="/categories/Papers/" itemprop="url">Papers</a><i class="anzhiyufont anzhiyu-icon-angle-right post-meta-separator"></i><i class="anzhiyufont anzhiyu-icon-inbox post-meta-icon"></i><a class="post-meta-categories" href="/categories/Papers/Vulnerabilities/" itemprop="url">Vulnerabilities</a></span><span class="article-meta tags"><a class="article-meta__tags" href="/tags/Vulnerabilities/" tabindex="-1" itemprop="url"> <span> <i class="anzhiyufont anzhiyu-icon-hashtag"></i>Vulnerabilities</span></a><a class="article-meta__tags" href="/tags/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8/" tabindex="-1" itemprop="url"> <span> <i class="anzhiyufont anzhiyu-icon-hashtag"></i>软件安全</span></a></span></div></div><h1 class="post-title" itemprop="name headline">Detecting Vulnerabilities using Patch-Enhanced Vulnerability Signatures</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="anzhiyufont anzhiyu-icon-calendar-days post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" itemprop="dateCreated datePublished" datetime="2023-12-18T07:46:15.000Z" title="发表于 2023-12-18 15:46:15">2023-12-18</time><span class="post-meta-separator"></span><i class="anzhiyufont anzhiyu-icon-history post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" itemprop="dateCreated datePublished" datetime="2024-04-22T08:19:05.683Z" title="更新于 2024-04-22 16:19:05">2024-04-22</time></span></div><div class="meta-secondline"><span class="post-meta-separator"></span><span class="post-meta-pv-cv" id="" data-flag-title="Detecting Vulnerabilities using Patch-Enhanced Vulnerability Signatures"><i class="anzhiyufont anzhiyu-icon-fw-eye post-meta-icon"></i><span class="post-meta-label" title="阅读量">阅读量:</span><span id="busuanzi_value_page_pv"><i class="anzhiyufont anzhiyu-icon-spinner anzhiyu-spin"></i></span></span><span class="post-meta-separator">       </span><span class="post-meta-position" title="作者IP属地为河北秦皇岛"><i class="anzhiyufont anzhiyu-icon-location-dot"></i>河北秦皇岛</span><span class="post-meta-separator"></span><span class="post-meta-commentcount"><i class="anzhiyufont anzhiyu-icon-comments post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/2023/12/18/Papers/Vul/MVP/#post-comment" tabindex="-1"><span id="twikoo-count"><i class="anzhiyufont anzhiyu-icon-spinner anzhiyu-spin"></i></span></a></span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section><div id="post-top-cover"><img class="nolazyload" id="post-top-bg" src="/img/home.jpg"></div></header><main id="blog-container"><div class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container" itemscope itemtype="https://foresta-yang.github.io/2023/12/18/Papers/Vul/MVP/"><header><a class="post-meta-categories" href="/categories/Papers/" itemprop="url">Papers</a><a class="post-meta-categories" href="/categories/Papers/Vulnerabilities/" itemprop="url">Vulnerabilities</a><a href="/tags/Vulnerabilities/" tabindex="-1" itemprop="url">Vulnerabilities</a><a href="/tags/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8/" tabindex="-1" itemprop="url">软件安全</a><h1 id="CrawlerTitle" itemprop="name headline">Detecting Vulnerabilities using Patch-Enhanced Vulnerability Signatures</h1><span itemprop="author" itemscope itemtype="http://schema.org/Person">foresta.yang</span><time itemprop="dateCreated datePublished" datetime="2023-12-18T07:46:15.000Z" title="发表于 2023-12-18 15:46:15">2023-12-18</time><time itemprop="dateCreated datePublished" datetime="2024-04-22T08:19:05.683Z" title="更新于 2024-04-22 16:19:05">2024-04-22</time></header><h3 id="paper"><a class="markdownIt-Anchor" href="#paper"></a> Paper</h3>
+<p>MVP: Detecting Vulnerabilities using Patch-Enhanced Vulnerability Signatures：USENIX 2020，Yang Xiao et al.</p>
+<h3 id="abstract"><a class="markdownIt-Anchor" href="#abstract"></a> Abstract</h3>
+<p>重复漏洞（Recurring Vulnerability）广泛存在于真实的系统中，这些漏洞通常由可重用的代码库或共享的代码逻辑导致，因此同样的漏洞很可能在其他地方也存在而未被发现。本文提出了一种新的方法<strong>MVP</strong>来检测具有低假阳性和低假阴性的重复漏洞，首先利用新的程序切片技术从漏洞函数及其补丁函数中提取漏洞和补丁的语法和语义特征。如果目标函数匹配漏洞特征，但不匹配补丁特征，则该目标函数会被识别为存在漏洞。</p>
+<p>本文在10个开源系统上对MVP方法进行实验，结果表明，MVP显著优于目前的基于克隆和基于功能匹配的重复漏洞检测的SOTA方法；MVP检测到了通用的漏洞检测方法无法检测到的重复漏洞；MVP检测到97个新的漏洞，并获得了23个CVE认证。</p>
+<h3 id="introduction"><a class="markdownIt-Anchor" href="#introduction"></a> Introduction</h3>
+<p>由于软件系统中代码库的重用或代码逻辑的共享(对不同用途的相似对象使用相似的处理逻辑)，使得具有相似特征的重复漏洞广泛存在，但在现实程序中却无法检测到，因此，重复漏洞检测得到了广泛的普及。本文的目的就是检测重复出现的漏洞，也即给定一个在程序中以一种特定的方式运行的漏洞，检测其他程序是否可能存在这种同样形式的漏洞。</p>
+<p>现有的检测重复漏洞的方法可以分为两种：</p>
+<ul>
+<li>一种是基于代码克隆的方法，该方法将重复漏洞的检测问题视为代码克隆的检测问题，从已知的漏洞中提取token或语法级的signature，并将该signature的克隆代码视作漏洞。</li>
+<li>另一种是基于函数匹配的方法，该方法不考虑任何漏洞特征，直接将已知的漏洞函数作为signature，检测是否存在这些signature的克隆函数。</li>
+</ul>
+<p>该领域目前存在的两个主要挑战是如何区分已经修补完成的漏洞，减少假阳性率；以及如何精确的生成一个已知漏洞的signature，来减少假阳性和假阴性。</p>
+<p>本文提出了一个针对重复漏洞的漏洞检测方法MVP，<strong>为了解决第一个挑战，MVP不仅生成漏洞的signature，还同时生成补丁的signature</strong>。利用漏洞特征来检测可能存在的漏洞，并利用补丁特征来区分这些漏洞是否已经打过补丁。<strong>为了解决第二个挑战，我们提出了一种新的切片方法，只提取与漏洞和补丁相关的语句，在语法和语义级别生成更加精确的漏洞和补丁的signature</strong>。此外，我们采用语句抽象和基于熵的语句选择来进一步提高MVP的准确性。</p>
+<p>本文在10个C/C++开源项目上对MVP方法进行了实验，发现了97个尚未被发现的安全漏洞，并获得了23个CVE认证。同时，将MVP与四种现有的SOTA方法进行比较，发现MVP在准确率上明显更胜一筹。</p>
+<h3 id="motivation"><a class="markdownIt-Anchor" href="#motivation"></a> Motivation</h3>
+<p>本文在10个项目的34019对漏洞和补丁函数上进行了实验，使用SourcerCC同一对漏洞函数和补丁函数的相似度，发现有91.3%的样本对二者相似度均超过了70%，而实验证明有35.1%的真实漏洞目标函数与原漏洞函数的相似度小于70%，所以很难通过仅仅计算目标函数与漏洞函数的相似度来判断是否有漏洞，还要计算目标函数与补丁函数的相似度来综合判断。</p>
+<h3 id="method"><a class="markdownIt-Anchor" href="#method"></a> Method</h3>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202403290958816.jpeg" alt="img" /></p>
+<p>上图是本文MVP模型的Framework架构图，一个以函数为检测粒度的重复漏洞检测框架，主要包含以下3个步骤：(以下用“sig”代指“signature”)</p>
+<ul>
+<li>生成目标函数的sig：输入待检测的目标系统，为系统中的每个目标函数生成sig。</li>
+<li>生成漏洞代码和补丁代码的sig：输入安全补丁程序，生成漏洞和补丁的sig，从漏洞产生和漏洞修复的角度反映漏洞，得到一个具有众多漏洞和补丁sig的待匹配集合。</li>
+<li>将目标系统中的每个函数的sig与漏洞和补丁sig进行匹配：如果在待匹配集合中发现了与目标函数sig相匹配的漏洞sig，但不存在相匹配的补丁sig，则认为目标函数存在重复漏洞。</li>
+</ul>
+<p>接下来进行详细解读。</p>
+<p>首先，定义函数签名，给定一个C/C++函数f，将f的签名定义为一个元组(fsyn，fsem)，其中fsyn是函数中所有语句的哈希值的集合；fsem是由一系列3元组(h1，h2，type)构成的集合，h1和h2表示任意两个语句的哈希值，type ∈\in\in {data，control}表示哈希值为h1的语句和哈希值为h2的语句具有数据依赖或控制依赖关系。<strong>fsyn捕获目标函数的语句作为语法签名；fsem捕获目标函数语句之间的数据依赖和控制依赖关系，作为语义签名</strong>。二者提供了一个函数的补充信息，以帮助提高匹配精度。</p>
+<p>其次，使用(fv,pv)来代表一对漏洞函数和对应的补丁函数。给定一对(fv,pv)，函数Patch Pv由一个或多个hunk（块）组成。hunk是Patch中的一个基本单元，它由上下文行、已删除的代码行和已添加的代码行组成。删除的行在fv中，但不再pv中；添加的行不在fv中，但在pv中。</p>
+<ul>
+<li><strong>生成目标函数的signature</strong></li>
+</ul>
+<p>该过程有3个步骤，首先是parsing过程，使用Joern来parse代码生成代码属性图（一个AST、PDG、CFG联合的数据结构），以获取目标系统的所有函数，对每个目标函数生成AST和PDG。然后对函数做规范化处理，对形参、局部变量和字符串常量替换为同一形式，删除所有注释、大括号、tab、空白。</p>
+<p>最后，进行函数签名的生成，首先对规范化后的函数中的每个语句计算hash值，得到fsyn。接着从函数的PDG中提取两个语句之间的数据和控制依赖关系，每一组关系表示成一个三元组的形式(h1，h2，type)，下图展示了一个从原始目标函数到生成sig的完整过程。</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202403290958827.jpeg" alt="img" /></p>
+<ul>
+<li><strong>生成漏洞代码和补丁代码的signature</strong></li>
+</ul>
+<p>给定一对(fv,pv)和Patch Pv，下面阐述如何生成sig来捕获与漏洞相关的关键语句，而不是将fv和pv中的所有语句都包含在内，以此获得小而准确的sig来进行有效匹配。</p>
+<p>首先识别代码变化，通过解析安全补丁的头文件（diff文件）来识别更改的文件，通过解析diff文件来查找已删除和添加的语句及其行号。同时找到所有函数的起始和结束地址，如果一个语句包括一个或多个已删除（已添加）的代码行，则认为该语句已删除(已添加)，通过比较语句行号和函数行号的关系来确定哪些函数被更改。以此可以获得已添加的语句集合 SaddS_{add}S_{add} ，已删除的语句集合 SdelS_{del}S_{del} ，漏洞函数语句 SvulS_{vul}S_{vul} ，补丁函数语句SpatS_{pat}S_{pat} 。</p>
+<p>利用切片技术可以提取相关的语句并排除无关的语句，本文在PDG上执行前向和后向切片，使用SaddS_{add}S_{add}和 SdelS_{del}S_{del} 作为切片的标准。传统的程序切片方法存在一定的问题，比如下图的例子，如果将第18行的条件语句作为切片标准，那么前向切片包含了太多的语句(19-40)，其中会包含很多与该漏洞无关的噪声语句，而如果将标准严格到与18行直接相关的前向切片，则只有23和24行，真正的漏洞行28行又没有包含在内。也就是说<strong>如果要求直接相关，则切片可能不包含漏洞语句，而如果允许间接相关，切片又存在太多的噪声</strong>。</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202403290958834.jpeg" alt="img" /></p>
+<p>再比如说下图的例子，如果以第3行的函数调用作为切片标准，由于其没有返回值，因此只能得到后向切片而无法得到前向切片。</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202403290958824.jpeg" alt="img" /></p>
+<p>基于以上的问题，本文提出了一种新的切片方法，将SaddS_{add}S_{add}和 SdelS_{del}S_{del} 中的每个语句作为切片的标准。对于后向切片，正常的基于PDG进行后向切片，获取与标准句相数据依赖和控制依赖的所有语句。对于前向切片，根据不同的语句类型执行不同的切片准则：</p>
+<ul>
+<li>赋值语句：正常按照数据流进行前向切片即可</li>
+<li>条件语句：前向切片过程中只针对条件语句中使用的变量或参数切片（只考虑数据依赖），只有当这样产生的切片为空时，才考虑控制依赖</li>
+<li>返回语句：不需要进行前向切片，因为返回值和返回语句与后面的语句无依赖关系</li>
+<li>其他：包括未使用返回值的函数调用语句，对变量和参数的数据依赖语句切片</li>
+</ul>
+<p>（注：上面条件语句和其他语句指的数据依赖并不是严格意义上的数据依赖，而是先回溯到变量和参数的定义语句再求数据依赖，比如上图正常来说第4行和第3行不存在数据依赖，但在上面的语境下是存在的，第4行在第3行的前向切片中）</p>
+<p>将SdelS_{del}S_{del}以及其对应的前向后向切片放在一起，构成了 SdelsemS_{del}<sup>{sem}S_{del}</sup>{sem} 蕴含着该函数已删除的语句的语义信息， SaddsemS_{add}<sup>{sem}S_{add}</sup>{sem} 同理。</p>
+<p>接下来分别从语法和语义级别上计算漏洞sig和补丁sig，即(Vsyn,Vsem)和(Psyn,Psem)，漏洞sig与漏洞的产生相关，补丁sig与漏洞的修补相关。</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202403290958801.jpeg" alt="img" /></p>
+<p>首先是计算Vsyn，SdelsemS_{del}<sup>{sem}S_{del}</sup>{sem}包含了漏洞产生的语义信息，但有漏洞的修改过程不涉及删除语句，只有增加语句，因此还要补上与增加的语句数据或控制依赖的原漏洞函数语句，也就是(1)式，然后根据PDG图由Vsyn得到Vsem，由SdelsemS_{del}<sup>{sem}S_{del}</sup>{sem}得到Tsem。接着将 SaddsemS_{add}<sup>{sem}S_{add}</sup>{sem} 和 SvulS_{vul}S_{vul} 做差集找到只存在于补丁函数中的语句即为Psyn，然后先根据PDG图计算漏洞函数的三元组集F，用T和F做差集就可以得到只存在于补丁函数中的语句（新加的语句）的三元组集Psem。</p>
+<p>然而按照上述方式生成Vsyn还是会发现存在噪声，而且发现Vsyn这与删除(添加)语句远的语句更有可能是噪声。因此本文提出了一种基于信息熵的漏洞语句选择方法。</p>
+<p>设目标系统中语句的总个数为N，Vsyn中某个语句s在目标系统中出现的次数为n，则信息熵为</p>
+<p>Is=−log§=−log(nN)∝1nI_s=-log§=-log(\frac{n}{N}) \propto \frac{1}{n}I_s=-log§=-log(\frac{n}{N}) \propto \frac{1}{n}</p>
+<p>对Vsyn中的所有语句的信息熵求和，得到总信息熵 III ，如果 III 高于某一阈值就不断的删除离删除(添加)语句最远的语句，直到低于该阈值，或者直到剩余的语句均为与改动代码直接数据或控制依赖的语句。</p>
+<p>接着对Sdel，(Vsyn,Vsem)和 (Psyn,Psem)进行如上文所述的规范化处理和计算hash值，得到漏洞sig和补丁sig，对所有的漏洞补丁代码对处理后得到待检测集合。</p>
+<ul>
+<li><strong>将目标系统中的每个函数的signature与漏洞和补丁signature进行匹配</strong></li>
+</ul>
+<p>那么有了目标系统中每个目标函数的sig(fsyn,fsem)，以及删除的语句Sdel，漏洞的sig(Vsyn, Vsem)，补丁的sig(Psyn,Psem)，根据以下原则判断目标函数是否具有漏洞（与漏洞sig匹配但与补丁sig不匹配），规则有以下5条：</p>
+<ul>
+<li>目标函数必须包含所有已删除的语句</li>
+<li>目标函数的签名与漏洞签名在语法层次上匹配（Vsyn和fsyn的交集大于某一阈值）</li>
+<li>目标函数的签名与补丁签名在语法层次上不匹配（Psyn和fsyn的交集小于某一阈值）</li>
+<li>目标函数的签名与漏洞签名在语义层次上匹配（Vsem和fsem的交集大于某一阈值）</li>
+<li>目标函数的签名与补丁签名在语义层次上不匹配（Psem和fsem的交集小于某一阈值）</li>
+</ul>
+<h3 id="evaluation"><a class="markdownIt-Anchor" href="#evaluation"></a> Evaluation</h3>
+<p>实验回答以下五个问题：</p>
+<ul>
+<li>Q1：与最先进的方法相比，MVP在检测重复漏洞方面的准确性如何？</li>
+<li>Q2：与最先进的方法相比，MVP在检测重复漏洞方面的开销程度如何？</li>
+<li>Q3：在MVP的匹配过程中，如何配置阈值？</li>
+<li>Q4：语句抽象和语句信息的采样对结果的影响有多大？</li>
+<li>Q5：其他漏洞检测方法检测重复漏洞的性能如何？</li>
+</ul>
+<p>本文作者对10个开源的C/C++项目代码进行测试，包含了25377个patch和34,378个有变动的函数，具体数据集如下表所示。</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202403290958794.jpeg" alt="img" /></p>
+<p>本文将MVP模型与两类SOTA方法进行对比，一类是基于代码克隆的重复漏洞检测方法，比如Redebug和VUDDY。另一类是基于函数匹配的方法，比如SourcererCC和CCAligner。最后还对比了VulDeepecker和Devign这两种方法，都是目前漏洞检测领域非常优秀的方法。</p>
+<ul>
+<li>Q1：与最先进的方法相比，MVP在检测重复漏洞方面的准确性如何？</li>
+</ul>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202403290958242.jpeg" alt="img" /></p>
+<p>由上图可见，在10个开源系统上MVP模型的准确率和召回率都大幅领先。</p>
+<ul>
+<li>Q2：与最先进的方法相比，MVP在检测重复漏洞方面的开销程度如何？</li>
+</ul>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202403290958250.jpeg" alt="img" /></p>
+<p>由上图可见，该类方法都可以分为系统分析、补丁分析、匹配三部分，简单来说，时间花销与方法的规模是成比例的，ReDeBug是基于token的，VUDDY是基于语法的，MVP是基于语义的，因此所花费的时间也是以此递增。</p>
+<ul>
+<li>Q3：在MVP的匹配过程中，如何配置阈值？</li>
+</ul>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202403290958358.jpeg" alt="img" /></p>
+<p>由上图可见，当匹配的漏洞sig大于0.8且补丁sig小于0.2时，MVP可以达到较高的准确率。当匹配的漏洞sig大于0.8时，召回率会大幅下降，而匹配的补丁sig比例不影响召回率（因为其实相当于不考虑补丁sig的话，主要问题是假阳性率，对召回率影响不大）。</p>
+<ul>
+<li>Q4：语句抽象和语句信息的采样对结果的影响有多大？</li>
+</ul>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202403290958341.jpeg" alt="img" /></p>
+<p>如上图所示，其含义是Vsyn采样时信息熵阈值的大小对结果的影响。有图可见，该采样的效果还是非常明显的，阈值在5时，准确率和召回率最高。</p>
+<ul>
+<li>Q5：其他漏洞检测方法检测重复漏洞的性能如何？</li>
+</ul>
+<p>本文还对比了VulDeepecker和Devign这两种方法，发现MVP的结果远远好于这两种方法，VulDeePecker召回率仅为7.2%，Devign召回率为36.0%。</p>
+<h3 id="limitation"><a class="markdownIt-Anchor" href="#limitation"></a> Limitation</h3>
+<ul>
+<li>MVP只专注于重复漏洞</li>
+<li>使用joern生成代码属性图，只适用于C/C++</li>
+<li>通过宏来修复的漏洞代码无法进行检测</li>
+<li>对形式参数、局部变量和字符串进行抽象，无法发现有相似函数调用或相似数据类型的漏洞</li>
+</ul>
+<h3 id="conclusion"><a class="markdownIt-Anchor" href="#conclusion"></a> Conclusion</h3>
+<p>本文提出了一个重复漏洞检测模型MVP，该模型通过同时生成漏洞signature和补丁signature的方式来区分漏洞函数是否打过补丁；同时提出了一种新的函数切片方法，只提取与漏洞和补丁相关的语句，在语法和语义级别生成更加精确的漏洞和补丁的signature。方法过程如下：首先对于待检测的目标系统，为系统中的每个目标函数生成signature；接着生成安全补丁数据集中每一个（漏洞，补丁）对对应的漏洞signature和补丁signature；最后将目标系统中的每个目标函数的signature与漏洞和补丁signature进行匹配，如果在待匹配集合中发现了与目标函数signature相匹配的漏洞signature，但不存在相匹配的补丁signature，则认为目标函数存在重复漏洞。该方法以函数为检测粒度，针对C/C++代码。</p>
+</article><div class="post-copyright"><div class="copyright-cc-box"><i class="anzhiyufont anzhiyu-icon-copyright"></i></div><div class="post-copyright__author_box"><a class="post-copyright__author_img" target="_blank" rel="noopener" href="https://github.com/foresta-yang.github.io" title="头像"><img class="post-copyright__author_img_back" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/head.jpg" title="头像" alt="头像"><img class="post-copyright__author_img_front" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/head.jpg" title="头像" alt="头像"></a><div class="post-copyright__author_name">foresta.yang</div><div class="post-copyright__author_desc"></div></div><div class="post-copyright__post__info"><a class="post-copyright__original" title="该文章为原创文章，注意版权协议" href="https://foresta-yang.github.io/2023/12/18/Papers/Vul/MVP/">原创</a><a class="post-copyright-title"><span onclick="rm.copyPageUrl('https://foresta-yang.github.io/2023/12/18/Papers/Vul/MVP/')">Detecting Vulnerabilities using Patch-Enhanced Vulnerability Signatures</span></a></div><div class="post-tools" id="post-tools"><div class="post-tools-left"><div class="rewardLeftButton"><div class="post-reward" onclick="anzhiyu.addRewardMask()"><div class="reward-button button--animated" title="赞赏作者"><i class="anzhiyufont anzhiyu-icon-hand-heart-fill"></i>打赏作者</div><div class="reward-main"><div class="reward-all"><span class="reward-title">感谢你赐予我前进的力量</span><ul class="reward-group"><li class="reward-item"><a href="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/wechat.jpg" target="_blank"><img class="post-qr-code-img" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/wechat.jpg" alt="微信"/></a><div class="post-qr-code-desc">微信</div></li><li class="reward-item"><a href="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/alipay.jpg" target="_blank"><img class="post-qr-code-img" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/alipay.jpg" alt="支付宝"/></a><div class="post-qr-code-desc">支付宝</div></li></ul><a class="reward-main-btn" href="/about/#about-reward" target="_blank"><div class="reward-text">赞赏者名单</div><div class="reward-dec">因为你们的支持让我意识到写文章的价值🙏</div></a></div></div></div><div id="quit-box" onclick="anzhiyu.removeRewardMask()" style="display: none"></div></div><div class="shareRight"><div class="share-link mobile"><div class="share-qrcode"><div class="share-button" title="使用手机访问这篇文章"><i class="anzhiyufont anzhiyu-icon-qrcode"></i></div><div class="share-main"><div class="share-main-all"><div id="qrcode" title="https://foresta-yang.github.io/2023/12/18/Papers/Vul/MVP/"></div><div class="reward-dec">使用手机访问这篇文章</div></div></div></div></div><script>function copyCurrentPageUrl() {
+  var currentPageUrl = window.location.href;
+  var input = document.createElement("input");
+  input.setAttribute("value", currentPageUrl);
+  document.body.appendChild(input);
+  input.select();
+  input.setSelectionRange(0, 99999);
+  document.execCommand("copy");
+  document.body.removeChild(input);
+}</script><div class="share-link copyurl"><div class="share-button" id="post-share-url" title="复制链接" onclick="copyCurrentPageUrl()"><i class="anzhiyufont anzhiyu-icon-link"></i></div></div></div></div></div><div class="post-copyright__notice"><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://foresta-yang.github.io" target="_blank">foresta</a>！</span></div></div><div class="post-tools-right"><div class="tag_share"><div class="post-meta__box"><div class="post-meta__box__tag-list"><a class="post-meta__box__tags" href="/tags/Vulnerabilities/"><span class="tags-punctuation"> <i class="anzhiyufont anzhiyu-icon-tag"></i></span>Vulnerabilities<span class="tagsPageCount">19</span></a><a class="post-meta__box__tags" href="/tags/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8/"><span class="tags-punctuation"> <i class="anzhiyufont anzhiyu-icon-tag"></i></span>软件安全<span class="tagsPageCount">23</span></a></div></div></div><div class="post_share"><div class="social-share" data-image="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/head.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.cbd.int/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"/><script src="https://cdn.cbd.int/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer="defer"></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2023/12/18/Papers/Vul/Modeling%20and%20Discovering%20Vulnerabilities%20with%20Code%20Property%20Graphs/"><img class="prev-cover" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="/" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Modeling and Discovering Vulnerabilities with Code Property Graphs</div></div></a></div><div class="next-post pull-right"><a href="/2023/12/18/Papers/Vul/LineVD-Statement-level-Vulnerability-Detection-using-Graph-Neural-Networks/"><img class="next-cover" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202312182110490.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">LineVD_Statement-level Vulnerability Detection using Graph Neural Networks</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="anzhiyufont anzhiyu-icon-thumbs-up fa-fw" style="font-size: 1.5rem; margin-right: 4px"></i><span>喜欢这篇文章的人也看了</span></div><div class="relatedPosts-list"><div><a href="/2023/12/18/Papers/Vul/CEVulDet/" title="CEVulDet A Code Edge Representation Learnable Vulnerability Detector"><img class="cover" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="/" alt="cover"><div class="content is-center"><div class="date"><i class="anzhiyufont anzhiyu-icon-calendar-days fa-fw"></i> 2023-12-18</div><div class="title">CEVulDet A Code Edge Representation Learnable Vulnerability Detector</div></div></a></div><div><a href="/2023/12/19/Papers/Vul/Cross-domain%20vulnerability%20detection%20using%20graph%20embedding%20and%20domain%20adaptation/" title="Cross-domain vulnerability detection using graph embedding and domain adaptation"><img class="cover" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202312191750331.png" alt="cover"><div class="content is-center"><div class="date"><i class="anzhiyufont anzhiyu-icon-calendar-days fa-fw"></i> 2023-12-19</div><div class="title">Cross-domain vulnerability detection using graph embedding and domain adaptation</div></div></a></div><div><a href="/2023/12/18/Papers/Vul/CPVD%20Cross%20Project%20Vulnerability%20Detection%20Based%20on%20Graph%20Attention%20Network%20and%20Domain%20Adaptation/" title="CPVD Cross Project Vulnerability Detection Based on Graph Attention Network and Domain Adaptation"><img class="cover" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="/" alt="cover"><div class="content is-center"><div class="date"><i class="anzhiyufont anzhiyu-icon-calendar-days fa-fw"></i> 2023-12-18</div><div class="title">CPVD Cross Project Vulnerability Detection Based on Graph Attention Network and Domain Adaptation</div></div></a></div><div><a href="/2023/12/18/Papers/Vul/Devign/" title="Devign基于GNN的源代码漏洞检测"><img class="cover" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="/" alt="cover"><div class="content is-center"><div class="date"><i class="anzhiyufont anzhiyu-icon-calendar-days fa-fw"></i> 2023-12-18</div><div class="title">Devign基于GNN的源代码漏洞检测</div></div></a></div><div><a href="/2023/12/18/Papers/Vul/Enhancing%20vulnerability%20detection%20via%20AST%20decomposition%20and%20neural%20sub-tree%20encoding/" title="Trvd Enhancing vulnerability detection via AST decomposition and neural sub-tree encoding"><img class="cover" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="/" alt="cover"><div class="content is-center"><div class="date"><i class="anzhiyufont anzhiyu-icon-calendar-days fa-fw"></i> 2023-12-18</div><div class="title">Trvd Enhancing vulnerability detection via AST decomposition and neural sub-tree encoding</div></div></a></div><div><a href="/2023/12/18/Papers/Vul/DeepVD%20Toward%20Class-Separation%20Features%20for%20Neural%20Network%20Vulnerability%20Detection/" title="DeepVD Toward Class-Separation Features for Neural Network Vulnerability Detection"><img class="cover" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="/" alt="cover"><div class="content is-center"><div class="date"><i class="anzhiyufont anzhiyu-icon-calendar-days fa-fw"></i> 2023-12-18</div><div class="title">DeepVD Toward Class-Separation Features for Neural Network Vulnerability Detection</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="anzhiyufont anzhiyu-icon-comments"></i><span> 评论</span></div><div class="comment-randomInfo"><a onclick="anzhiyu.addRandomCommentInfo()" href="javascript:void(0)">匿名评论</a><a href="/privacy" style="margin-left: 4px">隐私政策</a></div><div class="comment-tips" id="comment-tips"><span>✅ 你无需删除空行，直接评论以获取最佳展示效果</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div><div class="comment-barrage"></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="card-content"><div class="author-info-avatar"><img class="avatar-img" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/head.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__description">享受孤独</div><div class="author-info__bottom-group"><a class="author-info__bottom-group-left" href="/"><h1 class="author-info__name">foresta.yang</h1><div class="author-info__desc"></div></a><div class="card-info-social-icons is-center"><a class="social-icon faa-parent animated-hover" href="https://github.com/foresta-yang.github.io" target="_blank" title="Github"><i class="anzhiyufont anzhiyu-icon-github"></i></a></div></div></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="anzhiyufont anzhiyu-icon-bars"></i><span>文章目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#paper"><span class="toc-number">1.</span> <span class="toc-text"> Paper</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#abstract"><span class="toc-number">2.</span> <span class="toc-text"> Abstract</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#introduction"><span class="toc-number">3.</span> <span class="toc-text"> Introduction</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#motivation"><span class="toc-number">4.</span> <span class="toc-text"> Motivation</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#method"><span class="toc-number">5.</span> <span class="toc-text"> Method</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#evaluation"><span class="toc-number">6.</span> <span class="toc-text"> Evaluation</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#limitation"><span class="toc-number">7.</span> <span class="toc-text"> Limitation</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#conclusion"><span class="toc-number">8.</span> <span class="toc-text"> Conclusion</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="anzhiyufont anzhiyu-icon-history"></i><span>最近发布</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/04/18/Security/C_C++%E6%BC%8F%E6%B4%9E%E6%95%B0%E6%8D%AE%E9%9B%86/" title="C/C++漏洞数据集">C/C++漏洞数据集</a><time datetime="2024-04-18T09:46:15.000Z" title="发表于 2024-04-18 17:46:15">2024-04-18</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/12/19/Papers/Vul/Cross-domain%20vulnerability%20detection%20using%20graph%20embedding%20and%20domain%20adaptation/" title="Cross-domain vulnerability detection using graph embedding and domain adaptation"><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202312191750331.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Cross-domain vulnerability detection using graph embedding and domain adaptation"/></a><div class="content"><a class="title" href="/2023/12/19/Papers/Vul/Cross-domain%20vulnerability%20detection%20using%20graph%20embedding%20and%20domain%20adaptation/" title="Cross-domain vulnerability detection using graph embedding and domain adaptation">Cross-domain vulnerability detection using graph embedding and domain adaptation</a><time datetime="2023-12-19T07:32:24.000Z" title="发表于 2023-12-19 15:32:24">2023-12-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/12/19/AILearning/pytorch/conv2d/" title="Conv2d"><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202312191226420.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Conv2d"/></a><div class="content"><a class="title" href="/2023/12/19/AILearning/pytorch/conv2d/" title="Conv2d">Conv2d</a><time datetime="2023-12-19T03:30:36.000Z" title="发表于 2023-12-19 11:30:36">2023-12-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/12/19/AILearning/pytorch/tensor%E6%93%8D%E4%BD%9C/" title="torch tensor操作"><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="/img/cover-default.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="torch tensor操作"/></a><div class="content"><a class="title" href="/2023/12/19/AILearning/pytorch/tensor%E6%93%8D%E4%BD%9C/" title="torch tensor操作">torch tensor操作</a><time datetime="2023-12-19T03:30:36.000Z" title="发表于 2023-12-19 11:30:36">2023-12-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/12/19/AILearning/pytorch/pytorch/" title="pytorch入门"><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202312191226420.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="pytorch入门"/></a><div class="content"><a class="title" href="/2023/12/19/AILearning/pytorch/pytorch/" title="pytorch入门">pytorch入门</a><time datetime="2023-12-19T03:30:36.000Z" title="发表于 2023-12-19 11:30:36">2023-12-19</time></div></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2023 - 2024 By foresta.yang</div></div></footer></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="sidebar-site-data site-data is-center"><a href="/archives/" title="archive"><div class="headline">文章</div><div class="length-num">55</div></a><a href="/tags/" title="tag"><div class="headline">标签</div><div class="length-num">28</div></a><a href="/categories/" title="category"><div class="headline">分类</div><div class="length-num">16</div></a></div><span class="sidebar-menu-item-title">功能</span><div class="sidebar-menu-item"><a class="darkmode_switchbutton menu-child" href="javascript:void(0);" title="显示模式"><i class="anzhiyufont anzhiyu-icon-circle-half-stroke"></i><span>显示模式</span></a></div><div class="back-menu-list-groups"><div class="back-menu-list-group"><div class="back-menu-list-title">网页</div><div class="back-menu-list"><a class="back-menu-item" target="_blank" rel="noopener" href="https://blog.anheyu.com/" title="博客"><img class="back-menu-item-icon" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="/img/favicon.ico" alt="博客"/><span class="back-menu-item-text">博客</span></a></div></div><div class="back-menu-list-group"><div class="back-menu-list-title">项目</div><div class="back-menu-list"><a class="back-menu-item" target="_blank" rel="noopener" href="https://image.anheyu.com/" title="安知鱼图床"><img class="back-menu-item-icon" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://image.anheyu.com/favicon.ico" alt="安知鱼图床"/><span class="back-menu-item-text">安知鱼图床</span></a></div></div></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 文章</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/archives/"><i class="anzhiyufont anzhiyu-icon-box-archive faa-tada" style="font-size: 0.9em;"></i><span> 隧道</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/categories/"><i class="anzhiyufont anzhiyu-icon-shapes faa-tada" style="font-size: 0.9em;"></i><span> 分类</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/tags/"><i class="anzhiyufont anzhiyu-icon-tags faa-tada" style="font-size: 0.9em;"></i><span> 标签</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 友链</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/link/"><i class="anzhiyufont anzhiyu-icon-link faa-tada" style="font-size: 0.9em;"></i><span> 友人帐</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/comments/"><i class="anzhiyufont anzhiyu-icon-envelope faa-tada" style="font-size: 0.9em;"></i><span> 留言板</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 我的</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/music/"><i class="anzhiyufont anzhiyu-icon-music faa-tada" style="font-size: 0.9em;"></i><span> 音乐</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/album/"><i class="anzhiyufont anzhiyu-icon-images faa-tada" style="font-size: 0.9em;"></i><span> 相册</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/essay/"><i class="anzhiyufont anzhiyu-icon-lightbulb faa-tada" style="font-size: 0.9em;"></i><span> 即刻emo</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 关于</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/about/"><i class="anzhiyufont anzhiyu-icon-paper-plane faa-tada" style="font-size: 0.9em;"></i><span> 关于本人</span></a></li></ul></div></div><span class="sidebar-menu-item-title">标签</span><div class="card-tags"><div class="item-headline"></div><div class="card-tag-cloud"><a href="/tags/C-C/" style="font-size: 0.88rem;">C/C++<sup>2</sup></a><a href="/tags/CNN/" style="font-size: 0.88rem;">CNN<sup>1</sup></a><a href="/tags/DGL/" style="font-size: 0.88rem;">DGL<sup>1</sup></a><a href="/tags/DL%E7%9F%A5%E8%AF%86/" style="font-size: 0.88rem;">DL知识<sup>1</sup></a><a href="/tags/DL%E7%9F%A5%E8%AF%86%E7%82%B9/" style="font-size: 0.88rem;">DL知识点<sup>3</sup></a><a href="/tags/Hexo/" style="font-size: 0.88rem;">Hexo<sup>2</sup></a><a href="/tags/LaTex/" style="font-size: 0.88rem;">LaTex<sup>1</sup></a><a href="/tags/PowerShell/" style="font-size: 0.88rem;">PowerShell<sup>1</sup></a><a href="/tags/Python/" style="font-size: 0.88rem;">Python<sup>1</sup></a><a href="/tags/Pytorch/" style="font-size: 0.88rem;">Pytorch<sup>6</sup></a><a href="/tags/Vulnerabilities/" style="font-size: 0.88rem;">Vulnerabilities<sup>19</sup></a><a href="/tags/conda/" style="font-size: 0.88rem;">conda<sup>1</sup></a><a href="/tags/git/" style="font-size: 0.88rem;">git<sup>1</sup></a><a href="/tags/overleaf/" style="font-size: 0.88rem;">overleaf<sup>2</sup></a><a href="/tags/pip/" style="font-size: 0.88rem;">pip<sup>1</sup></a><a href="/tags/sci%E6%8A%95%E7%A8%BF/" style="font-size: 0.88rem;">sci投稿<sup>1</sup></a><a href="/tags/tensor/" style="font-size: 0.88rem;">tensor<sup>2</sup></a><a href="/tags/tree-sitter/" style="font-size: 0.88rem;">tree-sitter<sup>1</sup></a><a href="/tags/%E4%BB%A3%E7%A0%81%E8%A1%8C%E7%BA%A7%E6%A3%80%E6%B5%8B/" style="font-size: 0.88rem;">代码行级检测<sup>1</sup></a><a href="/tags/%E5%9F%BA%E6%9C%AC%E6%9C%AF%E8%AF%AD/" style="font-size: 0.88rem;">基本术语<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0%E7%8E%87/" style="font-size: 0.88rem;">学习率<sup>1</sup></a><a href="/tags/%E5%AE%A1%E7%A8%BF/" style="font-size: 0.88rem;">审稿<sup>1</sup></a><a href="/tags/%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/" style="font-size: 0.88rem;">漏洞分析<sup>1</sup></a><a href="/tags/%E7%8E%AF%E5%A2%83/" style="font-size: 0.88rem;">环境<sup>2</sup></a><a href="/tags/%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90/" style="font-size: 0.88rem;">软件分析<sup>5</sup></a><a href="/tags/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8/" style="font-size: 0.88rem;">软件安全<sup>23</sup></a><a href="/tags/%E8%BF%87%E7%A8%8B%E9%97%B4%E5%88%86%E6%9E%90/" style="font-size: 0.88rem;">过程间分析<sup>1</sup></a><a href="/tags/%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90/" style="font-size: 0.88rem;">静态分析<sup>2</sup></a></div></div><hr/></div></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="anzhiyufont anzhiyu-icon-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="anzhiyufont anzhiyu-icon-circle-half-stroke"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="anzhiyufont anzhiyu-icon-arrows-left-right"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="anzhiyufont anzhiyu-icon-gear"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="anzhiyufont anzhiyu-icon-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="anzhiyufont anzhiyu-icon-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="anzhiyufont anzhiyu-icon-arrow-up"></i></button></div></div><div id="nav-music"><a id="nav-music-hoverTips" onclick="anzhiyu.musicToggle()" accesskey="m">播放音乐</a><div id="console-music-bg"></div><meting-js id="8152976493" server="netease" type="playlist" mutex="true" preload="none" theme="var(--anzhiyu-main)" data-lrctype="0" order="random" volume="0.7"></meting-js></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="anzhiyufont anzhiyu-icon-xmark"></i></button></nav><div class="is-center" id="loading-database"><i class="anzhiyufont anzhiyu-icon-spinner anzhiyu-pulse-icon"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div id="rightMenu"><div class="rightMenu-group rightMenu-small"><div class="rightMenu-item" id="menu-backward"><i class="anzhiyufont anzhiyu-icon-arrow-left"></i></div><div class="rightMenu-item" id="menu-forward"><i class="anzhiyufont anzhiyu-icon-arrow-right"></i></div><div class="rightMenu-item" id="menu-refresh"><i class="anzhiyufont anzhiyu-icon-arrow-rotate-right" style="font-size: 1rem;"></i></div><div class="rightMenu-item" id="menu-top"><i class="anzhiyufont anzhiyu-icon-arrow-up"></i></div></div><div class="rightMenu-group rightMenu-line rightMenuPlugin"><div class="rightMenu-item" id="menu-copytext"><i class="anzhiyufont anzhiyu-icon-copy"></i><span>复制选中文本</span></div><div class="rightMenu-item" id="menu-pastetext"><i class="anzhiyufont anzhiyu-icon-paste"></i><span>粘贴文本</span></div><a class="rightMenu-item" id="menu-commenttext"><i class="anzhiyufont anzhiyu-icon-comment-medical"></i><span>引用到评论</span></a><div class="rightMenu-item" id="menu-newwindow"><i class="anzhiyufont anzhiyu-icon-window-restore"></i><span>新窗口打开</span></div><div class="rightMenu-item" id="menu-copylink"><i class="anzhiyufont anzhiyu-icon-link"></i><span>复制链接地址</span></div><div class="rightMenu-item" id="menu-copyimg"><i class="anzhiyufont anzhiyu-icon-images"></i><span>复制此图片</span></div><div class="rightMenu-item" id="menu-downloadimg"><i class="anzhiyufont anzhiyu-icon-download"></i><span>下载此图片</span></div><div class="rightMenu-item" id="menu-newwindowimg"><i class="anzhiyufont anzhiyu-icon-window-restore"></i><span>新窗口打开图片</span></div><div class="rightMenu-item" id="menu-search"><i class="anzhiyufont anzhiyu-icon-magnifying-glass"></i><span>站内搜索</span></div><div class="rightMenu-item" id="menu-searchBaidu"><i class="anzhiyufont anzhiyu-icon-magnifying-glass"></i><span>百度搜索</span></div><div class="rightMenu-item" id="menu-music-toggle"><i class="anzhiyufont anzhiyu-icon-play"></i><span>播放音乐</span></div><div class="rightMenu-item" id="menu-music-back"><i class="anzhiyufont anzhiyu-icon-backward"></i><span>切换到上一首</span></div><div class="rightMenu-item" id="menu-music-forward"><i class="anzhiyufont anzhiyu-icon-forward"></i><span>切换到下一首</span></div><div class="rightMenu-item" id="menu-music-playlist" onclick="window.open(&quot;https://y.qq.com/n/ryqq/playlist/8802438608&quot;, &quot;_blank&quot;);" style="display: none;"><i class="anzhiyufont anzhiyu-icon-radio"></i><span>查看所有歌曲</span></div><div class="rightMenu-item" id="menu-music-copyMusicName"><i class="anzhiyufont anzhiyu-icon-copy"></i><span>复制歌名</span></div></div><div class="rightMenu-group rightMenu-line rightMenuOther"><a class="rightMenu-item menu-link" id="menu-randomPost"><i class="anzhiyufont anzhiyu-icon-shuffle"></i><span>随便逛逛</span></a><a class="rightMenu-item menu-link" href="/categories/"><i class="anzhiyufont anzhiyu-icon-cube"></i><span>博客分类</span></a><a class="rightMenu-item menu-link" href="/tags/"><i class="anzhiyufont anzhiyu-icon-tags"></i><span>文章标签</span></a></div><div class="rightMenu-group rightMenu-line rightMenuOther"><a class="rightMenu-item" id="menu-copy" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-copy"></i><span>复制地址</span></a><a class="rightMenu-item" id="menu-commentBarrage" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-message"></i><span class="menu-commentBarrage-text">关闭热评</span></a><a class="rightMenu-item" id="menu-darkmode" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-circle-half-stroke"></i><span class="menu-darkmode-text">深色模式</span></a><a class="rightMenu-item" id="menu-translate" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-language"></i><span>轉為繁體</span></a></div></div><div id="rightmenu-mask"></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.cbd.int/@fancyapps/ui@5.0.28/dist/fancybox/fancybox.umd.js"></script><script src="https://cdn.cbd.int/instant.page@5.2.0/instantpage.js" type="module"></script><script src="https://cdn.cbd.int/vanilla-lazyload@17.8.5/dist/lazyload.iife.min.js"></script><script src="https://cdn.cbd.int/node-snackbar@0.1.16/dist/snackbar.min.js"></script><canvas id="universe"></canvas><script async src="https://npm.elemecdn.com/anzhiyu-theme-static@1.0.0/dark/dark.js"></script><script>// 消除控制台打印
+var HoldLog = console.log;
+console.log = function () {};
+let now1 = new Date();
+queueMicrotask(() => {
+  const Log = function () {
+    HoldLog.apply(console, arguments);
+  }; //在恢复前输出日志
+  const grt = new Date("04/01/2023 00:00:00"); //此处修改你的建站时间或者网站上线时间
+  now1.setTime(now1.getTime() + 250);
+  const days = (now1 - grt) / 1000 / 60 / 60 / 24;
+  const dnum = Math.floor(days);
+  const ascll = [
+    `欢迎使用安知鱼!`,
+    `生活明朗, 万物可爱`,
+    `
+        
+       █████╗ ███╗   ██╗███████╗██╗  ██╗██╗██╗   ██╗██╗   ██╗
+      ██╔══██╗████╗  ██║╚══███╔╝██║  ██║██║╚██╗ ██╔╝██║   ██║
+      ███████║██╔██╗ ██║  ███╔╝ ███████║██║ ╚████╔╝ ██║   ██║
+      ██╔══██║██║╚██╗██║ ███╔╝  ██╔══██║██║  ╚██╔╝  ██║   ██║
+      ██║  ██║██║ ╚████║███████╗██║  ██║██║   ██║   ╚██████╔╝
+      ╚═╝  ╚═╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝╚═╝   ╚═╝    ╚═════╝
+        
+        `,
+    "已上线",
+    dnum,
+    "天",
+    "©2023 By 安知鱼 V1.6.12",
+  ];
+  const ascll2 = [`NCC2-036`, `调用前置摄像头拍照成功，识别为【小笨蛋】.`, `Photo captured: `, `🤪`];
+
+  setTimeout(
+    Log.bind(
+      console,
+      `\n%c${ascll[0]} %c ${ascll[1]} %c ${ascll[2]} %c${ascll[3]}%c ${ascll[4]}%c ${ascll[5]}\n\n%c ${ascll[6]}\n`,
+      "color:#425AEF",
+      "",
+      "color:#425AEF",
+      "color:#425AEF",
+      "",
+      "color:#425AEF",
+      ""
+    )
+  );
+  setTimeout(
+    Log.bind(
+      console,
+      `%c ${ascll2[0]} %c ${ascll2[1]} %c \n${ascll2[2]} %c\n${ascll2[3]}\n`,
+      "color:white; background-color:#4fd953",
+      "",
+      "",
+      'background:url("https://npm.elemecdn.com/anzhiyu-blog@1.1.6/img/post/common/tinggge.gif") no-repeat;font-size:450%'
+    )
+  );
+
+  setTimeout(Log.bind(console, "%c WELCOME %c 你好，小笨蛋.", "color:white; background-color:#4f90d9", ""));
+
+  setTimeout(
+    console.warn.bind(
+      console,
+      "%c ⚡ Powered by 安知鱼 %c 你正在访问 foresta.yang 的博客.",
+      "color:white; background-color:#f0ad4e",
+      ""
+    )
+  );
+
+  setTimeout(Log.bind(console, "%c W23-12 %c 你已打开控制台.", "color:white; background-color:#4f90d9", ""));
+
+  setTimeout(
+    console.warn.bind(console, "%c S013-782 %c 你现在正处于监控中.", "color:white; background-color:#d9534f", "")
+  );
+});</script><script async src="/anzhiyu/random.js"></script><script src="/js/search/local-search.js"></script><div class="js-pjax"><script>if (!window.MathJax) {
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      tags: 'ams'
+    },
+    chtml: {
+      scale: 1.1
+    },
+    options: {
+      renderActions: {
+        findScript: [10, doc => {
+          for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+            const display = !!node.type.match(/; *mode=display/)
+            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+            const text = document.createTextNode('')
+            node.parentNode.replaceChild(text, node)
+            math.start = {node: text, delim: '', n: 0}
+            math.end = {node: text, delim: '', n: 0}
+            doc.math.push(math)
+          }
+        }, '']
+      }
+    }
+  }
+  
+  const script = document.createElement('script')
+  script.src = 'https://cdn.cbd.int/mathjax@3.2.2/es5/tex-mml-chtml.js'
+  script.id = 'MathJax-script'
+  script.async = true
+  document.head.appendChild(script)
+} else {
+  MathJax.startup.document.state(0)
+  MathJax.texReset()
+  MathJax.typesetPromise()
+}</script><link rel="stylesheet" type="text/css" href="https://cdn.cbd.int/katex@0.16.0/dist/katex.min.css"><script src="https://cdn.cbd.int/katex@0.16.0/dist/contrib/copy-tex.min.js"></script><script>(() => {
+  document.querySelectorAll('#article-container span.katex-display').forEach(item => {
+    anzhiyu.wrap(item, 'div', { class: 'katex-wrap'})
+  })
+})()</script><script>(() => {
+  const init = () => {
+    twikoo.init(Object.assign({
+      el: '#twikoo-wrap',
+      envId: 'https://mytwikoo-omega.vercel.app',
+      region: '',
+      onCommentLoaded: () => {
+        anzhiyu.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      }
+    }, null))
+  }
+
+  const loadTwikoo = () => {
+    if (typeof twikoo === 'object') setTimeout(runFn,0)
+    else getScript('https://cdn.cbd.int/twikoo@1.6.25/dist/twikoo.all.min.js').then(runFn)
+  }
+
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://mytwikoo-omega.vercel.app',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(res => {
+      countELement.textContent = res[0].count
+    }).catch(err => {
+      console.error(err)
+    })
+  }
+
+  const runFn = () => {
+    init();
+    GLOBAL_CONFIG_SITE.isPost && getCount()
+  }
+
+  if ('Twikoo' === 'Twikoo' || !false) {
+    if (false) anzhiyu.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else {
+      loadTwikoo()
+    }
+  } else {
+    window.loadOtherComment = loadTwikoo
+  }
+})()</script><input type="hidden" name="page-type" id="page-type" value="post"></div><script>window.addEventListener('load', () => {
+  const changeContent = (content) => {
+    if (content === '') return content
+
+    content = content.replace(/<img.*?src="(.*?)"?[^\>]+>/ig, '[图片]') // replace image link
+    content = content.replace(/<a[^>]+?href=["']?([^"']+)["']?[^>]*>([^<]+)<\/a>/gi, '[链接]') // replace url
+    content = content.replace(/<pre><code>.*?<\/pre>/gi, '[代码]') // replace code
+    content = content.replace(/<[^>]+>/g,"") // remove html tag
+
+    if (content.length > 150) {
+      content = content.substring(0,150) + '...'
+    }
+    return content
+  }
+
+  const getComment = () => {
+    const runTwikoo = () => {
+      twikoo.getRecentComments({
+        envId: 'https://mytwikoo-omega.vercel.app',
+        region: '',
+        pageSize: 6,
+        includeReply: true
+      }).then(function (res) {
+        const twikooArray = res.map(e => {
+          return {
+            'content': changeContent(e.comment),
+            'avatar': e.avatar,
+            'nick': e.nick,
+            'url': e.url + '#' + e.id,
+            'date': new Date(e.created).toISOString()
+          }
+        })
+
+        saveToLocal.set('twikoo-newest-comments', JSON.stringify(twikooArray), 10/(60*24))
+        generateHtml(twikooArray)
+      }).catch(function (err) {
+        const $dom = document.querySelector('#card-newest-comments .aside-list')
+        $dom.textContent= "无法获取评论，请确认相关配置是否正确"
+      })
+    }
+
+    if (typeof twikoo === 'object') {
+      runTwikoo()
+    } else {
+      getScript('https://cdn.cbd.int/twikoo@1.6.25/dist/twikoo.all.min.js').then(runTwikoo)
+    }
+  }
+
+  const generateHtml = array => {
+    let result = ''
+
+    if (array.length) {
+      for (let i = 0; i < array.length; i++) {
+        result += '<div class=\'aside-list-item\'>'
+
+        if (true) {
+          const name = 'data-lazy-src'
+          result += `<a href='${array[i].url}' class='thumbnail'><img ${name}='${array[i].avatar}' alt='${array[i].nick}'><div class='name'><span>${array[i].nick} </span></div></a>`
+        }
+        
+        result += `<div class='content'>
+        <a class='comment' href='${array[i].url}' title='${array[i].content}'>${array[i].content}</a>
+        <time datetime="${array[i].date}">${anzhiyu.diffDate(array[i].date, true)}</time></div>
+        </div>`
+      }
+    } else {
+      result += '没有评论'
+    }
+
+    let $dom = document.querySelector('#card-newest-comments .aside-list')
+    $dom && ($dom.innerHTML= result)
+    window.lazyLoadInstance && window.lazyLoadInstance.update()
+    window.pjax && window.pjax.refresh($dom)
+  }
+
+  const newestCommentInit = () => {
+    if (document.querySelector('#card-newest-comments .aside-list')) {
+      const data = saveToLocal.get('twikoo-newest-comments')
+      if (data) {
+        generateHtml(JSON.parse(data))
+      } else {
+        getComment()
+      }
+    }
+  }
+
+  newestCommentInit()
+  document.addEventListener('pjax:complete', newestCommentInit)
+})</script><script>var visitorMail = "";
+</script><script async data-pjax src="https://cdn.cbd.int/anzhiyu-theme-static@1.0.0/waterfall/waterfall.js"></script><script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/qrcodejs/1.0.0/qrcode.min.js"></script><script src="/js/anzhiyu/right_click_menu.js"></script><link rel="stylesheet" href="https://cdn.cbd.int/anzhiyu-theme-static@1.1.9/icon/ali_iconfont_css.css"><link rel="stylesheet" href="https://cdn.cbd.int/anzhiyu-theme-static@1.0.0/aplayer/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.cbd.int/anzhiyu-blog-static@1.0.1/js/APlayer.min.js"></script><script src="https://cdn.cbd.int/hexo-anzhiyu-music@1.0.1/assets/js/Meting2.min.js"></script><script src="https://cdn.cbd.int/pjax@0.2.8/pjax.min.js"></script><script>let pjaxSelectors = ["meta[property=\"og:image\"]","meta[property=\"og:title\"]","meta[property=\"og:url\"]","meta[property=\"og:type\"]","meta[property=\"og:site_name\"]","meta[property=\"og:description\"]","head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+  // removeEventListener scroll 
+  anzhiyu.removeGlobalFnEvent('pjax')
+  anzhiyu.removeGlobalFnEvent('themeChange')
+
+  document.getElementById('rightside').classList.remove('rightside-show')
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+})
+
+document.addEventListener('pjax:error', e => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/404.html')
+  }
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><script charset="UTF-8" src="https://cdn.cbd.int/anzhiyu-theme-static@1.1.5/accesskey/accesskey.js"></script></div><div id="popup-window"><div class="popup-window-title">通知</div><div class="popup-window-divider"></div><div class="popup-window-content"><div class="popup-tip">你好呀</div><div class="popup-link"><i class="anzhiyufont anzhiyu-icon-arrow-circle-right"></i></div></div></div></body></html>
