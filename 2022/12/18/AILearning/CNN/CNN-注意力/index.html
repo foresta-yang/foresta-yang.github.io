@@ -1,0 +1,572 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"><title>CNN中的注意力 | foresta</title><meta name="keywords" content="Attention,CNN"><meta name="author" content="foresta.yang"><meta name="copyright" content="foresta.yang"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#f7f9fe"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-touch-fullscreen" content="yes"><meta name="apple-mobile-web-app-title" content="CNN中的注意力"><meta name="application-name" content="CNN中的注意力"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="#f7f9fe"><meta property="og:type" content="article"><meta property="og:title" content="CNN中的注意力"><meta property="og:url" content="https://foresta-yang.github.io/2022/12/18/AILearning/CNN/CNN-%E6%B3%A8%E6%84%8F%E5%8A%9B/index.html"><meta property="og:site_name" content="foresta"><meta property="og:description" content="注意力机制最初在 2014年作为 RNN（Recurrent Neural Network）中编码器-解码器框架的一部分来编码长的输入语句，后续被广泛运用在RNN中。  1.单路注意力  SE-NET（Squeeze and Excitation）  HU J，SHEN L，SUN G.Squeez"><meta property="og:locale" content="zh-CN"><meta property="og:image" content="https://foresta-yang.github.io/img/cover-default.webp"><meta property="article:author" content="foresta.yang"><meta property="article:tag"><meta name="twitter:card" content="summary"><meta name="twitter:image" content="https://foresta-yang.github.io/img/cover-default.webp"><meta name="description" content="注意力机制最初在 2014年作为 RNN（Recurrent Neural Network）中编码器-解码器框架的一部分来编码长的输入语句，后续被广泛运用在RNN中。  1.单路注意力  SE-NET（Squeeze and Excitation）  HU J，SHEN L，SUN G.Squeez"><link rel="shortcut icon" href="/img/foresta.png"><link rel="canonical" href="https://foresta-yang.github.io/2022/12/18/AILearning/CNN/CNN-%E6%B3%A8%E6%84%8F%E5%8A%9B/"><link rel="preconnect" href="//cdn.cbd.int"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="google-site-verification" content="xxx"/><meta name="baidu-site-verification" content="code-xxx"/><meta name="msvalidate.01" content="xxx"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.cbd.int/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.cbd.int/@fancyapps/ui@5.0.28/dist/fancybox/fancybox.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/anzhiyu-theme-static@1.0.0/swiper/swiper.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  linkPageTop: undefined,
+  peoplecanvas: undefined,
+  postHeadAiDescription: undefined,
+  diytitle: undefined,
+  LA51: undefined,
+  greetingBox: undefined,
+  twikooEnvId: 'https://mytwikoo-omega.vercel.app',
+  commentBarrageConfig:undefined,
+  root: '/',
+  preloader: {"source":3},
+  friends_vue_info: undefined,
+  navMusic: true,
+  mainTone: undefined,
+  authorStatus: undefined,
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"简","rightMenuMsgToTraditionalChinese":"转为繁体","rightMenuMsgToSimplifiedChinese":"转为简体"},
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":330},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    simplehomepage: true,
+    post: false
+  },
+  runtime: '天',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"copy":true,"copyrightEbable":false,"limitCount":66,"languages":{"author":"作者: foresta.yang","link":"链接: ","source":"来源: foresta","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。","copySuccess":"复制成功，复制和转载请标注本文地址"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#425AEF","bgDark":"#1f1f1f","position":"top-center"},
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.cbd.int/flickr-justified-gallery@2.1.2/dist/fjGallery.min.js',
+      css: 'https://cdn.cbd.int/flickr-justified-gallery@2.1.2/dist/fjGallery.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isAnchor: false,
+  shortcutKey: undefined,
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  configTitle: 'foresta',
+  title: 'CNN中的注意力',
+  postAI: '',
+  pageFillDescription: ' 1.单路注意力,  SE-NET（Squeeze and Excitation）,  ECA-Net（Efficient Channel Attention）,  2.多路注意力,  SK-Net（Selective Kernel Networks）,  ResNeSt,  CBAM（Convolutional Block Attention Module）,  双注意力网络（Dual Attention Network）,  金字塔特征注意力网络（Pyramid Feature Attention Network）,  卷积网络中注意力机制展望注意力机制最初在年作为中编码器解码器框架的一部分来编码长的输入语句后续被广泛运用在中单路注意力年计算机视觉和模式识别收录的论文中提出了挤压和励磁网络是胡杰团队提出的新的网络结构该团队利用网络获得了年竞赛图像分类任务的冠军在数据集上将错误降低到对比于以往的最好成绩有了较大的提升中的关键结构利用了注意力机制的思想显式地建模特征图之间的相互依赖关系并通过学习的方式来自适应地获取到每张特征图的重要性然后依照这个重要程度去对原数据进行更新通过这种方式提升有用的特征重要程度同时降低无用特征的重要性并以不同通道的重要性为指导将计算资源合理地投入不同通道当中通俗地来说的核心思想在于通过网络根据损失函数值去学习特征权重使得对于任务更为效果明显的特征图权重变大无效果或效果不明显的特征图权重变小的方式来训练模型从而达到更好的结果并不是一个完整的网络结构而是一个即插即用的轻量级模块通过将此模块嵌入网络之中可以在小幅度提升参数量的代价下更加合理地分配神经网络的计算资源大幅提升网络性能在中每张特征图通过全局平均池化操作进行挤压将每一张特征图挤压成一个实数见公式这个实数具有特征图上的全局信息每张特征图的挤压结果组合成一个向量作为每组特征图的权重其中和分别为特征图的高和宽为卷积后的结果为对应特征图的全局注意力信息将此向量通过全连接层与激活函数见公式训练结果用来放大对于识别任务更加重要特征图的权重缩小不重要特征图的权重其中为激活函数代表激活函数与代表两个不同的全连接操作得到的向量代表每张特征图的重要性程度向量通过公式激励原特征图指导特征图不断向着有利于识别任务的方向更新挤压激励操作结构如图所示张宸嘉朱磊与俞璐卷积神经网络中的注意力机制综述计算机工程与应用第页年收录的论文中提出了来对进行改进它实现了对的改进提出了一种不降维的局部跨信道交互策略和自适应选择一维卷积核大小的方法通过一维卷积层汇总跨信道信息的方法获取更加精确的注意力信息的思想建立在作者认为跨通道的信息交互是很有必要的而只注重通道内部信息的综合没有考虑到相邻信道信息的重要性的结构如图所示公式表示最终的权重是综合了各个相邻通道的信息获得其中为激活函数代表通道为通道的权重代表与相邻的个通道的值是随着学习自适应变化的为了实现这一想法作者利用了一维卷积层来进行实现通过核为的一维卷积对通道与其相邻的个通道信息进行综合如公式所示表示核为的一维卷积操作表示通道多路注意力年收录的论文中提出了基于卷积核的注意力机制即卷积核的重要性即不同的图像经过不同卷积核的重要性是不同的其结构如图所示整个结构由三部分组成的任务是将输入的特征图进行不同卷积核大小的卷积操作如图所示对进行和的卷积操作得到输出与而在部分将对与进行得到输出特征图通过全局平均池化与全连接层获取特征图的注意力信息并创建了一个紧凑的特征以便为精确和自适应选择提供指导如公式所示其中是函数表示批量标准化表示全连接层且公式表明为了研究对模型效率的影响文章使用下降参数来控制其值表示的最小值在部分中将这个紧凑特征向量重新分为两个本文情况或多个更多的情况特征向量然后分别与相应的之后的特征图进行相应通道的相乘操作然后再通过这种加权共同构成输入到下一个神经元的特征向量两个特征向量的生成如公式所示其中分别表示与的注意力向量表示的第行表示的第个元素值对于向量同理年亚马逊加州大学戴维斯分校的张航李沐等研究者进一步改进了提出了其中利用与的思想提出了在中整体大框架运用了残差网络的结构通过将网络的输入输入个分支当中公式表述了每个的输入其中代表每个中后的分支数代表第个代表着后每个分支的输入公式表述了每个模块的输出代表携带了通道权重的输出是由计算得到的权重计算方法如公式所示其中代表每个的权重在经过模块后对最后的个输出进行拼接以达到综合个输出信息的目的如公式所示并将拼接后的输出与原本的输入进行得到最后的输出其结构如图所示在每个中又利用了与的思想使用模块对每个的输入切分为个分支通过中的挤压激励操作获取每个分支的注意力信息作为模块最后在模块中使得具有注意力信息的向量与其对应的分支特征图相乘并通过综合个分支的输出作为最终的输出结构如图所示年收录的论文中提出了卷积注意力模块它的创新在于它认为对于卷积网络中的特征图来说不仅通道中蕴含着丰富的注意力信息通道内部即特征图像素点间也具有大量的注意力信息而以往的注意力机制只关注了通道上的注意力信息这对于空间上的注意力信息是一种浪费通过构建两个子模块空间注意力模块通道注意力模块分别汇总空间和通道两方面的注意力信息并将信息进行一定程度的综合从而获得更全面可靠的注意力信息对计算资源的分配进行更合理的指导其结构如图所示通道注意力模块将输入的特征图分别经过基于宽和高的全局最大池化和全局平均池化得到两个的特征图接着再将它们分别送入一个两层的神经网络第一层神经元个数为为减少率激活函数为第二层神经元个数为这个两层的神经网络是共享的而后将输出的特征进行基于的加和操作再经过激活操作生成最终的通道注意力特征即公式中的其中为特征图经过全局平均池化的结果为经过全局最大池化的结果整个通道门注意力模块结构如图所示空间注意力模块将通道注意力模块输出的特征图作为本模块的输入特征图首先做一个基于通道的全局最大池化和全局平均池化得到两个尺寸为的特征图然后将这两个特征图基于通道做拼接操作然后经过一个卷积操作降维为再经过生成空间注意力特征即公式中的其中代表卷积操作代表通道拼接操作最后将该向量和该模块的输入特征图做乘操作得到最终生成的特征整个空间注意力模块结构如图所示双注意力网络年收录的论文中提出了与相似的是它的思想也是综合通道和空间两路的注意力信息但不同的是的两路注意力信息的获取是串行的而中的两路注意力信息的获取是并行的且获取注意力信息的方式也有很大差别从通道与空间两个分支通过对特征图进行矩阵操作构建特征图的相关性矩阵和两个矩阵分别用来表征通道之间的相关性和通道内像素点之间的相关性用此矩阵对特征图的更新进行引导增大关键特征的权重使得将更多的注意力放在更易于进行区分的优秀特征之上双注意力模块结构如图所示其中是空间分支其结构如图所示是通道分支其结构如图所示这两个分支通过对于特征图的处理分别构建出了关于特征图通道与空间位置的相关性矩阵尺寸为与尺寸为其中分别为特征图的高宽与通道数并用此两个相关性矩阵来引导特征图不同通道与空间位置权重的更新方向捕捉了空间和通道维度中的全局特征依赖关系使用位置注意力模块来学习特征的空间相互依赖性通道注意力模块来模拟通道相互依赖性金字塔特征注意力网络年收录的论文中提出了金字塔特征注意力网络同样是利用特征图在通道间与通道内部像素点都富含大量的注意力信息的思想其结构如图所示其中模块为通道注意力模块分支的结构与的思想是相同的都是通过全局平均池化提取通道注意力信息利用全连接获取各个通道的权重如图所示模块为空间注意力模块它利用了交替的卷积核相同的卷积层来提取通道内部像素位置之间的注意力信息获得通道内部不同像素位置之间的相关性与重要程度等信息其结构如图所示两个模块分别从通道与空间两个方向提取特征图中的注意力信息提取不同通道与空间中不同像素位置的权重信息并对特征图进行自适应的更新卷积网络中注意力机制展望近几年注意力机制的思想被广泛应用在各种深度学习任务中如计算机视觉图像分割自然语言处理等大量实验证明了注意力机制是行之有效且节省资源的当注意力机制的思想运用于卷积神经网络中时需要着眼于卷积网络中所特有的特征图中的关键信息当前注意力机制的主流方法是将特征图中的潜在注意力信息进行深度挖掘最常见的是通过各种手段获取各个特征图通道间的通道注意力信息与特征图内部像素点之间的空间注意力信息获取的方法也包括但不仅限于卷积操作矩阵操作构建相关性矩阵等其共同的目的是更深层次更全面地获取特征图中完善的注意力信息于是如何更深地挖掘从哪里去挖掘特征图的注意力信息将极有可能会成为未来注意力方法发展的方向之一目前获取注意力的方法基本基于通道间的注意力信息空间像素点之间的注意力信息和卷积核选择的注意力信息是否能够从新的方向去获取特征图更丰富的注意力信息或者以新的方式或手段去获取更精准的注意力信息也是未来需要关注的一个重点论文中的实验证明了跨通道的信息交互对于注意力信息的获取是有积极作用的这也从侧面验证了不同通道之间并不是相互独立的其内部是存在许多有利的有价值的信息的那么着眼于不同通道内部的其他信息的提取如不同特征图中像素点的空间注意力信息或其他跨通道信息是否对于获取更加精准的注意力分布有着正确的导向作用也是一个值得探索的方向注意力机制作为一个轻量级的模块有着即插即用的特点但是即使其本身参数量并不高在深度学习一些任务当中注意力模块往往会被反复多次的调用当注意力模块调用次数过多时仍然会对网络整体造成一定的负担如何优化模块结构降低模块参数量或减少模块调用次数更快地获取更精准的注意力信息对于以后注意力机制在其他任务中的推广有着举足轻重的作用也是未来需要研究的重要内容之一卷积网络中的注意力机制的核心在于深度挖掘特征图中所含有的信息而目前所发现的注意力获取渠道相对较少但是注意力机制已经被广泛证明其针对大量深度学习任务不仅具有参数量小即插即用的便捷性还可以较为明显地提升任务效果说明未来对于注意力机制的深度研究是必要且意义非凡的将对深度学习任务产生重大的影响随着信息技术的不断发展人类必将面临着大量而繁杂的信息针对如此庞杂的信息去完成各项深度学习任务将变得更为困难当数据量无法任意改变的情况下如何高效率地完成任务就变得尤为重要注意力机制便是提升深度学习任务效率的重要方法之一当深度学习方法较为低效时在深度学习任务中引入注意力机制将会实现曲线救国利用其低成本高收益的特点大幅提升信息处理的效率在未来的深度学习任务中大放异彩',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-04-24 20:30:01',
+  postMainColor: '',
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#18171d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f7f9fe')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+          const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+          const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+          const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+          if (t === undefined) {
+            if (isLightMode) activateLightMode()
+            else if (isDarkMode) activateDarkMode()
+            else if (isNotSpecified || hasNoSupport) {
+              const now = new Date()
+              const hour = now.getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addListener(e => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else if (t === 'light') activateLightMode()
+          else activateDarkMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 7.0.0"></head><body data-type="anzhiyu"><div id="web_bg"></div><div id="an_music_bg"></div><div id="loading-box" onclick="document.getElementById(&quot;loading-box&quot;).classList.add(&quot;loaded&quot;)"><div class="loading-bg"><img class="loading-img nolazyload" alt="加载头像" src="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/head.jpg"/><div class="loading-image-dot"></div></div></div><script>const preloader = {
+  endLoading: () => {
+    document.getElementById('loading-box').classList.add("loaded");
+  },
+  initLoading: () => {
+    document.getElementById('loading-box').classList.remove("loaded")
+  }
+}
+window.addEventListener('load',()=> { preloader.endLoading() })
+setTimeout(function(){preloader.endLoading();},10000)
+
+if (true) {
+  document.addEventListener('pjax:send', () => { preloader.initLoading() })
+  document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+}</script><link rel="stylesheet" href="https://cdn.cbd.int/anzhiyu-theme-static@1.1.10/progress_bar/progress_bar.css"/><script async="async" src="https://cdn.cbd.int/pace-js@1.2.4/pace.min.js" data-pace-options="{ &quot;restartOnRequestAfter&quot;:false,&quot;eventLag&quot;:false}"></script><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><div id="nav-group"><span id="blog_name"><a id="site-name" href="/" accesskey="h"><div class="title">foresta</div><i class="anzhiyufont anzhiyu-icon-house-chimney"></i></a></span><div class="mask-name-container"><div id="name-container"><a id="page-name" href="javascript:anzhiyu.scrollToDest(0, 500)">PAGE_NAME</a></div></div><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 文章</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/archives/"><i class="anzhiyufont anzhiyu-icon-box-archive faa-tada" style="font-size: 0.9em;"></i><span> 隧道</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/categories/"><i class="anzhiyufont anzhiyu-icon-shapes faa-tada" style="font-size: 0.9em;"></i><span> 分类</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/tags/"><i class="anzhiyufont anzhiyu-icon-tags faa-tada" style="font-size: 0.9em;"></i><span> 标签</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 友链</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/link/"><i class="anzhiyufont anzhiyu-icon-link faa-tada" style="font-size: 0.9em;"></i><span> 友人帐</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/comments/"><i class="anzhiyufont anzhiyu-icon-envelope faa-tada" style="font-size: 0.9em;"></i><span> 留言板</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 我的</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/music/"><i class="anzhiyufont anzhiyu-icon-music faa-tada" style="font-size: 0.9em;"></i><span> 音乐</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/album/"><i class="anzhiyufont anzhiyu-icon-images faa-tada" style="font-size: 0.9em;"></i><span> 相册</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/essay/"><i class="anzhiyufont anzhiyu-icon-lightbulb faa-tada" style="font-size: 0.9em;"></i><span> 即刻emo</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 关于</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/about/"><i class="anzhiyufont anzhiyu-icon-paper-plane faa-tada" style="font-size: 0.9em;"></i><span> 关于本人</span></a></li></ul></div></div></div><div id="nav-right"><div class="nav-button" id="randomPost_button"><a class="site-page" onclick="toRandomPost()" title="随机前往一个文章" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-dice"></i></a></div><div class="nav-button" id="search-button"><a class="site-page social-icon search" href="javascript:void(0);" title="搜索🔍" accesskey="s"><i class="anzhiyufont anzhiyu-icon-magnifying-glass"></i><span> 搜索</span></a></div><input id="center-console" type="checkbox"/><label class="widget" for="center-console" title="中控台" onclick="anzhiyu.switchConsole();"><i class="left"></i><i class="widget center"></i><i class="widget right"></i></label><div id="console"><div class="console-card-group-reward"><ul class="reward-all console-card"><li class="reward-item"><a href="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/wechat.jpg" target="_blank"><img class="post-qr-code-img" alt="微信" src="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/wechat.jpg"/></a><div class="post-qr-code-desc">微信</div></li><li class="reward-item"><a href="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/alipay.jpg" target="_blank"><img class="post-qr-code-img" alt="支付宝" src="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/alipay.jpg"/></a><div class="post-qr-code-desc">支付宝</div></li></ul></div><div class="console-card-group"><div class="console-card-group-left"><div class="console-card" id="card-newest-comments"><div class="card-content"><div class="author-content-item-tips">互动</div><span class="author-content-item-title"> 最新评论</span></div><div class="aside-list"><span>正在加载中...</span></div></div></div><div class="console-card-group-right"><div class="console-card tags"><div class="card-content"><div class="author-content-item-tips">兴趣点</div><span class="author-content-item-title">寻找你感兴趣的领域</span><div class="card-tags"><div class="item-headline"></div><div class="card-tag-cloud"><a href="/tags/Activation/" style="font-size: 1.05rem;">Activation<sup>1</sup></a><a href="/tags/Attention/" style="font-size: 1.05rem;">Attention<sup>2</sup></a><a href="/tags/Binary/" style="font-size: 1.05rem;">Binary<sup>1</sup></a><a href="/tags/C-C/" style="font-size: 1.05rem;">C/C++<sup>2</sup></a><a href="/tags/CNN/" style="font-size: 1.05rem;">CNN<sup>2</sup></a><a href="/tags/DGL/" style="font-size: 1.05rem;">DGL<sup>2</sup></a><a href="/tags/DL/" style="font-size: 1.05rem;">DL<sup>3</sup></a><a href="/tags/DL%E7%9F%A5%E8%AF%86/" style="font-size: 1.05rem;">DL知识<sup>1</sup></a><a href="/tags/DL%E7%9F%A5%E8%AF%86%E7%82%B9/" style="font-size: 1.05rem;">DL知识点<sup>4</sup></a><a href="/tags/GNN/" style="font-size: 1.05rem;">GNN<sup>10</sup></a><a href="/tags/Hexo/" style="font-size: 1.05rem;">Hexo<sup>2</sup></a><a href="/tags/LLM/" style="font-size: 1.05rem;">LLM<sup>1</sup></a><a href="/tags/LaTex/" style="font-size: 1.05rem;">LaTex<sup>1</sup></a><a href="/tags/Loss/" style="font-size: 1.05rem;">Loss<sup>1</sup></a><a href="/tags/PowerShell/" style="font-size: 1.05rem;">PowerShell<sup>1</sup></a><a href="/tags/Python/" style="font-size: 1.05rem;">Python<sup>1</sup></a><a href="/tags/Pytorch/" style="font-size: 1.05rem;">Pytorch<sup>6</sup></a><a href="/tags/Term/" style="font-size: 1.05rem;">Term<sup>1</sup></a><a href="/tags/Terms/" style="font-size: 1.05rem;">Terms<sup>1</sup></a><a href="/tags/Vulnerabilities/" style="font-size: 1.05rem;">Vulnerabilities<sup>19</sup></a><a href="/tags/conda/" style="font-size: 1.05rem;">conda<sup>1</sup></a><a href="/tags/git/" style="font-size: 1.05rem;">git<sup>1</sup></a><a href="/tags/overleaf/" style="font-size: 1.05rem;">overleaf<sup>2</sup></a><a href="/tags/pip/" style="font-size: 1.05rem;">pip<sup>1</sup></a><a href="/tags/sci%E6%8A%95%E7%A8%BF/" style="font-size: 1.05rem;">sci投稿<sup>1</sup></a><a href="/tags/tensor/" style="font-size: 1.05rem;">tensor<sup>2</sup></a><a href="/tags/tree-sitter/" style="font-size: 1.05rem;">tree-sitter<sup>1</sup></a><a href="/tags/%E4%BB%A3%E7%A0%81%E8%A1%8C%E7%BA%A7%E6%A3%80%E6%B5%8B/" style="font-size: 1.05rem;">代码行级检测<sup>1</sup></a><a href="/tags/%E5%9F%BA%E6%9C%AC%E6%9C%AF%E8%AF%AD/" style="font-size: 1.05rem;">基本术语<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0%E7%8E%87/" style="font-size: 1.05rem;">学习率<sup>1</sup></a><a href="/tags/%E5%AE%A1%E7%A8%BF/" style="font-size: 1.05rem;">审稿<sup>1</sup></a><a href="/tags/%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/" style="font-size: 1.05rem;">漏洞分析<sup>1</sup></a><a href="/tags/%E7%8E%AF%E5%A2%83/" style="font-size: 1.05rem;">环境<sup>2</sup></a><a href="/tags/%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90/" style="font-size: 1.05rem;">软件分析<sup>5</sup></a><a href="/tags/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8/" style="font-size: 1.05rem;">软件安全<sup>23</sup></a><a href="/tags/%E8%BF%87%E7%A8%8B%E9%97%B4%E5%88%86%E6%9E%90/" style="font-size: 1.05rem;">过程间分析<sup>1</sup></a><a href="/tags/%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90/" style="font-size: 1.05rem;">静态分析<sup>2</sup></a></div></div><hr/></div></div><div class="console-card history"><div class="item-headline"><i class="anzhiyufont anzhiyu-icon-box-archiv"></i><span>文章</span></div><div class="card-archives"><div class="item-headline"><i class="anzhiyufont anzhiyu-icon-archive"></i><span>归档</span></div><ul class="card-archive-list"><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2024/04/"><span class="card-archive-list-date">四月 2024</span><div class="card-archive-list-count-group"><span class="card-archive-list-count">1</span><span>篇</span></div></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2023/12/"><span class="card-archive-list-date">十二月 2023</span><div class="card-archive-list-count-group"><span class="card-archive-list-count">49</span><span>篇</span></div></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2023/10/"><span class="card-archive-list-date">十月 2023</span><div class="card-archive-list-count-group"><span class="card-archive-list-count">19</span><span>篇</span></div></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2022/12/"><span class="card-archive-list-date">十二月 2022</span><div class="card-archive-list-count-group"><span class="card-archive-list-count">8</span><span>篇</span></div></a></li></ul></div><hr/></div></div></div><div class="button-group"><div class="console-btn-item"><a class="darkmode_switchbutton" title="显示模式切换" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-moon"></i></a></div><div class="console-btn-item" id="consoleHideAside" onclick="anzhiyu.hideAsideBtn()" title="边栏显示控制"><a class="asideSwitch"><i class="anzhiyufont anzhiyu-icon-arrows-left-right"></i></a></div><div class="console-btn-item" id="consoleMusic" onclick="anzhiyu.musicToggle()" title="音乐开关"><a class="music-switch"><i class="anzhiyufont anzhiyu-icon-music"></i></a></div></div><div class="console-mask" onclick="anzhiyu.hideConsole()" href="javascript:void(0);"></div></div><div class="nav-button" id="nav-totop"><a class="totopbtn" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-arrow-up"></i><span id="percent" onclick="anzhiyu.scrollToDest(0,500)">0</span></a></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);" title="切换"><i class="anzhiyufont anzhiyu-icon-bars"></i></a></div></div></div></nav><div id="post-info"><div id="post-firstinfo"><div class="meta-firstline"><a class="post-meta-original">原创</a><span class="post-meta-categories"><span class="post-meta-separator"></span><i class="anzhiyufont anzhiyu-icon-inbox post-meta-icon"></i><a class="post-meta-categories" href="/categories/Deep-Learning/" itemprop="url">Deep Learning</a></span><span class="article-meta tags"><a class="article-meta__tags" href="/tags/Attention/" tabindex="-1" itemprop="url"> <span> <i class="anzhiyufont anzhiyu-icon-hashtag"></i>Attention</span></a><a class="article-meta__tags" href="/tags/CNN/" tabindex="-1" itemprop="url"> <span> <i class="anzhiyufont anzhiyu-icon-hashtag"></i>CNN</span></a></span></div></div><h1 class="post-title" itemprop="name headline">CNN中的注意力</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="anzhiyufont anzhiyu-icon-calendar-days post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" itemprop="dateCreated datePublished" datetime="2022-12-18T07:46:15.000Z" title="发表于 2022-12-18 15:46:15">2022-12-18</time><span class="post-meta-separator"></span><i class="anzhiyufont anzhiyu-icon-history post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" itemprop="dateCreated datePublished" datetime="2024-04-24T12:30:01.190Z" title="更新于 2024-04-24 20:30:01">2024-04-24</time></span></div><div class="meta-secondline"><span class="post-meta-separator"></span><span class="post-meta-pv-cv" id="" data-flag-title="CNN中的注意力"><i class="anzhiyufont anzhiyu-icon-fw-eye post-meta-icon"></i><span class="post-meta-label" title="阅读量">阅读量:</span><span id="busuanzi_value_page_pv"><i class="anzhiyufont anzhiyu-icon-spinner anzhiyu-spin"></i></span></span><span class="post-meta-separator">       </span><span class="post-meta-position" title="作者IP属地为河北秦皇岛"><i class="anzhiyufont anzhiyu-icon-location-dot"></i>河北秦皇岛</span><span class="post-meta-separator"></span><span class="post-meta-commentcount"><i class="anzhiyufont anzhiyu-icon-comments post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/2022/12/18/AILearning/CNN/CNN-%E6%B3%A8%E6%84%8F%E5%8A%9B/#post-comment" tabindex="-1"><span id="twikoo-count"><i class="anzhiyufont anzhiyu-icon-spinner anzhiyu-spin"></i></span></a></span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section><div id="post-top-cover"><img class="nolazyload" id="post-top-bg" src="/img/home.jpg"></div></header><main id="blog-container"><div class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container" itemscope itemtype="https://foresta-yang.github.io/2022/12/18/AILearning/CNN/CNN-%E6%B3%A8%E6%84%8F%E5%8A%9B/"><header><a class="post-meta-categories" href="/categories/Deep-Learning/" itemprop="url">Deep Learning</a><a href="/tags/Attention/" tabindex="-1" itemprop="url">Attention</a><a href="/tags/CNN/" tabindex="-1" itemprop="url">CNN</a><h1 id="CrawlerTitle" itemprop="name headline">CNN中的注意力</h1><span itemprop="author" itemscope itemtype="http://schema.org/Person">foresta.yang</span><time itemprop="dateCreated datePublished" datetime="2022-12-18T07:46:15.000Z" title="发表于 2022-12-18 15:46:15">2022-12-18</time><time itemprop="dateCreated datePublished" datetime="2024-04-24T12:30:01.190Z" title="更新于 2024-04-24 20:30:01">2024-04-24</time></header><p>注意力机制最初在 2014年作为 RNN（Recurrent Neural Network）中编码器-解码器框架的一部分来编码长的输入语句，后续被广泛运用在RNN中。</p>
+<h2 id="1单路注意力"><a class="markdownIt-Anchor" href="#1单路注意力"></a> 1.单路注意力</h2>
+<h4 id="se-netsqueeze-and-excitation"><a class="markdownIt-Anchor" href="#se-netsqueeze-and-excitation"></a> SE-NET（Squeeze and Excitation）</h4>
+<blockquote>
+<p>HU J，SHEN L，SUN G.Squeeze-and-excitation networks[J].</p>
+</blockquote>
+<p>2018年 ，CVPR（计算机视觉和模式识别）收录的论文中提出了 SE-Net（挤压和励磁网络）是 Momenta 胡杰团队 （WMW）提出的新的网络结构，该团队利用 SE网络获得 了ImageNet 2017年竞赛图像分类任务的冠军，在ImageNet数据集上将 top-5错误降低到 2.251%，对比于以往的最 好成绩 2.991%有了较大的提升。</p>
+<p>SE-Net中的关键结构SE-Netblock利用了注意力机制的思想，显式地建模特征图之间的相互依赖关系，并通过学习的方式来自适应地获取到每张特征图的重要性，然后依照这个重要程度去对原数据进行更新。SE-Net通过这种方式提升有用的特征重要程度同时降低无用特征的重要性，并以不同通道的重要性为指导，将计算资源合理地投入不同通道当中。</p>
+<p>通俗地来说SENet的核心思想在于通过网络根据损失函数值loss去学习特征权重，使得对于任务更为效果明显的特征图权重变大，无效果或效果不明显的特征图权重变小的方式来训练模型从而达到更好的结果。SE-Netblock并不是一个完整的网络结构，而是一个即插即用的轻量级模块，通过将此模块嵌入网络之中，可以在小幅度提升参数量的代价下更加合理地分配神经网络的计算资源，大幅提升网络性能。</p>
+<p>在SE-Netblock中，<mark>每张特征图通过全局平均池化操作进行挤压</mark>，<mark>将每一张特征图挤压成一个实数</mark>（见公式（1）），这个实数具有特征图上的全局信息，<mark>每张特征图的挤压结果组合成一个向量作为每组特征图的权重，其中H和W分别为特征图的高和宽，</mark><strong>u为卷积后的结果，z为对应特征图的全局注意力信息，将此向量通过全连接层与激活函数</strong>（见公式（2）），训练结果用来放大对于识别任务更加重要特征图的权重，缩小不重要特征图的权重，其中σ为relu激活函数，δ代表sigmoid激活函数，W1与W2代表两个不同的全连接操作。得到的向量s代表每张特征图的重要性程度。向量s通过公式（3）激励原特征图，指导特征图不断向着有利于识别任务的方向更新，挤压激励操作结构如图2所示。</p>
+<img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404241651509.png" alt="image-20220711094328585" style="zoom:80%;" />
+<p>[1].	张宸嘉, 朱磊与俞璐, 卷积神经网络中的注意力机制综述. 计算机工程与应用, 2021. 57(20): 第64-72页.</p>
+<h4 id="eca-netefficient-channel-attention"><a class="markdownIt-Anchor" href="#eca-netefficient-channel-attention"></a> ECA-Net（Efficient Channel Attention）</h4>
+<p>2020年，CVPR收录的论文中提出了ECA-Net[14]（EfficientChannelAttentionNetwork）来对SE-Net进行改进，它实现了对SE-Net block的改进，提出了<mark>一种不降维的局部跨信道交互策略（ECAblock）和自适应选择一维卷积核大小的方法</mark>，通过一维卷积层汇总跨信道信息的方法获取更加精确的注意力信息。ECA block的思想建立在作者认为<mark>跨通道的信息交互是很有必要的</mark>，而SE-Net block只注重通道内部信息的综合，没有考虑到相邻信道信息的重要性。ECA block的结构如图3所示。</p>
+<img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404241651503.png" alt="image-20220711095517412" style="zoom:80%;" />
+<p>公式（4）表示最终的权重是<mark>综合了各个相邻通道的信息获得</mark>，其中σ为激活函数，yi代表通道，wi为通道yi的权重，Ω代表与yi相邻的k个通道，<mark>k的值是随着学习自适应变化的</mark>。为了实现这一想法，作者利用了一维卷积层来进行实现，通过核为k的一维卷积对通道与其相邻的k-1个通道信息进行综合，如公式（5）所示，C1Dk表示核为k的一维卷积操作，y表示通道。</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404241651502.png" alt="image-20220711100235954" /></p>
+<h2 id="2多路注意力"><a class="markdownIt-Anchor" href="#2多路注意力"></a> 2.多路注意力</h2>
+<h4 id="sk-netselective-kernel-networks"><a class="markdownIt-Anchor" href="#sk-netselective-kernel-networks"></a> SK-Net（Selective Kernel Networks）</h4>
+<p>2019年，CVPR收录的论文中提出了SK-Net（Selective Kernel Networks），SK-Net<mark>基于卷积核的注意力机制</mark>，即卷积核的重要性，即不同的图像经过不同卷积核的重要性是不同的，其结构如图4所示。整个SK-Net结构由<mark>Split、Fuse、Select</mark>三部分组成[15]。Split的任务是将输入的<strong>特征图X进行不同卷积核大小的卷积操作</strong>。如图4所示，对X进行<strong>Kernel3×3和Kernel5×5</strong>的卷积操作，得到输出U1与U2。而在Fuse部分将对U1与U2进行element-wise summation，得到输出特征图U，<mark>通过全局平均池化与全连接层获取特征图的注意力信息</mark>，并创建了一个紧凑的特征z∈Rd×1，以便为精确和自适应选择提供指导如公式（6）所示，其中δ是ReLU函数，B表示批量标准化，W表示全连接层且W∈Rd×C。公式（7）表明为了研究d对模型效率的影响，文章使用<mark>下降参数r来控制其值</mark>，L表示d的最小值。在Select部分中，将这个紧凑特征z向量重新分为两个（本文情况）或多个（更多的情况）特征向量，然后分别与相应的split之后的特征图进行相应通道的相乘操作，然后再通过这种加权共同构成输入到下一个神经元的特征向量。两个特征向量ac、bc的生成如公式（8）、（9）所示，其中A,B∈RC×d,a、b分别表示U1与U2的注意力向量，Ac∈R1×d表示A的第c行，ac表示a的第c个元素值，对于向量B同理。</p>
+<img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404241651515.png" alt="image-20220711104648704" style="zoom:80%;" />
+<img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404241651508.png" alt="image-20220711104719907" style="zoom:80%;" />
+<h4 id="resnest"><a class="markdownIt-Anchor" href="#resnest"></a> ResNeSt</h4>
+<p>2020年，亚马逊、加州大学戴维斯分校的张航、李沐、 Smola等研究者进一步改进了 ResNet[16]（Deep Residual Network），提出了ResNeSt，其中利用ResNet、SE-Net与SKNet的思想，提出了 <mark>Split- Attention block</mark>[17]。在 ResNeSt block中，整体大框架运用了残差网络的结构，通过将网络的输入 Input输入 k个 Cardinal分支当中，公式（10）表 述了每个 Cardinal的输入，其中 R代表每个 Cardinal中 split后的分支数，k代表第 k个 Cardinal，U代表着 split 后每个分支的输入。公式（11）表述了每个 Cardinal模块 的输出，V代表携带了通道权重的 Cardinal输出，a© 是由 softmax计算得到的权重，计算方法如公式（12）所 示，其中 G代表每个 split的权重。在经过 Cardinal模块 后对最后的 k个输出进行拼接，以达到综合 k个 Cardinal 输出信息的目的，如公式（13）所示，并将拼接后的输出 与原本的输入进行 element-wise summation，得到最后 的输出，其结构如图 5所示。</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404241651521.png" alt="image-20220711172340306" /></p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404241651028.png" alt="image-20220711172359420" /></p>
+<img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404241651074.png" alt="image-20220711104622217" style="zoom:80%;" />
+<p>在每个Cardinal中，又利用了SE-Net与SK-Net的思想，使用Split模块对每个Cardinal的输入切分为r个分支，通过SE-Net中的挤压激励操作获取每个分支的注意力信息作为Fuse模块，最后在Select模块中使得具有注意力信息的向量与其对应的分支特征图相乘，并通过element-wisesummation综合r个分支的输出作为最终的Cardinal输出，Cardinal结构如图6所示。</p>
+<h4 id="cbamconvolutional-block-attention-module"><a class="markdownIt-Anchor" href="#cbamconvolutional-block-attention-module"></a> CBAM（Convolutional Block Attention Module）</h4>
+<p>2018年，ECCV（European Conference on Computer Vision）收录的论文中提出了卷积注意力模块 CBAM （Convolutional Block Attention Module Network），它的创新在于，它==<strong>认为对于卷积网络中的特征图来说，不仅通道中蕴含着丰富的注意力信息[18]，通道内部，即特征图像素点间也具有大量的注意力信息，而以往的注意力机制只关注了通道上的注意力信息，这对于空间上的注意力信息是一种浪费</strong>==[19]。CBAM通过构建两个子模 块，==空间注意力模块 SAM（Spatial Attention Module）， 通道注意力模块 CAM（Channel Attention Module）==分别汇总空间和通道两方面的注意力信息，并将信息进行一定程度的综合，从而获得更全面可靠的注意力信息[20]，对计算资源的分配进行更合理的指导，其结构如图7所示。</p>
+<img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404241651084.png" alt="image-20220711184905172" style="zoom:80%;" />
+<p>通道注意力模块将输入的特征图F(H×W×C)分别经过基于宽和高的global max pooling（全局最大池化）和global average pooling（全局平均池化），得到两个1×1×C的特征图，接着，再将它们分别送入一个两层的神经网络（MLP），第一层神经元个数为C/r（r为减少率），激活函数为Relu，第二层神经元个数为C，这个两层的神经网络是共享的。而后，将MLP输出的特征进行基于element-wise的加和操作，再经过sigmoid激活操作，生成最终的通道注意力特征，即公式（14）中的Mc(F)，其中Favg为特征图经过全局平均池化的结果，Fmax为经过全局最大池化的结果，整个通道门注意力模块结构如图8所示。</p>
+<img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404241651096.png" alt="image-20220711185157839" style="zoom:80%;" />
+<p>空间注意力模块将通道注意力模块输出的特征图F作为本模块的输入特征图[21]。首先做一个基于通道的全局最大池化和全局平均池化，得到两个尺寸为H×W×1的特征图，然后将这两个特征图基于通道做拼接操作。然后经过一个7×7卷积操作，降维为H×W×1，再经过sigmoid生成空间注意力特征，即公式（15）中的Ms(F)，其中f代表卷积操作，[]代表通道拼接操作，最后将该向量和该模块的输入特征图做乘操作，得到最终生成的特征。整个空间注意力模块结构如图9所示。</p>
+<img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404241651114.png" alt="image-20220711185251497" style="zoom:80%;" />
+<h4 id="双注意力网络dual-attention-network"><a class="markdownIt-Anchor" href="#双注意力网络dual-attention-network"></a> 双注意力网络（Dual Attention Network）</h4>
+<p>2019年CVPR收录的论文中提出了DA-Net（Dual AttentionNetwork），==与CBAM相似的是，它的思想也是综合通道和空间两路的注意力信息，但不同的是CBAM的两路注意力信息的获取是串行的，而DA-Net中的两路注意力信息的获取是并行的，且获取注意力信息的方式也有很大差别。==DA-Net从通道与空间两个分支通过对特征图进行矩阵操作构建特征图的相关性矩阵S和X，两个矩阵分别用来表征通道之间的相关性和通道内像素点之间的相关性，用此矩阵对特征图的更新进行引导，增大关键特征的权重，使得将更多的注意力放在更易于进行区分的优秀特征之上。双注意力模块结构如图10所示。</p>
+<img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404241651131.png" alt="image-20220711190049358" style="zoom:80%;" />
+<p>其中<mark>PAM（Position Attention Module）是空间分支</mark>，其结构如图11所示，CAM（ChannelAttentionModule）是通道分支，其结构如图12所示，这两个分支通过对于特征图的处理分别构建出了关于<mark>特征图通道与空间位置的相关性矩阵X</mark>（尺寸为C×C）与S（尺寸为(H×W)×(H×W))，其中H、W、C分别为特征图的高、宽与通道数，并用此两个相关性矩阵来引导特征图不同通道与空间位置权重的更新方向，DA-Net捕捉了空间和通道维度中的全局特征依赖关系，==使用位置注意力模块来学习特征的空间相互依赖性，==通道注意力模块来模拟通道相互依赖性[22]。</p>
+<img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404241651265.png" alt="image-20220711190125197" style="zoom:80%;" />
+<h4 id="金字塔特征注意力网络pyramid-feature-attention-network"><a class="markdownIt-Anchor" href="#金字塔特征注意力网络pyramid-feature-attention-network"></a> 金字塔特征注意力网络（Pyramid Feature Attention Network）</h4>
+<p>2019年CVPR收录的论文中提出了金字塔特征注意力网络==，同样是利用特征图在通道间与通道内部像素点都富含大量的注意力信息的思想==[23]，其结构如图13所示。其中CA模块（ChannelAttentionModule）为通道注意力模块，CA分支的结构与SE-Net的思想是相同的，都是通过全局平均池化提取通道注意力信息，利用全连接获取各个通道的权重，如图14所示，SA模块（SpatialAttentionModule）为空间注意力模块，它利用了交替的卷积核相同的卷积层来提取通道内部像素位置之间的注意力信息，获得通道内部不同像素位置之间的相关性与重要程度等信息[24]，其结构如图15所示。两个模块分别从通道与空间两个方向提取特征图中的注意力信息，提取不同通道与空间中不同像素位置的权重信息，并对特征图进行自适应的更新。</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404241651331.png" alt="image-20220711190217722" /></p>
+<img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404241651360.png" alt="image-20220711190306707" style="zoom:80%;" />
+<h2 id="卷积网络中注意力机制展望"><a class="markdownIt-Anchor" href="#卷积网络中注意力机制展望"></a> 卷积网络中注意力机制展望</h2>
+<p>近几年，注意力机制的思想被广泛应用在各种深度学习任务中，如计算机视觉、图像分割、自然语言处理等[25]。大量实验证明了注意力机制是行之有效且节省资源的，当注意力机制的思想运用于卷积神经网络中时，需要着眼于卷积网络中所特有的特征图中的关键信息。当前注意力机制的主流方法是将特征图中的潜在注意力信息进行深度挖掘，最常见的是通过各种手段获取各个特征图通道间的通道注意力信息与特征图内部像素点之间的空间注意力信息，获取的方法也包括但不仅限于卷积操作，矩阵操作构建相关性矩阵等，其共同的目的是更深层次、更全面地获取特征图中完善的注意力信息[26]，于是如何更深地挖掘，从哪里去挖掘特征图的注意力信息，将极有可能会成为未来注意力方法发展的方向之一。</p>
+<p>目前，<mark>获取注意力的方法基本基于通道间的注意力信息、空间像素点之间的注意力信息和卷积核选择的注意力信息</mark>，是否能够从新的方向去获取特征图更丰富的注意力信息，或者<mark>以新的方式或手段去获取更精准的注意力信息</mark>也是未来需要关注的一个重点[27]。</p>
+<p>ECA-Net论文中的实验证明了跨通道的信息交互对于注意力信息的获取是有积极作用的，这也从侧面验证了不同通道之间并不是相互独立的，其内部是存在许多有利的有价值的信息的[28]，那么着眼于不同通道内部的其他信息的提取，如不同特征图中像素点的空间注意力信息或其他跨通道信息是否对于获取更加精准的注意力分布有着正确的导向作用也是一个值得探索的方向[29]。</p>
+<p>注意力机制作为一个轻量级的模块[30]，有着即插即用的特点，但是即使其本身参数量并不高[31]，在深度学习一些任务当中，注意力模块往往会被反复多次的调用，当注意力模块调用次数过多时仍然会对网络整体造成一定的负担[32]，如何优化模块结构，降低模块参数量或减少模块调用次数，更快地获取更精准的注意力信息，对于以后注意力机制在其他任务中的推广有着举足轻重的作用[33]，也是未来需要研究的重要内容之一。</p>
+<p>卷积网络中的注意力机制的核心在于<mark>深度挖掘特征图中所含有的信息</mark>[34]，而目前所发现的注意力获取渠道相对较少，但是注意力机制已经被广泛证明其针对大量深度学习任务不仅具有参数量小[35]，即插即用的便捷性[36]，还可以较为明显地提升任务效果。说明未来对于注意力机制的深度研究是必要且意义非凡的[37]，将对深度学习任务产生重大的影响。</p>
+<p>随着信息技术的不断发展，人类必将面临着大量而繁杂的信息，针对如此庞杂的信息去完成各项深度学习任务将变得更为困难[38]。当数据量无法任意改变的情况下，如何高效率地完成任务就变得尤为重要[39]。注意力机制便是提升深度学习任务效率的重要方法之一。当深度学习方法较为低效时，在深度学习任务中引入注意力机制将会实现“曲线救国”[40]，利用其低成本、高收益[41]的特点，大幅提升信息处理的效率，在未来的深度学习任务中大放异彩</p>
+</article><div class="post-copyright"><div class="copyright-cc-box"><i class="anzhiyufont anzhiyu-icon-copyright"></i></div><div class="post-copyright__author_box"><a class="post-copyright__author_img" target="_blank" rel="noopener" href="https://github.com/foresta-yang.github.io" title="头像"><img class="post-copyright__author_img_back" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/head.jpg" title="头像" alt="头像"><img class="post-copyright__author_img_front" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/head.jpg" title="头像" alt="头像"></a><div class="post-copyright__author_name">foresta.yang</div><div class="post-copyright__author_desc"></div></div><div class="post-copyright__post__info"><a class="post-copyright__original" title="该文章为原创文章，注意版权协议" href="https://foresta-yang.github.io/2022/12/18/AILearning/CNN/CNN-%E6%B3%A8%E6%84%8F%E5%8A%9B/">原创</a><a class="post-copyright-title"><span onclick="rm.copyPageUrl('https://foresta-yang.github.io/2022/12/18/AILearning/CNN/CNN-%E6%B3%A8%E6%84%8F%E5%8A%9B/')">CNN中的注意力</span></a></div><div class="post-tools" id="post-tools"><div class="post-tools-left"><div class="rewardLeftButton"><div class="post-reward" onclick="anzhiyu.addRewardMask()"><div class="reward-button button--animated" title="赞赏作者"><i class="anzhiyufont anzhiyu-icon-hand-heart-fill"></i>打赏作者</div><div class="reward-main"><div class="reward-all"><span class="reward-title">感谢你赐予我前进的力量</span><ul class="reward-group"><li class="reward-item"><a href="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/wechat.jpg" target="_blank"><img class="post-qr-code-img" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/wechat.jpg" alt="微信"/></a><div class="post-qr-code-desc">微信</div></li><li class="reward-item"><a href="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/alipay.jpg" target="_blank"><img class="post-qr-code-img" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/alipay.jpg" alt="支付宝"/></a><div class="post-qr-code-desc">支付宝</div></li></ul><a class="reward-main-btn" href="/about/#about-reward" target="_blank"><div class="reward-text">赞赏者名单</div><div class="reward-dec">因为你们的支持让我意识到写文章的价值🙏</div></a></div></div></div><div id="quit-box" onclick="anzhiyu.removeRewardMask()" style="display: none"></div></div><div class="shareRight"><div class="share-link mobile"><div class="share-qrcode"><div class="share-button" title="使用手机访问这篇文章"><i class="anzhiyufont anzhiyu-icon-qrcode"></i></div><div class="share-main"><div class="share-main-all"><div id="qrcode" title="https://foresta-yang.github.io/2022/12/18/AILearning/CNN/CNN-%E6%B3%A8%E6%84%8F%E5%8A%9B/"></div><div class="reward-dec">使用手机访问这篇文章</div></div></div></div></div><script>function copyCurrentPageUrl() {
+  var currentPageUrl = window.location.href;
+  var input = document.createElement("input");
+  input.setAttribute("value", currentPageUrl);
+  document.body.appendChild(input);
+  input.select();
+  input.setSelectionRange(0, 99999);
+  document.execCommand("copy");
+  document.body.removeChild(input);
+}</script><div class="share-link copyurl"><div class="share-button" id="post-share-url" title="复制链接" onclick="copyCurrentPageUrl()"><i class="anzhiyufont anzhiyu-icon-link"></i></div></div></div></div></div><div class="post-copyright__notice"><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://foresta-yang.github.io" target="_blank">foresta</a>！</span></div></div><div class="post-tools-right"><div class="tag_share"><div class="post-meta__box"><div class="post-meta__box__tag-list"><a class="post-meta__box__tags" href="/tags/Attention/"><span class="tags-punctuation"> <i class="anzhiyufont anzhiyu-icon-tag"></i></span>Attention<span class="tagsPageCount">2</span></a><a class="post-meta__box__tags" href="/tags/CNN/"><span class="tags-punctuation"> <i class="anzhiyufont anzhiyu-icon-tag"></i></span>CNN<span class="tagsPageCount">2</span></a></div></div></div><div class="post_share"><div class="social-share" data-image="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/head.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.cbd.int/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"/><script src="https://cdn.cbd.int/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer="defer"></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/12/18/AILearning/GNN/DGL%E8%AE%A1%E7%AE%97%E4%B8%AD%E5%BF%83%E6%80%A7/"><img class="prev-cover" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="/img/cover-default.webp" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">DGL计算中心性</div></div></a></div><div class="next-post pull-right"><a href="/2023/10/10/AILearning/GNN/GCN%E6%B5%85%E5%85%A5/"><img class="next-cover" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404241722489.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">GCN浅入</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="anzhiyufont anzhiyu-icon-thumbs-up fa-fw" style="font-size: 1.5rem; margin-right: 4px"></i><span>喜欢这篇文章的人也看了</span></div><div class="relatedPosts-list"><div><a href="/2023/10/10/AILearning/DL/%E5%87%A0%E7%A7%8D%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%9C%BA%E5%88%B6/" title="注意力机制"><img class="cover" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="/img/cover-default.webp" alt="cover"><div class="content is-center"><div class="date"><i class="anzhiyufont anzhiyu-icon-calendar-days fa-fw"></i> 2023-10-10</div><div class="title">注意力机制</div></div></a></div><div><a href="/2023/12/19/AILearning/pytorch/conv2d/" title="Conv2d"><img class="cover" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202312191226420.png" alt="cover"><div class="content is-center"><div class="date"><i class="anzhiyufont anzhiyu-icon-calendar-days fa-fw"></i> 2023-12-19</div><div class="title">Conv2d</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="anzhiyufont anzhiyu-icon-comments"></i><span> 评论</span></div><div class="comment-randomInfo"><a onclick="anzhiyu.addRandomCommentInfo()" href="javascript:void(0)">匿名评论</a><a href="/privacy" style="margin-left: 4px">隐私政策</a></div><div class="comment-tips" id="comment-tips"><span>✅ 你无需删除空行，直接评论以获取最佳展示效果</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div><div class="comment-barrage"></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="card-content"><div class="author-info-avatar"><img class="avatar-img" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/head.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__description">享受孤独</div><div class="author-info__bottom-group"><a class="author-info__bottom-group-left" href="/"><h1 class="author-info__name">foresta.yang</h1><div class="author-info__desc"></div></a><div class="card-info-social-icons is-center"><a class="social-icon faa-parent animated-hover" href="https://github.com/foresta-yang.github.io" target="_blank" title="Github"><i class="anzhiyufont anzhiyu-icon-github"></i></a></div></div></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="anzhiyufont anzhiyu-icon-bars"></i><span>文章目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1%E5%8D%95%E8%B7%AF%E6%B3%A8%E6%84%8F%E5%8A%9B"><span class="toc-number">1.</span> <span class="toc-text"> 1.单路注意力</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#se-netsqueeze-and-excitation"><span class="toc-number">1.0.1.</span> <span class="toc-text"> SE-NET（Squeeze and Excitation）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#eca-netefficient-channel-attention"><span class="toc-number">1.0.2.</span> <span class="toc-text"> ECA-Net（Efficient Channel Attention）</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2%E5%A4%9A%E8%B7%AF%E6%B3%A8%E6%84%8F%E5%8A%9B"><span class="toc-number">2.</span> <span class="toc-text"> 2.多路注意力</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#sk-netselective-kernel-networks"><span class="toc-number">2.0.1.</span> <span class="toc-text"> SK-Net（Selective Kernel Networks）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#resnest"><span class="toc-number">2.0.2.</span> <span class="toc-text"> ResNeSt</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#cbamconvolutional-block-attention-module"><span class="toc-number">2.0.3.</span> <span class="toc-text"> CBAM（Convolutional Block Attention Module）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%8C%E6%B3%A8%E6%84%8F%E5%8A%9B%E7%BD%91%E7%BB%9Cdual-attention-network"><span class="toc-number">2.0.4.</span> <span class="toc-text"> 双注意力网络（Dual Attention Network）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%87%91%E5%AD%97%E5%A1%94%E7%89%B9%E5%BE%81%E6%B3%A8%E6%84%8F%E5%8A%9B%E7%BD%91%E7%BB%9Cpyramid-feature-attention-network"><span class="toc-number">2.0.5.</span> <span class="toc-text"> 金字塔特征注意力网络（Pyramid Feature Attention Network）</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%B7%E7%A7%AF%E7%BD%91%E7%BB%9C%E4%B8%AD%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%9C%BA%E5%88%B6%E5%B1%95%E6%9C%9B"><span class="toc-number">3.</span> <span class="toc-text"> 卷积网络中注意力机制展望</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="anzhiyufont anzhiyu-icon-history"></i><span>最近发布</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/04/18/Security/C_C++%E6%BC%8F%E6%B4%9E%E6%95%B0%E6%8D%AE%E9%9B%86/" title="C/C++漏洞数据集">C/C++漏洞数据集</a><time datetime="2024-04-18T09:46:15.000Z" title="发表于 2024-04-18 17:46:15">2024-04-18</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/12/19/Papers/Vul/Cross-domain%20vulnerability%20detection%20using%20graph%20embedding%20and%20domain%20adaptation/" title="Cross-domain vulnerability detection using graph embedding and domain adaptation"><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202312191750331.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Cross-domain vulnerability detection using graph embedding and domain adaptation"/></a><div class="content"><a class="title" href="/2023/12/19/Papers/Vul/Cross-domain%20vulnerability%20detection%20using%20graph%20embedding%20and%20domain%20adaptation/" title="Cross-domain vulnerability detection using graph embedding and domain adaptation">Cross-domain vulnerability detection using graph embedding and domain adaptation</a><time datetime="2023-12-19T07:32:24.000Z" title="发表于 2023-12-19 15:32:24">2023-12-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/12/19/AILearning/pytorch/conv2d/" title="Conv2d"><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202312191226420.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Conv2d"/></a><div class="content"><a class="title" href="/2023/12/19/AILearning/pytorch/conv2d/" title="Conv2d">Conv2d</a><time datetime="2023-12-19T03:30:36.000Z" title="发表于 2023-12-19 11:30:36">2023-12-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/12/19/AILearning/pytorch/pytorch/" title="pytorch入门"><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202312191226420.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="pytorch入门"/></a><div class="content"><a class="title" href="/2023/12/19/AILearning/pytorch/pytorch/" title="pytorch入门">pytorch入门</a><time datetime="2023-12-19T03:30:36.000Z" title="发表于 2023-12-19 11:30:36">2023-12-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/12/19/AILearning/pytorch/tensor%E6%93%8D%E4%BD%9C/" title="torch tensor操作"><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="/img/cover-default.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="torch tensor操作"/></a><div class="content"><a class="title" href="/2023/12/19/AILearning/pytorch/tensor%E6%93%8D%E4%BD%9C/" title="torch tensor操作">torch tensor操作</a><time datetime="2023-12-19T03:30:36.000Z" title="发表于 2023-12-19 11:30:36">2023-12-19</time></div></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2023 - 2024 By foresta.yang</div></div></footer></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="sidebar-site-data site-data is-center"><a href="/archives/" title="archive"><div class="headline">文章</div><div class="length-num">77</div></a><a href="/tags/" title="tag"><div class="headline">标签</div><div class="length-num">37</div></a><a href="/categories/" title="category"><div class="headline">分类</div><div class="length-num">17</div></a></div><span class="sidebar-menu-item-title">功能</span><div class="sidebar-menu-item"><a class="darkmode_switchbutton menu-child" href="javascript:void(0);" title="显示模式"><i class="anzhiyufont anzhiyu-icon-circle-half-stroke"></i><span>显示模式</span></a></div><div class="back-menu-list-groups"><div class="back-menu-list-group"><div class="back-menu-list-title">网页</div><div class="back-menu-list"><a class="back-menu-item" target="_blank" rel="noopener" href="https://blog.anheyu.com/" title="博客"><img class="back-menu-item-icon" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="/img/favicon.ico" alt="博客"/><span class="back-menu-item-text">博客</span></a></div></div><div class="back-menu-list-group"><div class="back-menu-list-title">项目</div><div class="back-menu-list"><a class="back-menu-item" target="_blank" rel="noopener" href="https://image.anheyu.com/" title="安知鱼图床"><img class="back-menu-item-icon" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://image.anheyu.com/favicon.ico" alt="安知鱼图床"/><span class="back-menu-item-text">安知鱼图床</span></a></div></div></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 文章</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/archives/"><i class="anzhiyufont anzhiyu-icon-box-archive faa-tada" style="font-size: 0.9em;"></i><span> 隧道</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/categories/"><i class="anzhiyufont anzhiyu-icon-shapes faa-tada" style="font-size: 0.9em;"></i><span> 分类</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/tags/"><i class="anzhiyufont anzhiyu-icon-tags faa-tada" style="font-size: 0.9em;"></i><span> 标签</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 友链</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/link/"><i class="anzhiyufont anzhiyu-icon-link faa-tada" style="font-size: 0.9em;"></i><span> 友人帐</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/comments/"><i class="anzhiyufont anzhiyu-icon-envelope faa-tada" style="font-size: 0.9em;"></i><span> 留言板</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 我的</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/music/"><i class="anzhiyufont anzhiyu-icon-music faa-tada" style="font-size: 0.9em;"></i><span> 音乐</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/album/"><i class="anzhiyufont anzhiyu-icon-images faa-tada" style="font-size: 0.9em;"></i><span> 相册</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/essay/"><i class="anzhiyufont anzhiyu-icon-lightbulb faa-tada" style="font-size: 0.9em;"></i><span> 即刻emo</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 关于</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/about/"><i class="anzhiyufont anzhiyu-icon-paper-plane faa-tada" style="font-size: 0.9em;"></i><span> 关于本人</span></a></li></ul></div></div><span class="sidebar-menu-item-title">标签</span><div class="card-tags"><div class="item-headline"></div><div class="card-tag-cloud"><a href="/tags/Activation/" style="font-size: 0.88rem;">Activation<sup>1</sup></a><a href="/tags/Attention/" style="font-size: 0.88rem;">Attention<sup>2</sup></a><a href="/tags/Binary/" style="font-size: 0.88rem;">Binary<sup>1</sup></a><a href="/tags/C-C/" style="font-size: 0.88rem;">C/C++<sup>2</sup></a><a href="/tags/CNN/" style="font-size: 0.88rem;">CNN<sup>2</sup></a><a href="/tags/DGL/" style="font-size: 0.88rem;">DGL<sup>2</sup></a><a href="/tags/DL/" style="font-size: 0.88rem;">DL<sup>3</sup></a><a href="/tags/DL%E7%9F%A5%E8%AF%86/" style="font-size: 0.88rem;">DL知识<sup>1</sup></a><a href="/tags/DL%E7%9F%A5%E8%AF%86%E7%82%B9/" style="font-size: 0.88rem;">DL知识点<sup>4</sup></a><a href="/tags/GNN/" style="font-size: 0.88rem;">GNN<sup>10</sup></a><a href="/tags/Hexo/" style="font-size: 0.88rem;">Hexo<sup>2</sup></a><a href="/tags/LLM/" style="font-size: 0.88rem;">LLM<sup>1</sup></a><a href="/tags/LaTex/" style="font-size: 0.88rem;">LaTex<sup>1</sup></a><a href="/tags/Loss/" style="font-size: 0.88rem;">Loss<sup>1</sup></a><a href="/tags/PowerShell/" style="font-size: 0.88rem;">PowerShell<sup>1</sup></a><a href="/tags/Python/" style="font-size: 0.88rem;">Python<sup>1</sup></a><a href="/tags/Pytorch/" style="font-size: 0.88rem;">Pytorch<sup>6</sup></a><a href="/tags/Term/" style="font-size: 0.88rem;">Term<sup>1</sup></a><a href="/tags/Terms/" style="font-size: 0.88rem;">Terms<sup>1</sup></a><a href="/tags/Vulnerabilities/" style="font-size: 0.88rem;">Vulnerabilities<sup>19</sup></a><a href="/tags/conda/" style="font-size: 0.88rem;">conda<sup>1</sup></a><a href="/tags/git/" style="font-size: 0.88rem;">git<sup>1</sup></a><a href="/tags/overleaf/" style="font-size: 0.88rem;">overleaf<sup>2</sup></a><a href="/tags/pip/" style="font-size: 0.88rem;">pip<sup>1</sup></a><a href="/tags/sci%E6%8A%95%E7%A8%BF/" style="font-size: 0.88rem;">sci投稿<sup>1</sup></a><a href="/tags/tensor/" style="font-size: 0.88rem;">tensor<sup>2</sup></a><a href="/tags/tree-sitter/" style="font-size: 0.88rem;">tree-sitter<sup>1</sup></a><a href="/tags/%E4%BB%A3%E7%A0%81%E8%A1%8C%E7%BA%A7%E6%A3%80%E6%B5%8B/" style="font-size: 0.88rem;">代码行级检测<sup>1</sup></a><a href="/tags/%E5%9F%BA%E6%9C%AC%E6%9C%AF%E8%AF%AD/" style="font-size: 0.88rem;">基本术语<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0%E7%8E%87/" style="font-size: 0.88rem;">学习率<sup>1</sup></a><a href="/tags/%E5%AE%A1%E7%A8%BF/" style="font-size: 0.88rem;">审稿<sup>1</sup></a><a href="/tags/%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/" style="font-size: 0.88rem;">漏洞分析<sup>1</sup></a><a href="/tags/%E7%8E%AF%E5%A2%83/" style="font-size: 0.88rem;">环境<sup>2</sup></a><a href="/tags/%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90/" style="font-size: 0.88rem;">软件分析<sup>5</sup></a><a href="/tags/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8/" style="font-size: 0.88rem;">软件安全<sup>23</sup></a><a href="/tags/%E8%BF%87%E7%A8%8B%E9%97%B4%E5%88%86%E6%9E%90/" style="font-size: 0.88rem;">过程间分析<sup>1</sup></a><a href="/tags/%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90/" style="font-size: 0.88rem;">静态分析<sup>2</sup></a></div></div><hr/></div></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="anzhiyufont anzhiyu-icon-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="anzhiyufont anzhiyu-icon-circle-half-stroke"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="anzhiyufont anzhiyu-icon-arrows-left-right"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="anzhiyufont anzhiyu-icon-gear"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="anzhiyufont anzhiyu-icon-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="anzhiyufont anzhiyu-icon-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="anzhiyufont anzhiyu-icon-arrow-up"></i></button></div></div><div id="nav-music"><a id="nav-music-hoverTips" onclick="anzhiyu.musicToggle()" accesskey="m">播放音乐</a><div id="console-music-bg"></div><meting-js id="8152976493" server="netease" type="playlist" mutex="true" preload="none" theme="var(--anzhiyu-main)" data-lrctype="0" order="random" volume="0.7"></meting-js></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="anzhiyufont anzhiyu-icon-xmark"></i></button></nav><div class="is-center" id="loading-database"><i class="anzhiyufont anzhiyu-icon-spinner anzhiyu-pulse-icon"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div id="rightMenu"><div class="rightMenu-group rightMenu-small"><div class="rightMenu-item" id="menu-backward"><i class="anzhiyufont anzhiyu-icon-arrow-left"></i></div><div class="rightMenu-item" id="menu-forward"><i class="anzhiyufont anzhiyu-icon-arrow-right"></i></div><div class="rightMenu-item" id="menu-refresh"><i class="anzhiyufont anzhiyu-icon-arrow-rotate-right" style="font-size: 1rem;"></i></div><div class="rightMenu-item" id="menu-top"><i class="anzhiyufont anzhiyu-icon-arrow-up"></i></div></div><div class="rightMenu-group rightMenu-line rightMenuPlugin"><div class="rightMenu-item" id="menu-copytext"><i class="anzhiyufont anzhiyu-icon-copy"></i><span>复制选中文本</span></div><div class="rightMenu-item" id="menu-pastetext"><i class="anzhiyufont anzhiyu-icon-paste"></i><span>粘贴文本</span></div><a class="rightMenu-item" id="menu-commenttext"><i class="anzhiyufont anzhiyu-icon-comment-medical"></i><span>引用到评论</span></a><div class="rightMenu-item" id="menu-newwindow"><i class="anzhiyufont anzhiyu-icon-window-restore"></i><span>新窗口打开</span></div><div class="rightMenu-item" id="menu-copylink"><i class="anzhiyufont anzhiyu-icon-link"></i><span>复制链接地址</span></div><div class="rightMenu-item" id="menu-copyimg"><i class="anzhiyufont anzhiyu-icon-images"></i><span>复制此图片</span></div><div class="rightMenu-item" id="menu-downloadimg"><i class="anzhiyufont anzhiyu-icon-download"></i><span>下载此图片</span></div><div class="rightMenu-item" id="menu-newwindowimg"><i class="anzhiyufont anzhiyu-icon-window-restore"></i><span>新窗口打开图片</span></div><div class="rightMenu-item" id="menu-search"><i class="anzhiyufont anzhiyu-icon-magnifying-glass"></i><span>站内搜索</span></div><div class="rightMenu-item" id="menu-searchBaidu"><i class="anzhiyufont anzhiyu-icon-magnifying-glass"></i><span>百度搜索</span></div><div class="rightMenu-item" id="menu-music-toggle"><i class="anzhiyufont anzhiyu-icon-play"></i><span>播放音乐</span></div><div class="rightMenu-item" id="menu-music-back"><i class="anzhiyufont anzhiyu-icon-backward"></i><span>切换到上一首</span></div><div class="rightMenu-item" id="menu-music-forward"><i class="anzhiyufont anzhiyu-icon-forward"></i><span>切换到下一首</span></div><div class="rightMenu-item" id="menu-music-playlist" onclick="window.open(&quot;https://y.qq.com/n/ryqq/playlist/8802438608&quot;, &quot;_blank&quot;);" style="display: none;"><i class="anzhiyufont anzhiyu-icon-radio"></i><span>查看所有歌曲</span></div><div class="rightMenu-item" id="menu-music-copyMusicName"><i class="anzhiyufont anzhiyu-icon-copy"></i><span>复制歌名</span></div></div><div class="rightMenu-group rightMenu-line rightMenuOther"><a class="rightMenu-item menu-link" id="menu-randomPost"><i class="anzhiyufont anzhiyu-icon-shuffle"></i><span>随便逛逛</span></a><a class="rightMenu-item menu-link" href="/categories/"><i class="anzhiyufont anzhiyu-icon-cube"></i><span>博客分类</span></a><a class="rightMenu-item menu-link" href="/tags/"><i class="anzhiyufont anzhiyu-icon-tags"></i><span>文章标签</span></a></div><div class="rightMenu-group rightMenu-line rightMenuOther"><a class="rightMenu-item" id="menu-copy" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-copy"></i><span>复制地址</span></a><a class="rightMenu-item" id="menu-commentBarrage" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-message"></i><span class="menu-commentBarrage-text">关闭热评</span></a><a class="rightMenu-item" id="menu-darkmode" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-circle-half-stroke"></i><span class="menu-darkmode-text">深色模式</span></a><a class="rightMenu-item" id="menu-translate" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-language"></i><span>轉為繁體</span></a></div></div><div id="rightmenu-mask"></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.cbd.int/@fancyapps/ui@5.0.28/dist/fancybox/fancybox.umd.js"></script><script src="https://cdn.cbd.int/instant.page@5.2.0/instantpage.js" type="module"></script><script src="https://cdn.cbd.int/vanilla-lazyload@17.8.5/dist/lazyload.iife.min.js"></script><script src="https://cdn.cbd.int/node-snackbar@0.1.16/dist/snackbar.min.js"></script><canvas id="universe"></canvas><script async src="https://npm.elemecdn.com/anzhiyu-theme-static@1.0.0/dark/dark.js"></script><script>// 消除控制台打印
+var HoldLog = console.log;
+console.log = function () {};
+let now1 = new Date();
+queueMicrotask(() => {
+  const Log = function () {
+    HoldLog.apply(console, arguments);
+  }; //在恢复前输出日志
+  const grt = new Date("04/01/2023 00:00:00"); //此处修改你的建站时间或者网站上线时间
+  now1.setTime(now1.getTime() + 250);
+  const days = (now1 - grt) / 1000 / 60 / 60 / 24;
+  const dnum = Math.floor(days);
+  const ascll = [
+    `欢迎使用安知鱼!`,
+    `生活明朗, 万物可爱`,
+    `
+        
+       █████╗ ███╗   ██╗███████╗██╗  ██╗██╗██╗   ██╗██╗   ██╗
+      ██╔══██╗████╗  ██║╚══███╔╝██║  ██║██║╚██╗ ██╔╝██║   ██║
+      ███████║██╔██╗ ██║  ███╔╝ ███████║██║ ╚████╔╝ ██║   ██║
+      ██╔══██║██║╚██╗██║ ███╔╝  ██╔══██║██║  ╚██╔╝  ██║   ██║
+      ██║  ██║██║ ╚████║███████╗██║  ██║██║   ██║   ╚██████╔╝
+      ╚═╝  ╚═╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝╚═╝   ╚═╝    ╚═════╝
+        
+        `,
+    "已上线",
+    dnum,
+    "天",
+    "©2023 By 安知鱼 V1.6.12",
+  ];
+  const ascll2 = [`NCC2-036`, `调用前置摄像头拍照成功，识别为【小笨蛋】.`, `Photo captured: `, `🤪`];
+
+  setTimeout(
+    Log.bind(
+      console,
+      `\n%c${ascll[0]} %c ${ascll[1]} %c ${ascll[2]} %c${ascll[3]}%c ${ascll[4]}%c ${ascll[5]}\n\n%c ${ascll[6]}\n`,
+      "color:#425AEF",
+      "",
+      "color:#425AEF",
+      "color:#425AEF",
+      "",
+      "color:#425AEF",
+      ""
+    )
+  );
+  setTimeout(
+    Log.bind(
+      console,
+      `%c ${ascll2[0]} %c ${ascll2[1]} %c \n${ascll2[2]} %c\n${ascll2[3]}\n`,
+      "color:white; background-color:#4fd953",
+      "",
+      "",
+      'background:url("https://npm.elemecdn.com/anzhiyu-blog@1.1.6/img/post/common/tinggge.gif") no-repeat;font-size:450%'
+    )
+  );
+
+  setTimeout(Log.bind(console, "%c WELCOME %c 你好，小笨蛋.", "color:white; background-color:#4f90d9", ""));
+
+  setTimeout(
+    console.warn.bind(
+      console,
+      "%c ⚡ Powered by 安知鱼 %c 你正在访问 foresta.yang 的博客.",
+      "color:white; background-color:#f0ad4e",
+      ""
+    )
+  );
+
+  setTimeout(Log.bind(console, "%c W23-12 %c 你已打开控制台.", "color:white; background-color:#4f90d9", ""));
+
+  setTimeout(
+    console.warn.bind(console, "%c S013-782 %c 你现在正处于监控中.", "color:white; background-color:#d9534f", "")
+  );
+});</script><script async src="/anzhiyu/random.js"></script><script src="/js/search/local-search.js"></script><div class="js-pjax"><script>if (!window.MathJax) {
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      tags: 'ams'
+    },
+    chtml: {
+      scale: 1.1
+    },
+    options: {
+      renderActions: {
+        findScript: [10, doc => {
+          for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+            const display = !!node.type.match(/; *mode=display/)
+            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+            const text = document.createTextNode('')
+            node.parentNode.replaceChild(text, node)
+            math.start = {node: text, delim: '', n: 0}
+            math.end = {node: text, delim: '', n: 0}
+            doc.math.push(math)
+          }
+        }, '']
+      }
+    }
+  }
+  
+  const script = document.createElement('script')
+  script.src = 'https://cdn.cbd.int/mathjax@3.2.2/es5/tex-mml-chtml.js'
+  script.id = 'MathJax-script'
+  script.async = true
+  document.head.appendChild(script)
+} else {
+  MathJax.startup.document.state(0)
+  MathJax.texReset()
+  MathJax.typesetPromise()
+}</script><link rel="stylesheet" type="text/css" href="https://cdn.cbd.int/katex@0.16.0/dist/katex.min.css"><script src="https://cdn.cbd.int/katex@0.16.0/dist/contrib/copy-tex.min.js"></script><script>(() => {
+  document.querySelectorAll('#article-container span.katex-display').forEach(item => {
+    anzhiyu.wrap(item, 'div', { class: 'katex-wrap'})
+  })
+})()</script><script>(() => {
+  const init = () => {
+    twikoo.init(Object.assign({
+      el: '#twikoo-wrap',
+      envId: 'https://mytwikoo-omega.vercel.app',
+      region: '',
+      onCommentLoaded: () => {
+        anzhiyu.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      }
+    }, null))
+  }
+
+  const loadTwikoo = () => {
+    if (typeof twikoo === 'object') setTimeout(runFn,0)
+    else getScript('https://cdn.cbd.int/twikoo@1.6.25/dist/twikoo.all.min.js').then(runFn)
+  }
+
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://mytwikoo-omega.vercel.app',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(res => {
+      countELement.textContent = res[0].count
+    }).catch(err => {
+      console.error(err)
+    })
+  }
+
+  const runFn = () => {
+    init();
+    GLOBAL_CONFIG_SITE.isPost && getCount()
+  }
+
+  if ('Twikoo' === 'Twikoo' || !false) {
+    if (false) anzhiyu.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else {
+      loadTwikoo()
+    }
+  } else {
+    window.loadOtherComment = loadTwikoo
+  }
+})()</script><input type="hidden" name="page-type" id="page-type" value="post"></div><script>window.addEventListener('load', () => {
+  const changeContent = (content) => {
+    if (content === '') return content
+
+    content = content.replace(/<img.*?src="(.*?)"?[^\>]+>/ig, '[图片]') // replace image link
+    content = content.replace(/<a[^>]+?href=["']?([^"']+)["']?[^>]*>([^<]+)<\/a>/gi, '[链接]') // replace url
+    content = content.replace(/<pre><code>.*?<\/pre>/gi, '[代码]') // replace code
+    content = content.replace(/<[^>]+>/g,"") // remove html tag
+
+    if (content.length > 150) {
+      content = content.substring(0,150) + '...'
+    }
+    return content
+  }
+
+  const getComment = () => {
+    const runTwikoo = () => {
+      twikoo.getRecentComments({
+        envId: 'https://mytwikoo-omega.vercel.app',
+        region: '',
+        pageSize: 6,
+        includeReply: true
+      }).then(function (res) {
+        const twikooArray = res.map(e => {
+          return {
+            'content': changeContent(e.comment),
+            'avatar': e.avatar,
+            'nick': e.nick,
+            'url': e.url + '#' + e.id,
+            'date': new Date(e.created).toISOString()
+          }
+        })
+
+        saveToLocal.set('twikoo-newest-comments', JSON.stringify(twikooArray), 10/(60*24))
+        generateHtml(twikooArray)
+      }).catch(function (err) {
+        const $dom = document.querySelector('#card-newest-comments .aside-list')
+        $dom.textContent= "无法获取评论，请确认相关配置是否正确"
+      })
+    }
+
+    if (typeof twikoo === 'object') {
+      runTwikoo()
+    } else {
+      getScript('https://cdn.cbd.int/twikoo@1.6.25/dist/twikoo.all.min.js').then(runTwikoo)
+    }
+  }
+
+  const generateHtml = array => {
+    let result = ''
+
+    if (array.length) {
+      for (let i = 0; i < array.length; i++) {
+        result += '<div class=\'aside-list-item\'>'
+
+        if (true) {
+          const name = 'data-lazy-src'
+          result += `<a href='${array[i].url}' class='thumbnail'><img ${name}='${array[i].avatar}' alt='${array[i].nick}'><div class='name'><span>${array[i].nick} </span></div></a>`
+        }
+        
+        result += `<div class='content'>
+        <a class='comment' href='${array[i].url}' title='${array[i].content}'>${array[i].content}</a>
+        <time datetime="${array[i].date}">${anzhiyu.diffDate(array[i].date, true)}</time></div>
+        </div>`
+      }
+    } else {
+      result += '没有评论'
+    }
+
+    let $dom = document.querySelector('#card-newest-comments .aside-list')
+    $dom && ($dom.innerHTML= result)
+    window.lazyLoadInstance && window.lazyLoadInstance.update()
+    window.pjax && window.pjax.refresh($dom)
+  }
+
+  const newestCommentInit = () => {
+    if (document.querySelector('#card-newest-comments .aside-list')) {
+      const data = saveToLocal.get('twikoo-newest-comments')
+      if (data) {
+        generateHtml(JSON.parse(data))
+      } else {
+        getComment()
+      }
+    }
+  }
+
+  newestCommentInit()
+  document.addEventListener('pjax:complete', newestCommentInit)
+})</script><script>var visitorMail = "";
+</script><script async data-pjax src="https://cdn.cbd.int/anzhiyu-theme-static@1.0.0/waterfall/waterfall.js"></script><script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/qrcodejs/1.0.0/qrcode.min.js"></script><script src="/js/anzhiyu/right_click_menu.js"></script><link rel="stylesheet" href="https://cdn.cbd.int/anzhiyu-theme-static@1.1.9/icon/ali_iconfont_css.css"><link rel="stylesheet" href="https://cdn.cbd.int/anzhiyu-theme-static@1.0.0/aplayer/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.cbd.int/anzhiyu-blog-static@1.0.1/js/APlayer.min.js"></script><script src="https://cdn.cbd.int/hexo-anzhiyu-music@1.0.1/assets/js/Meting2.min.js"></script><script src="https://cdn.cbd.int/pjax@0.2.8/pjax.min.js"></script><script>let pjaxSelectors = ["meta[property=\"og:image\"]","meta[property=\"og:title\"]","meta[property=\"og:url\"]","meta[property=\"og:type\"]","meta[property=\"og:site_name\"]","meta[property=\"og:description\"]","head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+  // removeEventListener scroll 
+  anzhiyu.removeGlobalFnEvent('pjax')
+  anzhiyu.removeGlobalFnEvent('themeChange')
+
+  document.getElementById('rightside').classList.remove('rightside-show')
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+})
+
+document.addEventListener('pjax:error', e => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/404.html')
+  }
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><script charset="UTF-8" src="https://cdn.cbd.int/anzhiyu-theme-static@1.1.5/accesskey/accesskey.js"></script></div><div id="popup-window"><div class="popup-window-title">通知</div><div class="popup-window-divider"></div><div class="popup-window-content"><div class="popup-tip">你好呀</div><div class="popup-link"><i class="anzhiyufont anzhiyu-icon-arrow-circle-right"></i></div></div></div></body></html>

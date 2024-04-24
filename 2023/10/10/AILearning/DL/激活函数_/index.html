@@ -1,0 +1,811 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"><title>激活函数 | foresta</title><meta name="keywords" content="Activation"><meta name="author" content="foresta.yang"><meta name="copyright" content="foresta.yang"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#f7f9fe"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-touch-fullscreen" content="yes"><meta name="apple-mobile-web-app-title" content="激活函数"><meta name="application-name" content="激活函数"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="#f7f9fe"><meta property="og:type" content="article"><meta property="og:title" content="激活函数"><meta property="og:url" content="https://foresta-yang.github.io/2023/10/10/AILearning/DL/%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0_/index.html"><meta property="og:site_name" content="foresta"><meta property="og:description" content="激活函数对神经网络的重要性自不必多言，机器之心也曾发布过一些相关的介绍文章，比如《一文概览深度学习中的激活函数》。本文同样关注的是激活函数。来自丹麦技术大学的 Casper Hansen 通过公式、图表和代码实验介绍了 sigmoid、ReLU、ELU 以及更新的 Leaky ReLU、SELU、"><meta property="og:locale" content="zh-CN"><meta property="og:image" content="https://foresta-yang.github.io/img/cover-default.webp"><meta property="article:author" content="foresta.yang"><meta property="article:tag"><meta name="twitter:card" content="summary"><meta name="twitter:image" content="https://foresta-yang.github.io/img/cover-default.webp"><meta name="description" content="激活函数对神经网络的重要性自不必多言，机器之心也曾发布过一些相关的介绍文章，比如《一文概览深度学习中的激活函数》。本文同样关注的是激活函数。来自丹麦技术大学的 Casper Hansen 通过公式、图表和代码实验介绍了 sigmoid、ReLU、ELU 以及更新的 Leaky ReLU、SELU、"><link rel="shortcut icon" href="/img/foresta.png"><link rel="canonical" href="https://foresta-yang.github.io/2023/10/10/AILearning/DL/%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0_/"><link rel="preconnect" href="//cdn.cbd.int"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="google-site-verification" content="xxx"/><meta name="baidu-site-verification" content="code-xxx"/><meta name="msvalidate.01" content="xxx"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.cbd.int/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.cbd.int/@fancyapps/ui@5.0.28/dist/fancybox/fancybox.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/anzhiyu-theme-static@1.0.0/swiper/swiper.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  linkPageTop: undefined,
+  peoplecanvas: undefined,
+  postHeadAiDescription: undefined,
+  diytitle: undefined,
+  LA51: undefined,
+  greetingBox: undefined,
+  twikooEnvId: 'https://mytwikoo-omega.vercel.app',
+  commentBarrageConfig:undefined,
+  root: '/',
+  preloader: {"source":3},
+  friends_vue_info: undefined,
+  navMusic: true,
+  mainTone: undefined,
+  authorStatus: undefined,
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"简","rightMenuMsgToTraditionalChinese":"转为繁体","rightMenuMsgToSimplifiedChinese":"转为简体"},
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":330},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    simplehomepage: true,
+    post: false
+  },
+  runtime: '天',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"copy":true,"copyrightEbable":false,"limitCount":66,"languages":{"author":"作者: foresta.yang","link":"链接: ","source":"来源: foresta","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。","copySuccess":"复制成功，复制和转载请标注本文地址"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#425AEF","bgDark":"#1f1f1f","position":"top-center"},
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.cbd.int/flickr-justified-gallery@2.1.2/dist/fjGallery.min.js',
+      css: 'https://cdn.cbd.int/flickr-justified-gallery@2.1.2/dist/fjGallery.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isAnchor: false,
+  shortcutKey: undefined,
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  configTitle: 'foresta',
+  title: '激活函数',
+  postAI: '',
+  pageFillDescription: ' 概述,  sigmoid 函数是什么？,  梯度问题,  整流线性单元（ReLU）,  指数线性单元（ELU）,  渗漏型整流线性单元激活函数（Leaky ReLU）,  扩展型指数线性单元激活函数（SELU）,  GELU激活函数对神经网络的重要性自不必多言机器之心也曾发布过一些相关的介绍文章比如一文概览深度学习中的激活函数本文同样关注的是激活函数来自丹麦技术大学的通过公式图表和代码实验介绍了以及更新的这些激活函数并比较了它们的优势和短板选自作者机器之心编译参与熊猫杜伟在计算每一层的激活值时我们要用到激活函数之后才能确定这些激活值究竟是多少根据每一层前面的激活权重和偏置我们要为下一层的每个激活计算一个值但在将该值发送给下一层之前我们要使用一个激活函数对这个输出进行缩放本文将介绍不同的激活函数目录概述函数是什么梯度问题反向传播梯度消失问题梯度爆炸问题梯度爆炸的极端案例避免梯度爆炸梯度裁剪范数整流线性单元死亡优势和缺点指数线性单元渗漏型整流线性单元扩展型指数线性单元归一化的特例权重初始化高斯误差线性单元代码深度神经网络的超参数搜索扩展阅读书籍与论文概述激活函数是神经网络中一个至关重要的部分在这篇长文中我将全面介绍六种不同的激活函数并阐述它们各自的优缺点我会给出激活函数的方程和微分方程还会给出它们的图示本文的目标是以简单的术语解释这些方程以及图我会介绍梯度消失和爆炸问题对于后者我将按照提出的那个很赞的示例来解释梯度爆炸的原因最后我还会提供一些代码让你可以自己在中运行我会在数据集上进行一些小型代码实验为每个激活函数都获得一张损失和准确度图函数是什么函数是一个函数意思就是说不管输入是什么得到的输出都在到之间也就是说你输入的每个神经元节点或激活都会被缩放为一个介于到之间的值函数图示这样的函数常被称为非线性函数因为我们不能用线性的项来描述它很多激活函数都是非线性或者线性和非线性的组合有可能函数的一部分是线性的但这种情况很少见这基本上没什么问题但值恰好为或的时候除外有时候确实会发生这种情况为什么这会有问题这个问题与反向传播有关有关反向传播的介绍请参阅我的前一篇文章在反向传播中我们要计算每个权重的梯度即针对每个权重的小更新这样做的目的是优化整个网络中激活值的输出使其能在输出层得到更好的结果进而实现对成本函数的优化在反向传播过程中我们必须计算每个权重影响成本函数的比例具体做法是计算成本函数相对于每个权重的偏导数假设我们不定义单个的权重而是将最后一层中的所有权重定义为则它们的导数为注意当求偏导数时我们要找到的方程然后仅微分其余部分保持不变我们用撇号来表示任意函数的导数当计算中间项的偏导数时我们有则函数的导数就为当我们向这个函数输入一个很大的值正或负时我们得到几乎为的值也就是说当我们输入时我们可能得到一个接近于的值函数的导数图示当是一个很大的值正或负时我们本质上就是用一个几乎为的值来乘这个偏导数的其余部分如果有太多的权重都有这样很大的值那么我们根本就没法得到可以调整权重的网络这可是个大问题如果我们不调整这些权重那么网络就只有细微的更新这样算法就不能随时间给网络带来多少改善对于针对一个权重的偏导数的每个计算我们都将其放入一个梯度向量中而且我们将使用这个梯度向量来更新神经网络可以想象如果该梯度向量的所有值都接近那么我们根本就无法真正更新任何东西这里描述的就是梯度消失问题这个问题使得函数在神经网络中并不实用我们应该使用后面介绍的其它激活函数梯度问题梯度消失问题我的前一篇文章说过如果我们想更新特定的权重则更新规则为但如果偏导数很小如同消失了一般又该如何呢这时我们就遇到了梯度消失问题其中许多权重和偏置只能收到非常小的更新可以看到如果权重的值为则当出现梯度消失问题时这个值基本不会变化因为这个权重分别连接了第一层和第二层的首个神经元所以我们可以用的表示方式将其记为假设这个权重的值为给定一个学习率具体多少不重要这里使用了则新的权重为这个权重原来的值为现在更新为了很明显这是有问题的梯度很小如同消失了一样使得神经网络中的权重几乎没有更新这会导致网络中的节点离其最优值相去甚远这个问题会严重妨碍神经网络的学习人们已经观察到如果不同层的学习速度不同那么这个问题还会变得更加严重层以不同的速度学习前面几层总是会根据学习率而变得更差出自的书在这个示例中隐藏层的学习速度最快因为其成本函数仅取决于连接到隐藏层的权重变化我们看看隐藏层这里的成本函数取决于连接隐藏层与隐藏层的权重变化如果你看过了我前一篇文章中关于反向传播的内容那么你可能知道网络中更前面的层会复用后面层的计算同时如前面介绍的那样最后一层仅取决于计算偏导时出现的一组变化最终这就是个大问题了因为现在权重层的学习速度不同这意味着网络中更后面的层几乎肯定会被网络中更前面的层受到更多优化而且问题还在于反向传播算法不知道应该向哪个方向传递权重来优化成本函数梯度爆炸问题梯度爆炸问题本质上就是梯度消失问题的反面研究表明这样的问题是可能出现的这时权重处于爆炸状态即它们的值快速增长我们将遵照以下示例来进行说明注意这个示例也可用于展示梯度消失问题而我是从更概念的角度选择了它以便更轻松地解释本质上讲当时我们可能遇到梯度消失问题当时我们可能遇到梯度爆炸问题但是当一个层遇到这个问题时必然有更多权重满足梯度消失或爆炸的条件我们从一个简单网络开始这个网络有少量权重偏置和激活而且每一层也只有一个节点这个网络很简单权重表示为偏置为成本函数为节点神经元或激活表示为圆圈使用了物理学上的常用表示方式来描述某个值中的变化这不同于梯度符号举个例子描述的是第个偏置的值变化我前一篇文章的核心是我们要衡量与成本函数有关的权重和偏置的变化率先不考虑层我们看看一个特定的偏置即第一个偏置然后我们通过下式衡量变化率下面式子的论据和上面的偏导一样即我们如何通过偏置的变化率来衡量成本函数的变化率正如刚才介绍的那样使用来描述变化因此我们可以说这个偏导能大致通过来替代权重和偏置的变化可以进行如下可视化动图出自视频地址我们先从网络的起点开始计算第一个偏置中的变化将如何影响网络因为我们知道在上一篇文章中第一个偏置会馈入第一个激活我们就从这里开始我们先回顾一下这个等式如果改变我们将这个改变量表示为因此我们注意到当改变时激活也会改变我们通常将其表示为因此我们左边有偏导的表达式这是中与相关的变化但我们开始替换左边的项先用的替换上式表示当变化时激活值中存在某个变化我们将这个变化描述为我们将变化看作是与激活值中的变化加上变化近似一样这里我们跳过了一步但本质上讲我们只是计算了偏导数并用偏导的结果替代了分数部分的变化导致的变化所描述的变化现在会导致下一层的输入出现变化如果这看起来很奇怪或者你还不信服我建议你阅读我的前一篇文章表示方式和前面一样我们将下一个变化记为我们又要再次经历前面的过程只是这次要得到的是中的变化我们可以使用下式替代我们只计算这个式子希望你清楚地明白到这一步的过程这与计算的过程一样这个过程会不断重复直到我们计算完整个网络通过替换值我们得到一个最终函数其计算的是成本函数中与整个网络即所有权重偏置和激活相关的变化基于此我们再计算得到我们需要的最终式梯度爆炸的极端案例据此如果所有权重都很大即如果很多权重的值大于我们就会开始乘以较大的值举个例子所有权重都有一些非常高的值比如而我们得到一些在到之间函数导数的随机输出最后一个偏导为可以合理地相信这会远大于但为了方便示例展示我们将其设为使用这个更新规则如果我们假设之前等于而学习率等于尽管这是一个极端案例但你懂我的意思权重和偏置的值可能会爆发式地增大进而导致整个网络爆炸现在花点时间想想网络的权重和偏置以及激活的其它部分爆炸式地更新它们的值这就是我们所说的梯度爆炸问题很显然这样的网络学不到什么东西因此这会完全毁掉你想要解决的任务避免梯度爆炸梯度裁剪规范解决梯度爆炸问题的基本思路就是为其设定一个规则这部分我不会深入进行数学解释但我会给出这个过程的步骤选取一个阈值如果梯度超过这个值则使用梯度裁剪或梯度规范定义是否使用梯度裁剪或规范如果使用梯度裁剪你就指定一个阈值比如如果这个梯度值超过或则要么通过梯度规范化将其缩放到阈值范围内要么就将其裁剪到阈值范围内但是要注意这些梯度方法都不能避免梯度消失问题所以我们还将进一步探索解决这个问题的更多方法通常而言如果你在使用循环神经网络架构比如或那么你就需要这些方法因为这种架构常出现梯度爆炸的情况整流线性单元整流线性单元是我们解决梯度消失问题的方法但这是否会导致其它问题呢请往下看的公式如下公式表明如果输入小于则令输出等于如果输入大于则令输出等于输入尽管我们没法用大多数工具绘制其图形但你可以这样用图解释值小于零的一切都映射为的值但值大于零的一切都映射为它本身也就是说如果我们输入我们得到激活函数图示这很好但这与梯度消失问题有什么关系首先我们必须得到其微分方程其意思是如果输入大于则输出等于如果输入小于或等于则输出变为用下图表示已微分的现在我们得到了答案当使用激活函数时我们不会得到非常小的值比如前面函数的相反它要么是导致某些梯度不返回任何东西要么是但这又催生出另一个问题死亡问题如果在计算梯度时有太多值都低于会怎样呢我们会得到相当多不会更新的权重和偏置因为其更新的量为要了解这个过程的实际表现我们反向地看看前面梯度爆炸的示例我们在这个等式中将记为我们只需要将每个替换成现在假如说这个微分后的的一个随机输入小于则这个函数会导致偏置死亡假设是反过来当我们得到时与其它值相乘自然也只能得到这会导致这个偏置死亡我们知道一个偏置的新值是该偏置减去学习率减去梯度这意味着我们得到的更新为死亡优势和缺点当我们将函数引入神经网络时我们也引入了很大的稀疏性那么稀疏性这个术语究竟是什么意思稀疏数量少通常分散在很大的区域在神经网络中这意味着激活的矩阵含有许多这种稀疏性能让我们得到什么当某个比例比如的激活饱和时我们就称这个神经网络是稀疏的这能提升时间和空间复杂度方面的效率常数值通常所需空间更少计算成本也更低等人发现这种分量实际上能让神经网络表现更好而且还有前面提到的时间和空间方面的效率论文地址优点相比于由于稀疏性时间和空间复杂度更低不涉及成本更高的指数运算能避免梯度消失问题缺点引入了死亡问题即网络的大部分分量都永远不会更新但这有时候也是一个优势不能避免梯度爆炸问题指数线性单元指数线性单元激活函数解决了的一些问题同时也保留了一些好的方面这种激活函数要选取一个值常见的取值是在到之间如果你数学不好的公式看起来会有些难以理解我解释一下如果你输入的值大于则结果与一样即值等于值但如果输入的值小于则我们会得到一个稍微小于的值所得到的值取决于输入的值但还要兼顾参数你可以根据需要来调整这个参数更进一步我们引入了指数运算因此的计算成本比高下面绘出了值为的函数的图激活函数图示上图很直观我们应该还能很好地应对梯度消失问题因为输入值没有映射到非常小的输出值但的导数又如何呢这同样也很重要看起来很简单如果输入大于则值输出为如果输入小于或等于则输出是函数未微分加上值可绘出图为微分的激活函数你可能已经注意到这里成功避开了死亡问题同时仍保有激活函数的一些计算速度增益也就是说网络中仍还有一些死亡的分量优点能避免死亡问题能得到负值输出这能帮助网络向正确的方向推动权重和偏置变化在计算梯度时能得到激活而不是让它们等于缺点由于包含指数运算所以计算时间更长无法避免梯度爆炸问题神经网络不学习值渗漏型整流线性单元激活函数渗漏型整流线性单元激活函数也有一个值通常取值在到之间激活函数很常用但相比于它也有一些缺陷但也比具有一些优势的数学形式如下因此如果输入大于则输出为如果输入小于或等于则输出为乘以输入这意味着能够解决死亡问题因为梯度的值不再被限定为另外这个函数也能避免梯度消失问题尽管梯度爆炸的问题依然存在但后面的代码部分会介绍如何解决下面给出了的图示其中假设值为图示和在公式中看到的一样如果值大于则任意值都映射为同样的值但如果值小于则会多一个系数也就是说如果输入值为则映射的输出值为因为函数是两个线性部分组合起来的所以它的导数很简单第一部分线性是当大于时输出为而当输入小于时输出就为值这里我们选择的是微分的图示从上图中也能明显地看出来输入大于或小于微分的各为一个常量优点类似也能避免死亡问题因为其在计算导数时允许较小的梯度由于不包含指数运算所以计算速度比快缺点无法避免梯度爆炸问题神经网络不学习值在微分时两部分都是线性的而的一部分是线性的一部分是非线性的扩展型指数线性单元激活函数扩展型指数线性单元激活函数比较新介绍它的论文包含长达页的附录包括定理和证明等当实际应用这个激活函数时必须使用进行权重初始化如果希望应用则应当使用后面的代码部分会更详细地介绍论文作者已经计算出了公式的两个值和如下所示可以看到它们的小数点后还有很多位这是为了绝对精度而且它们是预先确定的也就是说我们不必担心如何为这个激活函数选取合适的值说实话这个公式看起来和其它公式或多或少有些类似所有新的激活函数看起来就像是其它已有的激活函数的组合的公式如下也就是说如果输入值大于则输出值为乘以如果输入值小于则会得到一个奇异函数它随增大而增大并趋近于为时的值本质上看当小于时先用乘以值的指数再减去然后乘以值函数图示的特例激活能够对神经网络进行自归一化这是什么意思首先我们先看看什么是归一化简单来说归一化首先是减去均值然后除以标准差因此经过归一化之后网络的组件权重偏置和激活的均值为标准差为而这正是激活函数的输出值均值为且标准差为又如何呢在初始化函数为的假设下网络参数会被初始化一个正态分布或高斯分布然后在的情况下网络会在论文中描述的范围内完全地归一化本质上看当乘或加这样的网络分量时网络仍被视为符合高斯分布我们就称之为归一化反过来这又意味着整个网络及其最后一层的输出也是归一化的均值为且标准差为的正态分布看起来是怎样的的输出是归一化的这可称为内部归一化因此事实上其所有输出都是均值为且标准差为这不同于外部归一化会用到批归一化或其它方法很好也就是说所有分量都会被归一化但这是如何做到的简单解释一下当输入小于时方差减小当输入大于时方差增大而标准差是方差的平方根这样我们就使得标准差为我们通过梯度得到零均值我们需要一些正值和负值才能让均值为我的上一篇文章介绍过梯度可以调整神经网络的权重和偏置因此我们需要这些梯度输出一些负值和正值这样才能控制住均值均值和方差的主要作用是使我们有某个域让我们总是能将均值和方差映射到预定义的区间内这些区间定义如下符号表示均值和方差在这些预定义的区间之内反过来这又能避免网络出现梯度消失和爆炸问题下面引述一段论文的解释说明了他们得到这个激活函数的方式我认为这很重要允许构建一个映射其性质能够实现自归一化神经网络不能通过扩展型修正线性单元单元单元和实现这个激活函数需要有负值和正值以便控制均值饱和区域导数趋近于零以便抑制更低层中较大的方差大于的斜率以便在更低层中的方差过小时增大方差连续曲线后者能确保一个固定点其中方差抑制可通过方差增大来获得均衡我们能通过乘上指数线性单元来满足激活函数的这些性质而且能够确保正值净输入的斜率大于我们再看看的微分函数很好不太复杂我们可以简单地解释一下如果大于则输出值为如果小于则输出为乘以的指数再乘其图形如下所示看起来很特别微分的函数注意函数也需要进行权重初始化而且如果你想使用你也必须使用名为的特殊版本优点内部归一化的速度比外部归一化快这意味着网络能更快收敛不可能出现梯度消失或爆炸问题见论文附录的定理和缺点这个激活函数相对较新需要更多论文比较性地探索其在和等架构中应用这里有一篇使用的论文高斯误差线性单元激活函数在最近的模型谷歌的和的中得到了应用的论文来自年但直到最近才引起关注这种激活函数的形式为看得出来这就是某些函数比如双曲正切函数与近似数值的组合没什么过多可说的有意思的是这个函数的图形激活函数可以看出当大于时输出为但到的区间除外这时曲线更偏向于轴我没能找到该函数的导数所以我使用了来微分这个函数结果如下和前面一样这也是双曲函数的另一种组合形式但它的图形看起来很有意思微分的激活函数优点似乎是领域的当前最佳尤其在模型中表现最好能避免梯度消失问题缺点尽管是年提出的但在实际应用中还是一个相当新颖的激活函数用于深度神经网络的代码假如说你想要尝试所有这些激活函数以便了解哪种最适合你该怎么做通常我们会执行超参数优化这可以使用的函数实现但是我们想要进行比较所以我们的想法是选取一些超参数并让它们保持恒定同时修改激活函数说明一下我这里要做的事情使用本文提及的激活函数训练同样的神经网络模型使用每个激活函数的历史记录绘制损失和准确度随的变化图本代码也发布在了上并且支持以便你能够快速运行地址我更偏好使用的高级所以这会用来完成首先导入我们所需的一切注意这里使用了个库现在加载我们运行实验所需的数据集这里选择了数据集我们可以直接从导入它很好但我们想对数据进行一些预处理比如归一化我们需要通过很多函数来做这件事主要是调整图像大小并除以最大的值最后我们通过对数据进行编码现在我们已经完成了数据预处理可以构建模型以及定义运行所需的参数了首先从卷积神经网络模型本身开始激活函数是一个特殊情况我们需要使用核初始化器和特殊形式的其它一切都保持常规设定使用函数有个小问题中目前还没有这个函数幸好我们能轻松地向添加新的激活函数现在我们可以使用数组中定义的不同激活函数训练模型了我们会在每个激活函数上运行一个简单的循环并将结果添加到一个数组基于此我们可以为每个激活函数绘制从得到的历史图然后看看损失和准确度结果的变化情况现在我们可以为数据绘图了我用写了一小段代码这会得到如下图表扩展阅读下面是四本写得很赞的书作者作者作者作者下面是本文讨论过的重要论文论文论文论文论文',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-04-24 21:06:32',
+  postMainColor: '',
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#18171d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f7f9fe')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+          const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+          const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+          const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+          if (t === undefined) {
+            if (isLightMode) activateLightMode()
+            else if (isDarkMode) activateDarkMode()
+            else if (isNotSpecified || hasNoSupport) {
+              const now = new Date()
+              const hour = now.getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addListener(e => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else if (t === 'light') activateLightMode()
+          else activateDarkMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 7.0.0"></head><body data-type="anzhiyu"><div id="web_bg"></div><div id="an_music_bg"></div><div id="loading-box" onclick="document.getElementById(&quot;loading-box&quot;).classList.add(&quot;loaded&quot;)"><div class="loading-bg"><img class="loading-img nolazyload" alt="加载头像" src="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/head.jpg"/><div class="loading-image-dot"></div></div></div><script>const preloader = {
+  endLoading: () => {
+    document.getElementById('loading-box').classList.add("loaded");
+  },
+  initLoading: () => {
+    document.getElementById('loading-box').classList.remove("loaded")
+  }
+}
+window.addEventListener('load',()=> { preloader.endLoading() })
+setTimeout(function(){preloader.endLoading();},10000)
+
+if (true) {
+  document.addEventListener('pjax:send', () => { preloader.initLoading() })
+  document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+}</script><link rel="stylesheet" href="https://cdn.cbd.int/anzhiyu-theme-static@1.1.10/progress_bar/progress_bar.css"/><script async="async" src="https://cdn.cbd.int/pace-js@1.2.4/pace.min.js" data-pace-options="{ &quot;restartOnRequestAfter&quot;:false,&quot;eventLag&quot;:false}"></script><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><div id="nav-group"><span id="blog_name"><a id="site-name" href="/" accesskey="h"><div class="title">foresta</div><i class="anzhiyufont anzhiyu-icon-house-chimney"></i></a></span><div class="mask-name-container"><div id="name-container"><a id="page-name" href="javascript:anzhiyu.scrollToDest(0, 500)">PAGE_NAME</a></div></div><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 文章</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/archives/"><i class="anzhiyufont anzhiyu-icon-box-archive faa-tada" style="font-size: 0.9em;"></i><span> 隧道</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/categories/"><i class="anzhiyufont anzhiyu-icon-shapes faa-tada" style="font-size: 0.9em;"></i><span> 分类</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/tags/"><i class="anzhiyufont anzhiyu-icon-tags faa-tada" style="font-size: 0.9em;"></i><span> 标签</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 友链</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/link/"><i class="anzhiyufont anzhiyu-icon-link faa-tada" style="font-size: 0.9em;"></i><span> 友人帐</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/comments/"><i class="anzhiyufont anzhiyu-icon-envelope faa-tada" style="font-size: 0.9em;"></i><span> 留言板</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 我的</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/music/"><i class="anzhiyufont anzhiyu-icon-music faa-tada" style="font-size: 0.9em;"></i><span> 音乐</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/album/"><i class="anzhiyufont anzhiyu-icon-images faa-tada" style="font-size: 0.9em;"></i><span> 相册</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/essay/"><i class="anzhiyufont anzhiyu-icon-lightbulb faa-tada" style="font-size: 0.9em;"></i><span> 即刻emo</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 关于</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/about/"><i class="anzhiyufont anzhiyu-icon-paper-plane faa-tada" style="font-size: 0.9em;"></i><span> 关于本人</span></a></li></ul></div></div></div><div id="nav-right"><div class="nav-button" id="randomPost_button"><a class="site-page" onclick="toRandomPost()" title="随机前往一个文章" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-dice"></i></a></div><div class="nav-button" id="search-button"><a class="site-page social-icon search" href="javascript:void(0);" title="搜索🔍" accesskey="s"><i class="anzhiyufont anzhiyu-icon-magnifying-glass"></i><span> 搜索</span></a></div><input id="center-console" type="checkbox"/><label class="widget" for="center-console" title="中控台" onclick="anzhiyu.switchConsole();"><i class="left"></i><i class="widget center"></i><i class="widget right"></i></label><div id="console"><div class="console-card-group-reward"><ul class="reward-all console-card"><li class="reward-item"><a href="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/wechat.jpg" target="_blank"><img class="post-qr-code-img" alt="微信" src="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/wechat.jpg"/></a><div class="post-qr-code-desc">微信</div></li><li class="reward-item"><a href="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/alipay.jpg" target="_blank"><img class="post-qr-code-img" alt="支付宝" src="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/alipay.jpg"/></a><div class="post-qr-code-desc">支付宝</div></li></ul></div><div class="console-card-group"><div class="console-card-group-left"><div class="console-card" id="card-newest-comments"><div class="card-content"><div class="author-content-item-tips">互动</div><span class="author-content-item-title"> 最新评论</span></div><div class="aside-list"><span>正在加载中...</span></div></div></div><div class="console-card-group-right"><div class="console-card tags"><div class="card-content"><div class="author-content-item-tips">兴趣点</div><span class="author-content-item-title">寻找你感兴趣的领域</span><div class="card-tags"><div class="item-headline"></div><div class="card-tag-cloud"><a href="/tags/Activation/" style="font-size: 1.05rem;">Activation<sup>1</sup></a><a href="/tags/Attention/" style="font-size: 1.05rem;">Attention<sup>2</sup></a><a href="/tags/Binary/" style="font-size: 1.05rem;">Binary<sup>1</sup></a><a href="/tags/C-C/" style="font-size: 1.05rem;">C/C++<sup>2</sup></a><a href="/tags/CNN/" style="font-size: 1.05rem;">CNN<sup>2</sup></a><a href="/tags/DGL/" style="font-size: 1.05rem;">DGL<sup>2</sup></a><a href="/tags/DL/" style="font-size: 1.05rem;">DL<sup>3</sup></a><a href="/tags/DL%E7%9F%A5%E8%AF%86/" style="font-size: 1.05rem;">DL知识<sup>1</sup></a><a href="/tags/DL%E7%9F%A5%E8%AF%86%E7%82%B9/" style="font-size: 1.05rem;">DL知识点<sup>4</sup></a><a href="/tags/GNN/" style="font-size: 1.05rem;">GNN<sup>10</sup></a><a href="/tags/Hexo/" style="font-size: 1.05rem;">Hexo<sup>2</sup></a><a href="/tags/LLM/" style="font-size: 1.05rem;">LLM<sup>1</sup></a><a href="/tags/LaTex/" style="font-size: 1.05rem;">LaTex<sup>1</sup></a><a href="/tags/Loss/" style="font-size: 1.05rem;">Loss<sup>1</sup></a><a href="/tags/PowerShell/" style="font-size: 1.05rem;">PowerShell<sup>1</sup></a><a href="/tags/Python/" style="font-size: 1.05rem;">Python<sup>1</sup></a><a href="/tags/Pytorch/" style="font-size: 1.05rem;">Pytorch<sup>6</sup></a><a href="/tags/Term/" style="font-size: 1.05rem;">Term<sup>1</sup></a><a href="/tags/Terms/" style="font-size: 1.05rem;">Terms<sup>1</sup></a><a href="/tags/Vulnerabilities/" style="font-size: 1.05rem;">Vulnerabilities<sup>19</sup></a><a href="/tags/conda/" style="font-size: 1.05rem;">conda<sup>1</sup></a><a href="/tags/git/" style="font-size: 1.05rem;">git<sup>1</sup></a><a href="/tags/overleaf/" style="font-size: 1.05rem;">overleaf<sup>2</sup></a><a href="/tags/pip/" style="font-size: 1.05rem;">pip<sup>1</sup></a><a href="/tags/sci%E6%8A%95%E7%A8%BF/" style="font-size: 1.05rem;">sci投稿<sup>1</sup></a><a href="/tags/tensor/" style="font-size: 1.05rem;">tensor<sup>2</sup></a><a href="/tags/tree-sitter/" style="font-size: 1.05rem;">tree-sitter<sup>1</sup></a><a href="/tags/%E4%BB%A3%E7%A0%81%E8%A1%8C%E7%BA%A7%E6%A3%80%E6%B5%8B/" style="font-size: 1.05rem;">代码行级检测<sup>1</sup></a><a href="/tags/%E5%9F%BA%E6%9C%AC%E6%9C%AF%E8%AF%AD/" style="font-size: 1.05rem;">基本术语<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0%E7%8E%87/" style="font-size: 1.05rem;">学习率<sup>1</sup></a><a href="/tags/%E5%AE%A1%E7%A8%BF/" style="font-size: 1.05rem;">审稿<sup>1</sup></a><a href="/tags/%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/" style="font-size: 1.05rem;">漏洞分析<sup>1</sup></a><a href="/tags/%E7%8E%AF%E5%A2%83/" style="font-size: 1.05rem;">环境<sup>2</sup></a><a href="/tags/%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90/" style="font-size: 1.05rem;">软件分析<sup>5</sup></a><a href="/tags/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8/" style="font-size: 1.05rem;">软件安全<sup>23</sup></a><a href="/tags/%E8%BF%87%E7%A8%8B%E9%97%B4%E5%88%86%E6%9E%90/" style="font-size: 1.05rem;">过程间分析<sup>1</sup></a><a href="/tags/%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90/" style="font-size: 1.05rem;">静态分析<sup>2</sup></a></div></div><hr/></div></div><div class="console-card history"><div class="item-headline"><i class="anzhiyufont anzhiyu-icon-box-archiv"></i><span>文章</span></div><div class="card-archives"><div class="item-headline"><i class="anzhiyufont anzhiyu-icon-archive"></i><span>归档</span></div><ul class="card-archive-list"><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2024/04/"><span class="card-archive-list-date">四月 2024</span><div class="card-archive-list-count-group"><span class="card-archive-list-count">1</span><span>篇</span></div></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2023/12/"><span class="card-archive-list-date">十二月 2023</span><div class="card-archive-list-count-group"><span class="card-archive-list-count">49</span><span>篇</span></div></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2023/10/"><span class="card-archive-list-date">十月 2023</span><div class="card-archive-list-count-group"><span class="card-archive-list-count">19</span><span>篇</span></div></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2022/12/"><span class="card-archive-list-date">十二月 2022</span><div class="card-archive-list-count-group"><span class="card-archive-list-count">8</span><span>篇</span></div></a></li></ul></div><hr/></div></div></div><div class="button-group"><div class="console-btn-item"><a class="darkmode_switchbutton" title="显示模式切换" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-moon"></i></a></div><div class="console-btn-item" id="consoleHideAside" onclick="anzhiyu.hideAsideBtn()" title="边栏显示控制"><a class="asideSwitch"><i class="anzhiyufont anzhiyu-icon-arrows-left-right"></i></a></div><div class="console-btn-item" id="consoleMusic" onclick="anzhiyu.musicToggle()" title="音乐开关"><a class="music-switch"><i class="anzhiyufont anzhiyu-icon-music"></i></a></div></div><div class="console-mask" onclick="anzhiyu.hideConsole()" href="javascript:void(0);"></div></div><div class="nav-button" id="nav-totop"><a class="totopbtn" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-arrow-up"></i><span id="percent" onclick="anzhiyu.scrollToDest(0,500)">0</span></a></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);" title="切换"><i class="anzhiyufont anzhiyu-icon-bars"></i></a></div></div></div></nav><div id="post-info"><div id="post-firstinfo"><div class="meta-firstline"><a class="post-meta-original">原创</a><span class="post-meta-categories"><span class="post-meta-separator"></span><i class="anzhiyufont anzhiyu-icon-inbox post-meta-icon"></i><a class="post-meta-categories" href="/categories/Deep-Learning/" itemprop="url">Deep Learning</a></span><span class="article-meta tags"><a class="article-meta__tags" href="/tags/Activation/" tabindex="-1" itemprop="url"> <span> <i class="anzhiyufont anzhiyu-icon-hashtag"></i>Activation</span></a></span></div></div><h1 class="post-title" itemprop="name headline">激活函数</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="anzhiyufont anzhiyu-icon-calendar-days post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" itemprop="dateCreated datePublished" datetime="2023-10-10T07:46:15.000Z" title="发表于 2023-10-10 15:46:15">2023-10-10</time><span class="post-meta-separator"></span><i class="anzhiyufont anzhiyu-icon-history post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" itemprop="dateCreated datePublished" datetime="2024-04-24T13:06:32.088Z" title="更新于 2024-04-24 21:06:32">2024-04-24</time></span></div><div class="meta-secondline"><span class="post-meta-separator"></span><span class="post-meta-pv-cv" id="" data-flag-title="激活函数"><i class="anzhiyufont anzhiyu-icon-fw-eye post-meta-icon"></i><span class="post-meta-label" title="阅读量">阅读量:</span><span id="busuanzi_value_page_pv"><i class="anzhiyufont anzhiyu-icon-spinner anzhiyu-spin"></i></span></span><span class="post-meta-separator">       </span><span class="post-meta-position" title="作者IP属地为河北秦皇岛"><i class="anzhiyufont anzhiyu-icon-location-dot"></i>河北秦皇岛</span><span class="post-meta-separator"></span><span class="post-meta-commentcount"><i class="anzhiyufont anzhiyu-icon-comments post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/2023/10/10/AILearning/DL/%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0_/#post-comment" tabindex="-1"><span id="twikoo-count"><i class="anzhiyufont anzhiyu-icon-spinner anzhiyu-spin"></i></span></a></span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section><div id="post-top-cover"><img class="nolazyload" id="post-top-bg" src="/img/home.jpg"></div></header><main id="blog-container"><div class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container" itemscope itemtype="https://foresta-yang.github.io/2023/10/10/AILearning/DL/%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0_/"><header><a class="post-meta-categories" href="/categories/Deep-Learning/" itemprop="url">Deep Learning</a><a href="/tags/Activation/" tabindex="-1" itemprop="url">Activation</a><h1 id="CrawlerTitle" itemprop="name headline">激活函数</h1><span itemprop="author" itemscope itemtype="http://schema.org/Person">foresta.yang</span><time itemprop="dateCreated datePublished" datetime="2023-10-10T07:46:15.000Z" title="发表于 2023-10-10 15:46:15">2023-10-10</time><time itemprop="dateCreated datePublished" datetime="2024-04-24T13:06:32.088Z" title="更新于 2024-04-24 21:06:32">2024-04-24</time></header><blockquote>
+<p>激活函数对神经网络的重要性自不必多言，机器之心也曾发布过一些相关的介绍文章，比如《<a href="https://link.zhihu.com/?target=http%3A//mp.weixin.qq.com/s%3F__biz%3DMzA3MzI4MjgzMw%3D%3D%26mid%3D2650732724%26idx%3D4%26sn%3D5230b8bb1811cda38ab97afb417d1613%26chksm%3D871b3ccab06cb5dcdf0bdfadcc7ae85d8ae95588bed0b884a55ba50b76d541771104675fbb3e%26scene%3D21%23wechat_redirect">一文概览深度学习中的激活函数</a>》。本文同样关注的是激活函数。来自丹麦技术大学的 Casper Hansen 通过公式、图表和代码实验介绍了 sigmoid、ReLU、ELU 以及更新的 Leaky ReLU、SELU、GELU 这些激活函数，并比较了它们的优势和短板。</p>
+</blockquote>
+<p>选自mlfromscratch，作者：Casper Hansen，机器之心编译，参与：熊猫、杜伟。</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036753.webp" alt="动图" /></p>
+<p>在计算每一层的激活值时，我们要用到激活函数，之后才能确定这些激活值究竟是多少。根据每一层前面的激活、权重和偏置，我们要为下一层的每个激活计算一个值。但在将该值发送给下一层之前，我们要使用一个激活函数对这个输出进行缩放。本文将介绍不同的激活函数。</p>
+<p><strong>目录</strong></p>
+<p>1.概述</p>
+<p>2.sigmoid 函数是什么？</p>
+<p>3.梯度问题：反向传播</p>
+<ul>
+<li>梯度消失问题</li>
+<li>梯度爆炸问题</li>
+<li>梯度爆炸的极端案例</li>
+<li>避免梯度爆炸：梯度裁剪/范数</li>
+</ul>
+<p>4.整流线性单元（ReLU）</p>
+<ul>
+<li>死亡 ReLU：优势和缺点</li>
+</ul>
+<p>5.指数线性单元（ELU）</p>
+<p>6.渗漏型整流线性单元（Leaky ReLU）</p>
+<p>7.扩展型指数线性单元（SELU）</p>
+<ul>
+<li>SELU：归一化的特例</li>
+<li>权重初始化+dropout</li>
+</ul>
+<p>8.高斯误差线性单元（GELU）</p>
+<p>9.代码：深度神经网络的超参数搜索</p>
+<p>10.扩展阅读：书籍与论文</p>
+<h2 id="概述"><a class="markdownIt-Anchor" href="#概述"></a> <strong>概述</strong></h2>
+<p>激活函数是神经网络中一个至关重要的部分。在这篇长文中，我将全面介绍六种不同的激活函数，并阐述它们各自的优缺点。我会给出激活函数的方程和微分方程，还会给出它们的图示。本文的目标是以简单的术语解释这些方程以及图。我会介绍梯度消失和爆炸问题；对于后者，我将按照 Nielsen 提出的那个很赞的示例来解释梯度爆炸的原因。最后，我还会提供一些代码让你可以自己在 Jupyter Notebook 中运行。</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036751.jpg" alt="动图封面" /></p>
+<p>我会在 MNIST 数据集上进行一些小型代码实验，为每个激活函数都获得一张损失和准确度图。</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036756.jpg" alt="img" /></p>
+<h2 id="sigmoid-函数是什么"><a class="markdownIt-Anchor" href="#sigmoid-函数是什么"></a> <strong>sigmoid 函数是什么？</strong></h2>
+<p>sigmoid 函数是一个 logistic 函数，意思就是说：不管输入是什么，得到的输出都在 0 到 1 之间。也就是说，你输入的每个神经元、节点或激活都会被缩放为一个介于 0 到 1 之间的值。</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036760.jpg" alt="img" /></p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036761.jpg" alt="img" />sigmoid 函数图示。</p>
+<p>sigmoid 这样的函数常被称为非线性函数，因为我们不能用线性的项来描述它。很多激活函数都是非线性或者线性和非线性的组合（有可能函数的一部分是线性的，但这种情况很少见）。这基本上没什么问题，但值恰好为 0 或 1 的时候除外（有时候确实会发生这种情况）。为什么这会有问题？这个问题与反向传播有关（有关反向传播的介绍请参阅我的前一篇文章）。在反向传播中，我们要计算每个权重的梯度，即针对每个权重的小更新。这样做的目的是优化整个网络中激活值的输出，使其能在输出层得到更好的结果，进而实现对成本函数的优化。在反向传播过程中，我们必须计算每个权重影响成本函数（cost function）的比例，具体做法是计算成本函数相对于每个权重的偏导数。假设我们不定义单个的权重，而是将最后一层 L 中的所有权重 w 定义为 w^L，则它们的导数为:</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036764.jpg" alt="img" /></p>
+<p>注意，当求偏导数时，我们要找到 ∂a^L 的方程，然后仅微分 ∂z^L，其余部分保持不变。我们用撇号「’」来表示任意函数的导数。当计算中间项 ∂a<sup>L/∂z</sup>L 的偏导数时，我们有：</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036048.jpg" alt="img" /></p>
+<p>则 sigmoid 函数的导数就为：</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036059.jpg" alt="img" /></p>
+<p>当我们向这个 sigmoid 函数输入一个很大的 x 值（正或负）时，我们得到几乎为 0 的 y 值——也就是说，当我们输入 w×a+b 时，我们可能得到一个接近于 0 的值。</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036074.jpg" alt="img" />sigmoid 函数的导数图示。</p>
+<p>当 x 是一个很大的值（正或负）时，我们本质上就是用一个几乎为 0 的值来乘这个偏导数的其余部分。</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036086.jpg" alt="img" /></p>
+<p>如果有太多的权重都有这样很大的值，那么我们根本就没法得到可以调整权重的网络，这可是个大问题。如果我们不调整这些权重，那么网络就只有细微的更新，这样算法就不能随时间给网络带来多少改善。对于针对一个权重的偏导数的每个计算，我们都将其放入一个梯度向量中，而且我们将使用这个梯度向量来更新神经网络。可以想象，如果该梯度向量的所有值都接近 0，那么我们根本就无法真正更新任何东西。</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036436.png" alt="img" /></p>
+<p>这里描述的就是梯度消失问题。这个问题使得 sigmoid 函数在神经网络中并不实用，我们应该使用后面介绍的其它激活函数。</p>
+<h2 id="梯度问题"><a class="markdownIt-Anchor" href="#梯度问题"></a> <strong>梯度问题</strong></h2>
+<p><strong>梯度消失问题</strong></p>
+<p>我的前一篇文章说过，如果我们想更新特定的权重，则更新规则为：</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036602.png" alt="img" /></p>
+<p>但如果偏导数 ∂C/∂w^(L) 很小，如同消失了一般，又该如何呢？这时我们就遇到了梯度消失问题，其中许多权重和偏置只能收到非常小的更新。</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036999.jpg" alt="img" /></p>
+<p>可以看到，如果权重的值为 0.2，则当出现梯度消失问题时，这个值基本不会变化。因为这个权重分别连接了第一层和第二层的首个神经元，所以我们可以用</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036024.png" alt="img" /></p>
+<p>的表示方式将其记为</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036037.png" alt="img" /></p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036050.png" alt="img" /></p>
+<p>假设这个权重的值为 0.2，给定一个学习率（具体多少不重要，这里使用了 0.5），则新的权重为：</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036060.png" alt="img" /></p>
+<p>这个权重原来的值为 0.2，现在更新为了 0.199999978。很明显，这是有问题的：梯度很小，如同消失了一样，使得神经网络中的权重几乎没有更新。这会导致网络中的节点离其最优值相去甚远。这个问题会严重妨碍神经网络的学习。人们已经观察到，如果不同层的学习速度不同，那么这个问题还会变得更加严重。层以不同的速度学习，前面几层总是会根据学习率而变得更差。</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036072.jpg" alt="img" />出自 Nielsen 的书《Neural Networks and Deep Learning》。</p>
+<p>在这个示例中，隐藏层 4 的学习速度最快，因为其成本函数仅取决于连接到隐藏层 4 的权重变化。我们看看隐藏层 1；这里的成本函数取决于连接隐藏层 1 与隐藏层 2、3、4 的权重变化。如果你看过了我前一篇文章中关于反向传播的内容，那么你可能知道网络中更前面的层会复用后面层的计算。</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036517.jpg" alt="img" /></p>
+<p>同时，如前面介绍的那样，最后一层仅取决于计算偏导时出现的一组变化：</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036680.jpg" alt="img" /></p>
+<p>最终，这就是个大问题了，因为现在权重层的学习速度不同。这意味着网络中更后面的层几乎肯定会被网络中更前面的层受到更多优化。而且问题还在于反向传播算法不知道应该向哪个方向传递权重来优化成本函数。</p>
+<p><strong>梯度爆炸问题</strong></p>
+<p>梯度爆炸问题本质上就是梯度消失问题的反面。研究表明，这样的问题是可能出现的，这时权重处于「爆炸」状态，即它们的值快速增长。</p>
+<p>我们将遵照以下示例来进行说明：</p>
+<ul>
+<li><a href="https://link.zhihu.com/?target=http%3A//neuralnetworksanddeeplearning.com/chap5.html%23what">http://neuralnetworksanddeeplearning.com/chap5.html#what</a>’s_causing_the_vanishing_gradient_problem_unstable_gradients_in_deep_neural_nets</li>
+</ul>
+<p>注意，这个示例也可用于展示梯度消失问题，而我是从更概念的角度选择了它，以便更轻松地解释。本质上讲，当 0&lt;w&lt;1 时，我们可能遇到梯度消失问题；当 w&gt;1 时，我们可能遇到梯度爆炸问题。但是，当一个层遇到这个问题时，必然有更多权重满足梯度消失或爆炸的条件。我们从一个简单网络开始。这个网络有少量权重、偏置和激活，而且每一层也只有一个节点。</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036692.jpg" alt="img" /></p>
+<p>这个网络很简单。权重表示为 w_j，偏置为 b_j，成本函数为 C。节点、神经元或激活表示为圆圈。Nielsen 使用了物理学上的常用表示方式 Δ 来描述某个值中的变化（这不同于梯度符号 ∇）。举个例子，Δb_j 描述的是第 j 个偏置的值变化。</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036704.jpg" alt="img" /></p>
+<p>我前一篇文章的核心是我们要衡量与成本函数有关的权重和偏置的变化率。先不考虑层，我们看看一个特定的偏置，即第一个偏置 b_1。然后我们通过下式衡量变化率：</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036713.jpg" alt="img" /></p>
+<p>下面式子的论据和上面的偏导一样。即我们如何通过偏置的变化率来衡量成本函数的变化率？正如刚才介绍的那样，Nielsen 使用 Δ 来描述变化，因此我们可以说这个偏导能大致通过 Δ 来替代：</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036041.jpg" alt="img" /></p>
+<p>权重和偏置的变化可以进行如下可视化：</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036315.jpg" alt="动图封面" /></p>
+<p>动图出自 3blue1brown，视频地址：<a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=tIeHLnjs5U8%E3%80%82">https://www.youtube.com/watch?v=tIeHLnjs5U8。</a></p>
+<p>我们先从网络的起点开始，计算第一个偏置 b_1 中的变化将如何影响网络。因为我们知道，在上一篇文章中，第一个偏置 b_1 会馈入第一个激活 a_1，我们就从这里开始。我们先回顾一下这个等式：</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036325.jpg" alt="img" /></p>
+<p>如果 b_1 改变，我们将这个改变量表示为 Δb_1。因此，我们注意到当 b_1 改变时，激活 a_1 也会改变——我们通常将其表示为 ∂a_1/∂b_1。因此，我们左边有偏导的表达式，这是 b_1 中与 a_1 相关的变化。但我们开始替换左边的项，先用 z_1 的 sigmoid 替换 a_1：</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036336.jpg" alt="img" /></p>
+<p>上式表示当 b_1 变化时，激活值 a_1 中存在某个变化。我们将这个变化描述为 Δa_1。我们将变化 Δa_1 看作是与激活值 a_1 中的变化加上变化 Δb_1 近似一样。</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036350.jpg" alt="img" /></p>
+<p>这里我们跳过了一步，但本质上讲，我们只是计算了偏导数，并用偏导的结果替代了分数部分。</p>
+<p><strong>a_1 的变化导致 z_2 的变化</strong></p>
+<p>所描述的变化 Δa_1 现在会导致下一层的输入 z_2 出现变化。如果这看起来很奇怪或者你还不信服，我建议你阅读我的前一篇文章。</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036361.jpg" alt="img" /></p>
+<p>表示方式和前面一样，我们将下一个变化记为 Δz_2。我们又要再次经历前面的过程，只是这次要得到的是 z_2 中的变化：</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036469.jpg" alt="img" /></p>
+<p>我们可以使用下式替代 Δa_1：</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036691.jpg" alt="img" /></p>
+<p>我们只计算这个式子。希望你清楚地明白到这一步的过程——这与计算 Δa_1 的过程一样。这个过程会不断重复，直到我们计算完整个网络。通过替换 Δa_j 值，我们得到一个最终函数，其计算的是成本函数中与整个网络（即所有权重、偏置和激活）相关的变化。</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036703.png" alt="img" /></p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036719.jpg" alt="img" /></p>
+<p>基于此，我们再计算 ∂C/∂b_1，得到我们需要的最终式：</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036791.png" alt="img" /></p>
+<p><strong>梯度爆炸的极端案例</strong></p>
+<p>据此，如果所有权重 w_j 都很大，即如果很多权重的值大于 1，我们就会开始乘以较大的值。举个例子，所有权重都有一些非常高的值，比如 100，而我们得到一些在 0 到 0.25 之间、 sigmoid 函数导数的随机输出：</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036802.png" alt="img" /></p>
+<p>最后一个偏导为</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036042.png" alt="img" /></p>
+<p>，可以合理地相信这会远大于 1，但为了方便示例展示，我们将其设为 1。</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036123.jpg" alt="img" /></p>
+<p>使用这个更新规则，如果我们假设 b_1 之前等于 1.56，而学习率等于 0.5。</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036477.png" alt="img" /></p>
+<p>尽管这是一个极端案例，但你懂我的意思。权重和偏置的值可能会爆发式地增大，进而导致整个网络爆炸。</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036504.jpg" alt="img" /></p>
+<p>现在花点时间想想网络的权重和偏置以及激活的其它部分，爆炸式地更新它们的值。这就是我们所说的梯度爆炸问题。很显然，这样的网络学不到什么东西，因此这会完全毁掉你想要解决的任务。</p>
+<p><strong>避免梯度爆炸：梯度裁剪/规范</strong></p>
+<p>解决梯度爆炸问题的基本思路就是为其设定一个规则。这部分我不会深入进行数学解释，但我会给出这个过程的步骤：</p>
+<ul>
+<li>选取一个阈值——如果梯度超过这个值，则使用梯度裁剪或梯度规范；</li>
+<li>定义是否使用梯度裁剪或规范。如果使用梯度裁剪，你就指定一个阈值，比如 0.5。如果这个梯度值超过 0.5 或 -0.5，则要么通过梯度规范化将其缩放到阈值范围内，要么就将其裁剪到阈值范围内。</li>
+</ul>
+<p>但是要注意，这些梯度方法都不能避免梯度消失问题。所以我们还将进一步探索解决这个问题的更多方法。通常而言，如果你在使用循环神经网络架构（比如 LSTM 或 GRU），那么你就需要这些方法，因为这种架构常出现梯度爆炸的情况。</p>
+<h2 id="整流线性单元relu"><a class="markdownIt-Anchor" href="#整流线性单元relu"></a> <strong>整流线性单元（ReLU）</strong></h2>
+<p>整流线性单元是我们解决梯度消失问题的方法，但这是否会导致其它问题呢？请往下看。ReLU 的公式如下：</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036514.jpg" alt="img" /></p>
+<p>ReLU 公式表明：</p>
+<ul>
+<li>如果输入 x 小于 0，则令输出等于 0；</li>
+<li>如果输入 x 大于 0，则令输出等于输入。</li>
+</ul>
+<p>尽管我们没法用大多数工具绘制其图形，但你可以这样用图解释 ReLU。x 值小于零的一切都映射为 0 的 y 值，但 x 值大于零的一切都映射为它本身。也就是说，如果我们输入 x=1，我们得到 y=1。</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036525.jpg" alt="img" />ReLU 激活函数图示。</p>
+<p>这很好，但这与梯度消失问题有什么关系？首先，我们必须得到其微分方程：</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036682.jpg" alt="img" /></p>
+<p>其意思是：</p>
+<ul>
+<li>如果输入 x 大于 0，则输出等于 1；</li>
+<li>如果输入小于或等于 0，则输出变为 0。</li>
+</ul>
+<p>用下图表示：</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036752.jpg" alt="img" />已微分的 ReLU。</p>
+<p>现在我们得到了答案：当使用 ReLU 激活函数时，我们不会得到非常小的值（比如前面 sigmoid 函数的 0.0000000438）。相反，它要么是 0（导致某些梯度不返回任何东西），要么是 1。但这又催生出另一个问题：死亡 ReLU 问题。如果在计算梯度时有太多值都低于 0 会怎样呢？我们会得到相当多不会更新的权重和偏置，因为其更新的量为 0。要了解这个过程的实际表现，我们反向地看看前面梯度爆炸的示例。我们在这个等式中将 ReLU 记为 R，我们只需要将每个 sigmoid σ 替换成 R：</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036818.png" alt="img" /></p>
+<p>现在，假如说这个微分后的 ReLU 的一个随机输入 z 小于 0——则这个函数会导致偏置「死亡」。假设是 R’(z_3)=0：</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036837.png" alt="img" /></p>
+<p>反过来，当我们得到 R’(z_3)=0 时，与其它值相乘自然也只能得到 0，这会导致这个偏置死亡。我们知道一个偏置的新值是该偏置减去学习率减去梯度，这意味着我们得到的更新为 0。</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036851.jpg" alt="img" /></p>
+<p><strong>死亡 ReLU：优势和缺点</strong></p>
+<p>当我们将 ReLU 函数引入神经网络时，我们也引入了很大的稀疏性。那么稀疏性这个术语究竟是什么意思？稀疏：数量少，通常分散在很大的区域。在神经网络中，这意味着激活的矩阵含有许多 0。这种稀疏性能让我们得到什么？当某个比例（比如 50%）的激活饱和时，我们就称这个神经网络是稀疏的。这能提升时间和空间复杂度方面的效率——常数值（通常）所需空间更少，计算成本也更低。Yoshua Bengio 等人发现 ReLU 这种分量实际上能让神经网络表现更好，而且还有前面提到的时间和空间方面的效率。</p>
+<p>论文地址：<a href="https://link.zhihu.com/?target=https%3A//www.utc.fr/~bordesan/dokuwiki/_media/en/glorot10nipsworkshop.pdf">https://www.utc.fr/~bordesan/dokuwiki/_media/en/glorot10nipsworkshop.pdf</a>优点：</p>
+<ul>
+<li>相比于 sigmoid，由于稀疏性，时间和空间复杂度更低；不涉及成本更高的指数运算；</li>
+<li>能避免梯度消失问题。</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>引入了死亡 ReLU 问题，即网络的大部分分量都永远不会更新。但这有时候也是一个优势；</li>
+<li>ReLU 不能避免梯度爆炸问题。</li>
+</ul>
+<h2 id="指数线性单元elu"><a class="markdownIt-Anchor" href="#指数线性单元elu"></a> <strong>指数线性单元（ELU）</strong></h2>
+<p>指数线性单元激活函数解决了 ReLU 的一些问题，同时也保留了一些好的方面。这种激活函数要选取一个 α 值；常见的取值是在 0.1 到 0.3 之间。如果你数学不好，ELU 的公式看起来会有些难以理解：</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036859.jpg" alt="img" /></p>
+<p>我解释一下。如果你输入的 x 值大于 0，则结果与 ReLU 一样——即 y 值等于 x 值；但如果输入的 x 值小于 0，则我们会得到一个稍微小于 0 的值。所得到的 y 值取决于输入的 x 值，但还要兼顾参数 α——你可以根据需要来调整这个参数。更进一步，我们引入了指数运算 e^x，因此 ELU 的计算成本比 ReLU 高。下面绘出了 α 值为 0.2 的 ELU 函数的图：</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036996.jpg" alt="img" />ELU 激活函数图示。</p>
+<p>上图很直观，我们应该还能很好地应对梯度消失问题，因为输入值没有映射到非常小的输出值。但 ELU 的导数又如何呢？这同样也很重要。</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036030.jpg" alt="img" /></p>
+<p>看起来很简单。如果输入 x 大于 0，则 y 值输出为 1；如果输入 x 小于或等于 0，则输出是 ELU 函数（未微分）加上 α 值。可绘出图为：</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036128.jpg" alt="img" />微分的 ELU 激活函数。</p>
+<p>你可能已经注意到，这里成功避开了死亡 ReLU 问题，同时仍保有 ReLU 激活函数的一些计算速度增益——也就是说，网络中仍还有一些死亡的分量。优点：</p>
+<ul>
+<li>能避免死亡 ReLU 问题；</li>
+<li>能得到负值输出，这能帮助网络向正确的方向推动权重和偏置变化；</li>
+<li>在计算梯度时能得到激活，而不是让它们等于 0。</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>由于包含指数运算，所以计算时间更长；</li>
+<li>无法避免梯度爆炸问题；</li>
+<li>神经网络不学习 α 值。</li>
+</ul>
+<h2 id="渗漏型整流线性单元激活函数leaky-relu"><a class="markdownIt-Anchor" href="#渗漏型整流线性单元激活函数leaky-relu"></a> <strong>渗漏型整流线性单元激活函数（Leaky ReLU）</strong></h2>
+<p>渗漏型整流线性单元激活函数也有一个 α 值，通常取值在 0.1 到 0.3 之间。Leaky ReLU 激活函数很常用，但相比于 ELU 它也有一些缺陷，但也比 ReLU 具有一些优势。Leaky ReLU 的数学形式如下：</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036144.jpg" alt="img" /></p>
+<p>因此，如果输入 x 大于 0，则输出为 x；如果输入 x 小于或等于 0，则输出为 α 乘以输入。这意味着能够解决死亡 ReLU 问题，因为梯度的值不再被限定为 0——另外，这个函数也能避免梯度消失问题。尽管梯度爆炸的问题依然存在，但后面的代码部分会介绍如何解决。下面给出了 Leaky ReLU 的图示，其中假设 α 值为 0.2：</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036158.jpg" alt="img" />Leaky ReLU 图示。</p>
+<p>和在公式中看到的一样，如果 x 值大于 0，则任意 x 值都映射为同样的 y 值；但如果 x 值小于 0，则会多一个系数 0.2。也就是说，如果输入值 x 为 -5，则映射的输出值为 -1。因为 Leaky ReLU 函数是两个线性部分组合起来的，所以它的导数很简单：</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036169.jpg" alt="img" /></p>
+<p>第一部分线性是当 x 大于 0 时，输出为 1；而当输入小于 0 时，输出就为 α 值，这里我们选择的是 0.2。</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036438.jpg" alt="img" />微分的 Leaky ReLU 图示。</p>
+<p>从上图中也能明显地看出来，输入 x 大于或小于 0，微分的 Leaky ReLU 各为一个常量。优点：</p>
+<ul>
+<li>类似 ELU，Leaky ReLU 也能避免死亡 ReLU 问题，因为其在计算导数时允许较小的梯度；</li>
+<li>由于不包含指数运算，所以计算速度比 ELU 快。</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>无法避免梯度爆炸问题；</li>
+<li>神经网络不学习 α 值；</li>
+<li>在微分时，两部分都是线性的；而 ELU 的一部分是线性的，一部分是非线性的。</li>
+</ul>
+<h2 id="扩展型指数线性单元激活函数selu"><a class="markdownIt-Anchor" href="#扩展型指数线性单元激活函数selu"></a> <strong>扩展型指数线性单元激活函数（SELU）</strong></h2>
+<p>扩展型指数线性单元激活函数比较新，介绍它的论文包含长达 90 页的附录（包括定理和证明等）。当实际应用这个激活函数时，必须使用 lecun_normal 进行权重初始化。如果希望应用 dropout，则应当使用 AlphaDropout。后面的代码部分会更详细地介绍。论文作者已经计算出了公式的两个值：α 和 λ；如下所示：</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036447.jpg" alt="img" /></p>
+<p>可以看到，它们的小数点后还有很多位，这是为了绝对精度。而且它们是预先确定的，也就是说我们不必担心如何为这个激活函数选取合适的 α 值。说实话，这个公式看起来和其它公式或多或少有些类似。所有新的激活函数看起来就像是其它已有的激活函数的组合。SELU 的公式如下：</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036590.jpg" alt="img" /></p>
+<p>也就是说，如果输入值 x 大于 0，则输出值为 x 乘以 λ；如果输入值 x 小于 0，则会得到一个奇异函数——它随 x 增大而增大并趋近于 x 为 0 时的值 0.0848。本质上看，当 x 小于 0 时，先用 α 乘以 x 值的指数，再减去 α，然后乘以 λ 值。</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036619.jpg" alt="img" />SELU 函数图示。</p>
+<p><strong>SELU 的特例</strong></p>
+<p>SELU 激活能够对神经网络进行自归一化（self-normalizing）。这是什么意思？首先，我们先看看什么是归一化（normalization）。简单来说，归一化首先是减去均值，然后除以标准差。因此，经过归一化之后，网络的组件（权重、偏置和激活）的均值为 0，标准差为 1。而这正是 SELU 激活函数的输出值。均值为 0 且标准差为 1 又如何呢？在初始化函数为 lecun_normal 的假设下，网络参数会被初始化一个正态分布（或高斯分布），然后在 SELU 的情况下，网络会在论文中描述的范围内完全地归一化。本质上看，当乘或加这样的网络分量时，网络仍被视为符合高斯分布。我们就称之为归一化。反过来，这又意味着整个网络及其最后一层的输出也是归一化的。均值 μ 为 0 且标准差 σ 为 1 的正态分布看起来是怎样的？</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036633.jpg" alt="img" /></p>
+<p>SELU 的输出是归一化的，这可称为内部归一化（internal normalization），因此事实上其所有输出都是均值为 0 且标准差为 1。这不同于外部归一化（external normalization）——会用到批归一化或其它方法。很好，也就是说所有分量都会被归一化。但这是如何做到的？简单解释一下，当输入小于 0 时，方差减小；当输入大于 0 时，方差增大——而标准差是方差的平方根，这样我们就使得标准差为 1。我们通过梯度得到零均值。我们需要一些正值和负值才能让均值为 0。我的上一篇文章介绍过，梯度可以调整神经网络的权重和偏置，因此我们需要这些梯度输出一些负值和正值，这样才能控制住均值。均值 μ 和方差 ν 的主要作用是使我们有某个域 Ω，让我们总是能将均值和方差映射到预定义的区间内。这些区间定义如下：</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036662.jpg" alt="img" /></p>
+<p>∈ 符号表示均值和方差在这些预定义的区间之内。反过来，这又能避免网络出现梯度消失和爆炸问题。下面引述一段论文的解释，说明了他们得到这个激活函数的方式，我认为这很重要：</p>
+<blockquote>
+<p>SELU 允许构建一个映射 g，其性质能够实现 SNN（自归一化神经网络）。SNN 不能通过（扩展型）修正线性单元（ReLU）、sigmoid 单元、tanh 单元和 Leaky ReLU 实现。这个激活函数需要有：（1）负值和正值，以便控制均值；（2）饱和区域（导数趋近于零），以便抑制更低层中较大的方差；（3）大于 1 的斜率，以便在更低层中的方差过小时增大方差；（4）连续曲线。后者能确保一个固定点，其中方差抑制可通过方差增大来获得均衡。我们能通过乘上指数线性单元（ELU）来满足激活函数的这些性质，而且 λ&gt;1 能够确保正值净输入的斜率大于 1。</p>
+</blockquote>
+<p>我们再看看 SELU 的微分函数：</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036739.jpg" alt="img" /></p>
+<p>很好，不太复杂，我们可以简单地解释一下。如果 x 大于 0，则输出值为 λ；如果 x 小于 0，则输出为 α 乘以 x 的指数再乘 λ。其图形如下所示，看起来很特别：</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036749.jpg" alt="img" />微分的 SELU 函数。</p>
+<p>注意 SELU 函数也需要 lecun_normal 进行权重初始化；而且如果你想使用 dropout，你也必须使用名为 Alpha Dropout 的特殊版本。优点：</p>
+<ul>
+<li>内部归一化的速度比外部归一化快，这意味着网络能更快收敛；</li>
+<li>不可能出现梯度消失或爆炸问题，见 SELU 论文附录的定理 2 和 3。</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>这个激活函数相对较新——需要更多论文比较性地探索其在 CNN 和 RNN 等架构中应用。</li>
+<li>这里有一篇使用 SELU 的 CNN 论文：<a href="https://link.zhihu.com/?target=https%3A//arxiv.org/pdf/1905.01338.pdf">https://arxiv.org/pdf/1905.01338.pdf</a></li>
+</ul>
+<h2 id="gelu"><a class="markdownIt-Anchor" href="#gelu"></a> <strong>GELU</strong></h2>
+<p>高斯误差线性单元激活函数在最近的 Transformer 模型（谷歌的 BERT 和 OpenAI 的 GPT-2）中得到了应用。GELU 的论文来自 2016 年，但直到最近才引起关注。这种激活函数的形式为：</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036011.png" alt="img" /></p>
+<p>看得出来，这就是某些函数（比如双曲正切函数 tanh）与近似数值的组合。没什么过多可说的。有意思的是这个函数的图形：</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036037.jpg" alt="img" />GELU 激活函数。</p>
+<p>可以看出，当 x 大于 0 时，输出为 x；但 x=0 到 x=1 的区间除外，这时曲线更偏向于 y 轴。我没能找到该函数的导数，所以我使用了 WolframAlpha 来微分这个函数。结果如下：</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036066.png" alt="img" /></p>
+<p>和前面一样，这也是双曲函数的另一种组合形式。但它的图形看起来很有意思：</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036094.jpg" alt="img" />微分的 GELU 激活函数。</p>
+<p>优点：</p>
+<ul>
+<li>似乎是 NLP 领域的当前最佳；尤其在 Transformer 模型中表现最好；</li>
+<li>能避免梯度消失问题。</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>尽管是 2016 年提出的，但在实际应用中还是一个相当新颖的激活函数。</li>
+</ul>
+<p><strong>用于深度神经网络的代码</strong></p>
+<p>假如说你想要尝试所有这些激活函数，以便了解哪种最适合，你该怎么做？通常我们会执行超参数优化——这可以使用 scikit-learn 的 GridSearchCV 函数实现。但是我们想要进行比较，所以我们的想法是选取一些超参数并让它们保持恒定，同时修改激活函数。说明一下我这里要做的事情：</p>
+<ul>
+<li>使用本文提及的激活函数训练同样的神经网络模型；</li>
+<li>使用每个激活函数的历史记录，绘制损失和准确度随 epoch 的变化图。</li>
+</ul>
+<p>本代码也发布在了 GitHub 上，并且支持 colab，以便你能够快速运行。地址：<a href="https://link.zhihu.com/?target=https%3A//github.com/casperbh96/Activation-Functions-Search">https://github.com/casperbh96/Activation-Functions-Search</a>我更偏好使用 Keras 的高级 API，所以这会用 Keras 来完成。首先导入我们所需的一切。注意这里使用了 4 个库：tensorflow、numpy、matplotlib、 keras。</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">import tensorflow as tf</span><br><span class="line">import numpy as np</span><br><span class="line">import matplotlib.pyplot as plt</span><br><span class="line">from keras.datasets import mnist</span><br><span class="line">from keras.utils.np_utils import to_categorical</span><br><span class="line">from keras.models import Sequential</span><br><span class="line">from keras.layers import Dense, Dropout, Flatten, Conv2D, MaxPooling2D, Activation, LeakyReLU</span><br><span class="line">from keras.layers.noise import AlphaDropout</span><br><span class="line">from keras.utils.generic_utils import get_custom_objects</span><br><span class="line">from keras import backend as K</span><br><span class="line">from keras.optimizers import Adam</span><br></pre></td></tr></table></figure>
+<p>现在加载我们运行实验所需的数据集；这里选择了 MNIST 数据集。我们可以直接从 Keras 导入它。</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">(x_train, y_train), (x_test, y_test) = mnist.load_data()</span><br></pre></td></tr></table></figure>
+<p>很好，但我们想对数据进行一些预处理，比如归一化。我们需要通过很多函数来做这件事，主要是调整图像大小（.reshape）并除以最大的 RGB 值 255（/= 255）。最后，我们通过 to_categorical() 对数据进行 one-hot 编码。</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">def preprocess_mnist(x_train, y_train, x_test, y_test):</span><br><span class="line">    # Normalizing all images of 28x28 pixels</span><br><span class="line">    x_train = x_train.reshape(x_train.shape[0], 28, 28, 1)</span><br><span class="line">    x_test = x_test.reshape(x_test.shape[0], 28, 28, 1)</span><br><span class="line">    input_shape = (28, 28, 1)</span><br><span class="line"></span><br><span class="line">    # Float values for division</span><br><span class="line">    x_train = x_train.astype(&#x27;float32&#x27;)</span><br><span class="line">    x_test = x_test.astype(&#x27;float32&#x27;)</span><br><span class="line"></span><br><span class="line">    # Normalizing the RGB codes by dividing it to the max RGB value</span><br><span class="line">    x_train /= 255</span><br><span class="line">    x_test /= 255</span><br><span class="line"></span><br><span class="line">    # Categorical y values</span><br><span class="line">    y_train = to_categorical(y_train)</span><br><span class="line">    y_test= to_categorical(y_test)</span><br><span class="line"></span><br><span class="line">    return x_train, y_train, x_test, y_test, input_shape</span><br><span class="line"></span><br><span class="line">x_train, y_train, x_test, y_test, input_shape = preprocess_mnist(x_train, y_train, x_test, y_test)</span><br></pre></td></tr></table></figure>
+<p>现在我们已经完成了数据预处理，可以构建模型以及定义 Keras 运行所需的参数了。首先从卷积神经网络模型本身开始。SELU 激活函数是一个特殊情况，我们需要使用核初始化器 ‘lecun_normal’ 和特殊形式的 dropout AlphaDropout()，其它一切都保持常规设定。</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">def build_cnn(activation,</span><br><span class="line">              dropout_rate,</span><br><span class="line">              optimizer):</span><br><span class="line">    model = Sequential()if(activation == &#x27;selu&#x27;):</span><br><span class="line">        model.add(Conv2D(32, kernel_size=(3, 3),</span><br><span class="line">                  activation=activation,</span><br><span class="line">                  input_shape=input_shape,</span><br><span class="line">                  kernel_initializer=&#x27;lecun_normal&#x27;))</span><br><span class="line">        model.add(Conv2D(64, (3, 3), activation=activation, </span><br><span class="line">                         kernel_initializer=&#x27;lecun_normal&#x27;))</span><br><span class="line">        model.add(MaxPooling2D(pool_size=(2, 2)))</span><br><span class="line">        model.add(AlphaDropout(0.25))</span><br><span class="line">        model.add(Flatten())</span><br><span class="line">        model.add(Dense(128, activation=activation, </span><br><span class="line">                        kernel_initializer=&#x27;lecun_normal&#x27;))</span><br><span class="line">        model.add(AlphaDropout(0.5))</span><br><span class="line">        model.add(Dense(10, activation=&#x27;softmax&#x27;))else:</span><br><span class="line">        model.add(Conv2D(32, kernel_size=(3, 3),</span><br><span class="line">                  activation=activation,</span><br><span class="line">                  input_shape=input_shape))</span><br><span class="line">        model.add(Conv2D(64, (3, 3), activation=activation))</span><br><span class="line">        model.add(MaxPooling2D(pool_size=(2, 2)))</span><br><span class="line">        model.add(Dropout(0.25))</span><br><span class="line">        model.add(Flatten())</span><br><span class="line">        model.add(Dense(128, activation=activation))</span><br><span class="line">        model.add(Dropout(0.5))</span><br><span class="line">        model.add(Dense(10, activation=&#x27;softmax&#x27;))</span><br><span class="line"></span><br><span class="line">    model.compile(</span><br><span class="line">        loss=&#x27;binary_crossentropy&#x27;, </span><br><span class="line">        optimizer=optimizer, </span><br><span class="line">        metrics=[&#x27;accuracy&#x27;])return model</span><br></pre></td></tr></table></figure>
+<p>使用 GELU 函数有个小问题；Keras 中目前还没有这个函数。幸好我们能轻松地向 Keras 添加新的激活函数。</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line"># Add the GELU function to Keras</span><br><span class="line">def gelu(x):</span><br><span class="line">    return 0.5 * x * (1 + tf.tanh(tf.sqrt(2 / np.pi) * (x + 0.044715 * tf.pow(x, 3))))</span><br><span class="line">get_custom_objects().update(&#123;&#x27;gelu&#x27;: Activation(gelu)&#125;)</span><br><span class="line"></span><br><span class="line"># Add leaky-relu so we can use it as a string</span><br><span class="line">get_custom_objects().update(&#123;&#x27;leaky-relu&#x27;: Activation(LeakyReLU(alpha=0.2))&#125;)</span><br><span class="line"></span><br><span class="line">act_func = [&#x27;sigmoid&#x27;, &#x27;relu&#x27;, &#x27;elu&#x27;, &#x27;leaky-relu&#x27;, &#x27;selu&#x27;, &#x27;gelu&#x27;]</span><br></pre></td></tr></table></figure>
+<p>现在我们可以使用 act_func 数组中定义的不同激活函数训练模型了。我们会在每个激活函数上运行一个简单的 for 循环，并将结果添加到一个数组：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">result = []for activation in act_func:print(&#x27;\nTraining with --&gt;&#123;0&#125;&lt;-- activation function\n&#x27;.format(activation))</span><br><span class="line"></span><br><span class="line">    model = build_cnn(activation=activation,</span><br><span class="line">                      dropout_rate=0.2,</span><br><span class="line">                      optimizer=Adam(clipvalue=0.5))</span><br><span class="line"></span><br><span class="line">    history = model.fit(x_train, y_train,</span><br><span class="line">          validation_split=0.20,</span><br><span class="line">          batch_size=128, # 128 is faster, but less accurate. 16/32 recommended</span><br><span class="line">          epochs=100,</span><br><span class="line">          verbose=1,</span><br><span class="line">          validation_data=(x_test, y_test))</span><br><span class="line"></span><br><span class="line">    result.append(history)</span><br><span class="line"></span><br><span class="line">    K.clear_session()del model</span><br><span class="line">print(result)</span><br></pre></td></tr></table></figure>
+<p>基于此，我们可以为每个激活函数绘制从 model.fit() 得到的历史图，然后看看损失和准确度结果的变化情况。现在我们可以为数据绘图了，我用 matplotlib 写了一小段代码：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">new_act_arr = act_func[1:]</span><br><span class="line">new_results = result[1:]def plot_act_func_results(results, activation_functions = []):</span><br><span class="line">    plt.figure(figsize=(10,10))</span><br><span class="line">    plt.style.use(&#x27;dark_background&#x27;)# Plot validation accuracy valuesfor act_func in results:</span><br><span class="line">        plt.plot(act_func.history[&#x27;val_acc&#x27;])</span><br><span class="line"></span><br><span class="line">    plt.title(&#x27;Model accuracy&#x27;)</span><br><span class="line">    plt.ylabel(&#x27;Test Accuracy&#x27;)</span><br><span class="line">    plt.xlabel(&#x27;Epoch&#x27;)</span><br><span class="line">    plt.legend(activation_functions)</span><br><span class="line">    plt.show()# Plot validation loss values</span><br><span class="line">    plt.figure(figsize=(10,10))for act_func in results:</span><br><span class="line">        plt.plot(act_func.history[&#x27;val_loss&#x27;])</span><br><span class="line"></span><br><span class="line">    plt.title(&#x27;Model loss&#x27;)</span><br><span class="line">    plt.ylabel(&#x27;Test Loss&#x27;)</span><br><span class="line">    plt.xlabel(&#x27;Epoch&#x27;)</span><br><span class="line">    plt.legend(activation_functions)</span><br><span class="line">    plt.show()</span><br><span class="line"></span><br><span class="line">plot_act_func_results(new_results, new_act_arr)</span><br></pre></td></tr></table></figure>
+<p>这会得到如下图表：</p>
+<p><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404242036115.jpg" alt="img" /></p>
+<p><strong>扩展阅读</strong></p>
+<p>下面是四本写得很赞的书：</p>
+<ul>
+<li>Deep Learning，作者：Ian Goodfellow、Yoshua Bengio、Aaron Courville</li>
+<li>The Hundred-Page Machine Learning Book，作者：Andriy Burkov</li>
+<li>Hands-On Machine Learning with Scikit-Learn and TensorFlow，作者：Aurélien Géron</li>
+<li>Machine Learning: A Probabilistic Perspective，作者：Kevin P. Murphy</li>
+</ul>
+<p>下面是本文讨论过的重要论文：</p>
+<ul>
+<li>Leaky ReLU 论文：<a href="https://link.zhihu.com/?target=https%3A//ai.stanford.edu/~amaas/papers/relu_hybrid_icml2013_final.pdf">https://ai.stanford.edu/~amaas/papers/relu_hybrid_icml2013_final.pdf</a></li>
+<li>ELU 论文：<a href="https://link.zhihu.com/?target=https%3A//arxiv.org/pdf/1511.07289.pdf">https://arxiv.org/pdf/1511.07289.pdf</a></li>
+<li>SELU 论文：<a href="https://link.zhihu.com/?target=https%3A//arxiv.org/pdf/1706.02515.pdf">https://arxiv.org/pdf/1706.02515.pdf</a></li>
+<li>GELU 论文：<a href="https://link.zhihu.com/?target=https%3A//arxiv.org/pdf/1606.08415.pdf">https://arxiv.org/pdf/1606.0841</a></li>
+</ul>
+</article><div class="post-copyright"><div class="copyright-cc-box"><i class="anzhiyufont anzhiyu-icon-copyright"></i></div><div class="post-copyright__author_box"><a class="post-copyright__author_img" target="_blank" rel="noopener" href="https://github.com/foresta-yang.github.io" title="头像"><img class="post-copyright__author_img_back" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/head.jpg" title="头像" alt="头像"><img class="post-copyright__author_img_front" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/head.jpg" title="头像" alt="头像"></a><div class="post-copyright__author_name">foresta.yang</div><div class="post-copyright__author_desc"></div></div><div class="post-copyright__post__info"><a class="post-copyright__original" title="该文章为原创文章，注意版权协议" href="https://foresta-yang.github.io/2023/10/10/AILearning/DL/%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0_/">原创</a><a class="post-copyright-title"><span onclick="rm.copyPageUrl('https://foresta-yang.github.io/2023/10/10/AILearning/DL/%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0_/')">激活函数</span></a></div><div class="post-tools" id="post-tools"><div class="post-tools-left"><div class="rewardLeftButton"><div class="post-reward" onclick="anzhiyu.addRewardMask()"><div class="reward-button button--animated" title="赞赏作者"><i class="anzhiyufont anzhiyu-icon-hand-heart-fill"></i>打赏作者</div><div class="reward-main"><div class="reward-all"><span class="reward-title">感谢你赐予我前进的力量</span><ul class="reward-group"><li class="reward-item"><a href="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/wechat.jpg" target="_blank"><img class="post-qr-code-img" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/wechat.jpg" alt="微信"/></a><div class="post-qr-code-desc">微信</div></li><li class="reward-item"><a href="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/alipay.jpg" target="_blank"><img class="post-qr-code-img" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/alipay.jpg" alt="支付宝"/></a><div class="post-qr-code-desc">支付宝</div></li></ul><a class="reward-main-btn" href="/about/#about-reward" target="_blank"><div class="reward-text">赞赏者名单</div><div class="reward-dec">因为你们的支持让我意识到写文章的价值🙏</div></a></div></div></div><div id="quit-box" onclick="anzhiyu.removeRewardMask()" style="display: none"></div></div><div class="shareRight"><div class="share-link mobile"><div class="share-qrcode"><div class="share-button" title="使用手机访问这篇文章"><i class="anzhiyufont anzhiyu-icon-qrcode"></i></div><div class="share-main"><div class="share-main-all"><div id="qrcode" title="https://foresta-yang.github.io/2023/10/10/AILearning/DL/%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0_/"></div><div class="reward-dec">使用手机访问这篇文章</div></div></div></div></div><script>function copyCurrentPageUrl() {
+  var currentPageUrl = window.location.href;
+  var input = document.createElement("input");
+  input.setAttribute("value", currentPageUrl);
+  document.body.appendChild(input);
+  input.select();
+  input.setSelectionRange(0, 99999);
+  document.execCommand("copy");
+  document.body.removeChild(input);
+}</script><div class="share-link copyurl"><div class="share-button" id="post-share-url" title="复制链接" onclick="copyCurrentPageUrl()"><i class="anzhiyufont anzhiyu-icon-link"></i></div></div></div></div></div><div class="post-copyright__notice"><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://foresta-yang.github.io" target="_blank">foresta</a>！</span></div></div><div class="post-tools-right"><div class="tag_share"><div class="post-meta__box"><div class="post-meta__box__tag-list"><a class="post-meta__box__tags" href="/tags/Activation/"><span class="tags-punctuation"> <i class="anzhiyufont anzhiyu-icon-tag"></i></span>Activation<span class="tagsPageCount">1</span></a></div></div></div><div class="post_share"><div class="social-share" data-image="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/head.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.cbd.int/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"/><script src="https://cdn.cbd.int/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer="defer"></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2023/10/10/AILearning/GNN/DGL%E6%95%B4%E5%9B%BE%E5%88%86%E7%B1%BB/"><img class="prev-cover" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202404241722489.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">DGL整图分类</div></div></a></div><div class="next-post pull-right"><a href="/2023/10/10/AILearning/DL/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E6%9C%AF%E8%AF%ADbaseline%E3%80%81benchmark%E3%80%81groundtruth/"><img class="next-cover" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="/img/cover-default.webp" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">baseline、benchmark、groundtruth</div></div></a></div></nav><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="anzhiyufont anzhiyu-icon-comments"></i><span> 评论</span></div><div class="comment-randomInfo"><a onclick="anzhiyu.addRandomCommentInfo()" href="javascript:void(0)">匿名评论</a><a href="/privacy" style="margin-left: 4px">隐私政策</a></div><div class="comment-tips" id="comment-tips"><span>✅ 你无需删除空行，直接评论以获取最佳展示效果</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div><div class="comment-barrage"></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="card-content"><div class="author-info-avatar"><img class="avatar-img" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/head.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__description">享受孤独</div><div class="author-info__bottom-group"><a class="author-info__bottom-group-left" href="/"><h1 class="author-info__name">foresta.yang</h1><div class="author-info__desc"></div></a><div class="card-info-social-icons is-center"><a class="social-icon faa-parent animated-hover" href="https://github.com/foresta-yang.github.io" target="_blank" title="Github"><i class="anzhiyufont anzhiyu-icon-github"></i></a></div></div></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="anzhiyufont anzhiyu-icon-bars"></i><span>文章目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A6%82%E8%BF%B0"><span class="toc-number">1.</span> <span class="toc-text"> 概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#sigmoid-%E5%87%BD%E6%95%B0%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">2.</span> <span class="toc-text"> sigmoid 函数是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A2%AF%E5%BA%A6%E9%97%AE%E9%A2%98"><span class="toc-number">3.</span> <span class="toc-text"> 梯度问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B4%E6%B5%81%E7%BA%BF%E6%80%A7%E5%8D%95%E5%85%83relu"><span class="toc-number">4.</span> <span class="toc-text"> 整流线性单元（ReLU）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8C%87%E6%95%B0%E7%BA%BF%E6%80%A7%E5%8D%95%E5%85%83elu"><span class="toc-number">5.</span> <span class="toc-text"> 指数线性单元（ELU）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B8%97%E6%BC%8F%E5%9E%8B%E6%95%B4%E6%B5%81%E7%BA%BF%E6%80%A7%E5%8D%95%E5%85%83%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0leaky-relu"><span class="toc-number">6.</span> <span class="toc-text"> 渗漏型整流线性单元激活函数（Leaky ReLU）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%89%A9%E5%B1%95%E5%9E%8B%E6%8C%87%E6%95%B0%E7%BA%BF%E6%80%A7%E5%8D%95%E5%85%83%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0selu"><span class="toc-number">7.</span> <span class="toc-text"> 扩展型指数线性单元激活函数（SELU）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#gelu"><span class="toc-number">8.</span> <span class="toc-text"> GELU</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="anzhiyufont anzhiyu-icon-history"></i><span>最近发布</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/04/18/Security/C_C++%E6%BC%8F%E6%B4%9E%E6%95%B0%E6%8D%AE%E9%9B%86/" title="C/C++漏洞数据集">C/C++漏洞数据集</a><time datetime="2024-04-18T09:46:15.000Z" title="发表于 2024-04-18 17:46:15">2024-04-18</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/12/19/Papers/Vul/Cross-domain%20vulnerability%20detection%20using%20graph%20embedding%20and%20domain%20adaptation/" title="Cross-domain vulnerability detection using graph embedding and domain adaptation"><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202312191750331.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Cross-domain vulnerability detection using graph embedding and domain adaptation"/></a><div class="content"><a class="title" href="/2023/12/19/Papers/Vul/Cross-domain%20vulnerability%20detection%20using%20graph%20embedding%20and%20domain%20adaptation/" title="Cross-domain vulnerability detection using graph embedding and domain adaptation">Cross-domain vulnerability detection using graph embedding and domain adaptation</a><time datetime="2023-12-19T07:32:24.000Z" title="发表于 2023-12-19 15:32:24">2023-12-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/12/19/AILearning/pytorch/conv2d/" title="Conv2d"><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202312191226420.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Conv2d"/></a><div class="content"><a class="title" href="/2023/12/19/AILearning/pytorch/conv2d/" title="Conv2d">Conv2d</a><time datetime="2023-12-19T03:30:36.000Z" title="发表于 2023-12-19 11:30:36">2023-12-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/12/19/AILearning/pytorch/pytorch/" title="pytorch入门"><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/images/202312191226420.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="pytorch入门"/></a><div class="content"><a class="title" href="/2023/12/19/AILearning/pytorch/pytorch/" title="pytorch入门">pytorch入门</a><time datetime="2023-12-19T03:30:36.000Z" title="发表于 2023-12-19 11:30:36">2023-12-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/12/19/AILearning/pytorch/tensor%E6%93%8D%E4%BD%9C/" title="torch tensor操作"><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="/img/cover-default.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="torch tensor操作"/></a><div class="content"><a class="title" href="/2023/12/19/AILearning/pytorch/tensor%E6%93%8D%E4%BD%9C/" title="torch tensor操作">torch tensor操作</a><time datetime="2023-12-19T03:30:36.000Z" title="发表于 2023-12-19 11:30:36">2023-12-19</time></div></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2023 - 2024 By foresta.yang</div></div></footer></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="sidebar-site-data site-data is-center"><a href="/archives/" title="archive"><div class="headline">文章</div><div class="length-num">77</div></a><a href="/tags/" title="tag"><div class="headline">标签</div><div class="length-num">37</div></a><a href="/categories/" title="category"><div class="headline">分类</div><div class="length-num">17</div></a></div><span class="sidebar-menu-item-title">功能</span><div class="sidebar-menu-item"><a class="darkmode_switchbutton menu-child" href="javascript:void(0);" title="显示模式"><i class="anzhiyufont anzhiyu-icon-circle-half-stroke"></i><span>显示模式</span></a></div><div class="back-menu-list-groups"><div class="back-menu-list-group"><div class="back-menu-list-title">网页</div><div class="back-menu-list"><a class="back-menu-item" target="_blank" rel="noopener" href="https://blog.anheyu.com/" title="博客"><img class="back-menu-item-icon" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="/img/favicon.ico" alt="博客"/><span class="back-menu-item-text">博客</span></a></div></div><div class="back-menu-list-group"><div class="back-menu-list-title">项目</div><div class="back-menu-list"><a class="back-menu-item" target="_blank" rel="noopener" href="https://image.anheyu.com/" title="安知鱼图床"><img class="back-menu-item-icon" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://image.anheyu.com/favicon.ico" alt="安知鱼图床"/><span class="back-menu-item-text">安知鱼图床</span></a></div></div></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 文章</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/archives/"><i class="anzhiyufont anzhiyu-icon-box-archive faa-tada" style="font-size: 0.9em;"></i><span> 隧道</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/categories/"><i class="anzhiyufont anzhiyu-icon-shapes faa-tada" style="font-size: 0.9em;"></i><span> 分类</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/tags/"><i class="anzhiyufont anzhiyu-icon-tags faa-tada" style="font-size: 0.9em;"></i><span> 标签</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 友链</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/link/"><i class="anzhiyufont anzhiyu-icon-link faa-tada" style="font-size: 0.9em;"></i><span> 友人帐</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/comments/"><i class="anzhiyufont anzhiyu-icon-envelope faa-tada" style="font-size: 0.9em;"></i><span> 留言板</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 我的</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/music/"><i class="anzhiyufont anzhiyu-icon-music faa-tada" style="font-size: 0.9em;"></i><span> 音乐</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/album/"><i class="anzhiyufont anzhiyu-icon-images faa-tada" style="font-size: 0.9em;"></i><span> 相册</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/essay/"><i class="anzhiyufont anzhiyu-icon-lightbulb faa-tada" style="font-size: 0.9em;"></i><span> 即刻emo</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 关于</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/about/"><i class="anzhiyufont anzhiyu-icon-paper-plane faa-tada" style="font-size: 0.9em;"></i><span> 关于本人</span></a></li></ul></div></div><span class="sidebar-menu-item-title">标签</span><div class="card-tags"><div class="item-headline"></div><div class="card-tag-cloud"><a href="/tags/Activation/" style="font-size: 0.88rem;">Activation<sup>1</sup></a><a href="/tags/Attention/" style="font-size: 0.88rem;">Attention<sup>2</sup></a><a href="/tags/Binary/" style="font-size: 0.88rem;">Binary<sup>1</sup></a><a href="/tags/C-C/" style="font-size: 0.88rem;">C/C++<sup>2</sup></a><a href="/tags/CNN/" style="font-size: 0.88rem;">CNN<sup>2</sup></a><a href="/tags/DGL/" style="font-size: 0.88rem;">DGL<sup>2</sup></a><a href="/tags/DL/" style="font-size: 0.88rem;">DL<sup>3</sup></a><a href="/tags/DL%E7%9F%A5%E8%AF%86/" style="font-size: 0.88rem;">DL知识<sup>1</sup></a><a href="/tags/DL%E7%9F%A5%E8%AF%86%E7%82%B9/" style="font-size: 0.88rem;">DL知识点<sup>4</sup></a><a href="/tags/GNN/" style="font-size: 0.88rem;">GNN<sup>10</sup></a><a href="/tags/Hexo/" style="font-size: 0.88rem;">Hexo<sup>2</sup></a><a href="/tags/LLM/" style="font-size: 0.88rem;">LLM<sup>1</sup></a><a href="/tags/LaTex/" style="font-size: 0.88rem;">LaTex<sup>1</sup></a><a href="/tags/Loss/" style="font-size: 0.88rem;">Loss<sup>1</sup></a><a href="/tags/PowerShell/" style="font-size: 0.88rem;">PowerShell<sup>1</sup></a><a href="/tags/Python/" style="font-size: 0.88rem;">Python<sup>1</sup></a><a href="/tags/Pytorch/" style="font-size: 0.88rem;">Pytorch<sup>6</sup></a><a href="/tags/Term/" style="font-size: 0.88rem;">Term<sup>1</sup></a><a href="/tags/Terms/" style="font-size: 0.88rem;">Terms<sup>1</sup></a><a href="/tags/Vulnerabilities/" style="font-size: 0.88rem;">Vulnerabilities<sup>19</sup></a><a href="/tags/conda/" style="font-size: 0.88rem;">conda<sup>1</sup></a><a href="/tags/git/" style="font-size: 0.88rem;">git<sup>1</sup></a><a href="/tags/overleaf/" style="font-size: 0.88rem;">overleaf<sup>2</sup></a><a href="/tags/pip/" style="font-size: 0.88rem;">pip<sup>1</sup></a><a href="/tags/sci%E6%8A%95%E7%A8%BF/" style="font-size: 0.88rem;">sci投稿<sup>1</sup></a><a href="/tags/tensor/" style="font-size: 0.88rem;">tensor<sup>2</sup></a><a href="/tags/tree-sitter/" style="font-size: 0.88rem;">tree-sitter<sup>1</sup></a><a href="/tags/%E4%BB%A3%E7%A0%81%E8%A1%8C%E7%BA%A7%E6%A3%80%E6%B5%8B/" style="font-size: 0.88rem;">代码行级检测<sup>1</sup></a><a href="/tags/%E5%9F%BA%E6%9C%AC%E6%9C%AF%E8%AF%AD/" style="font-size: 0.88rem;">基本术语<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0%E7%8E%87/" style="font-size: 0.88rem;">学习率<sup>1</sup></a><a href="/tags/%E5%AE%A1%E7%A8%BF/" style="font-size: 0.88rem;">审稿<sup>1</sup></a><a href="/tags/%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/" style="font-size: 0.88rem;">漏洞分析<sup>1</sup></a><a href="/tags/%E7%8E%AF%E5%A2%83/" style="font-size: 0.88rem;">环境<sup>2</sup></a><a href="/tags/%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90/" style="font-size: 0.88rem;">软件分析<sup>5</sup></a><a href="/tags/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8/" style="font-size: 0.88rem;">软件安全<sup>23</sup></a><a href="/tags/%E8%BF%87%E7%A8%8B%E9%97%B4%E5%88%86%E6%9E%90/" style="font-size: 0.88rem;">过程间分析<sup>1</sup></a><a href="/tags/%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90/" style="font-size: 0.88rem;">静态分析<sup>2</sup></a></div></div><hr/></div></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="anzhiyufont anzhiyu-icon-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="anzhiyufont anzhiyu-icon-circle-half-stroke"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="anzhiyufont anzhiyu-icon-arrows-left-right"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="anzhiyufont anzhiyu-icon-gear"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="anzhiyufont anzhiyu-icon-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="anzhiyufont anzhiyu-icon-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="anzhiyufont anzhiyu-icon-arrow-up"></i></button></div></div><div id="nav-music"><a id="nav-music-hoverTips" onclick="anzhiyu.musicToggle()" accesskey="m">播放音乐</a><div id="console-music-bg"></div><meting-js id="8152976493" server="netease" type="playlist" mutex="true" preload="none" theme="var(--anzhiyu-main)" data-lrctype="0" order="random" volume="0.7"></meting-js></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="anzhiyufont anzhiyu-icon-xmark"></i></button></nav><div class="is-center" id="loading-database"><i class="anzhiyufont anzhiyu-icon-spinner anzhiyu-pulse-icon"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div id="rightMenu"><div class="rightMenu-group rightMenu-small"><div class="rightMenu-item" id="menu-backward"><i class="anzhiyufont anzhiyu-icon-arrow-left"></i></div><div class="rightMenu-item" id="menu-forward"><i class="anzhiyufont anzhiyu-icon-arrow-right"></i></div><div class="rightMenu-item" id="menu-refresh"><i class="anzhiyufont anzhiyu-icon-arrow-rotate-right" style="font-size: 1rem;"></i></div><div class="rightMenu-item" id="menu-top"><i class="anzhiyufont anzhiyu-icon-arrow-up"></i></div></div><div class="rightMenu-group rightMenu-line rightMenuPlugin"><div class="rightMenu-item" id="menu-copytext"><i class="anzhiyufont anzhiyu-icon-copy"></i><span>复制选中文本</span></div><div class="rightMenu-item" id="menu-pastetext"><i class="anzhiyufont anzhiyu-icon-paste"></i><span>粘贴文本</span></div><a class="rightMenu-item" id="menu-commenttext"><i class="anzhiyufont anzhiyu-icon-comment-medical"></i><span>引用到评论</span></a><div class="rightMenu-item" id="menu-newwindow"><i class="anzhiyufont anzhiyu-icon-window-restore"></i><span>新窗口打开</span></div><div class="rightMenu-item" id="menu-copylink"><i class="anzhiyufont anzhiyu-icon-link"></i><span>复制链接地址</span></div><div class="rightMenu-item" id="menu-copyimg"><i class="anzhiyufont anzhiyu-icon-images"></i><span>复制此图片</span></div><div class="rightMenu-item" id="menu-downloadimg"><i class="anzhiyufont anzhiyu-icon-download"></i><span>下载此图片</span></div><div class="rightMenu-item" id="menu-newwindowimg"><i class="anzhiyufont anzhiyu-icon-window-restore"></i><span>新窗口打开图片</span></div><div class="rightMenu-item" id="menu-search"><i class="anzhiyufont anzhiyu-icon-magnifying-glass"></i><span>站内搜索</span></div><div class="rightMenu-item" id="menu-searchBaidu"><i class="anzhiyufont anzhiyu-icon-magnifying-glass"></i><span>百度搜索</span></div><div class="rightMenu-item" id="menu-music-toggle"><i class="anzhiyufont anzhiyu-icon-play"></i><span>播放音乐</span></div><div class="rightMenu-item" id="menu-music-back"><i class="anzhiyufont anzhiyu-icon-backward"></i><span>切换到上一首</span></div><div class="rightMenu-item" id="menu-music-forward"><i class="anzhiyufont anzhiyu-icon-forward"></i><span>切换到下一首</span></div><div class="rightMenu-item" id="menu-music-playlist" onclick="window.open(&quot;https://y.qq.com/n/ryqq/playlist/8802438608&quot;, &quot;_blank&quot;);" style="display: none;"><i class="anzhiyufont anzhiyu-icon-radio"></i><span>查看所有歌曲</span></div><div class="rightMenu-item" id="menu-music-copyMusicName"><i class="anzhiyufont anzhiyu-icon-copy"></i><span>复制歌名</span></div></div><div class="rightMenu-group rightMenu-line rightMenuOther"><a class="rightMenu-item menu-link" id="menu-randomPost"><i class="anzhiyufont anzhiyu-icon-shuffle"></i><span>随便逛逛</span></a><a class="rightMenu-item menu-link" href="/categories/"><i class="anzhiyufont anzhiyu-icon-cube"></i><span>博客分类</span></a><a class="rightMenu-item menu-link" href="/tags/"><i class="anzhiyufont anzhiyu-icon-tags"></i><span>文章标签</span></a></div><div class="rightMenu-group rightMenu-line rightMenuOther"><a class="rightMenu-item" id="menu-copy" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-copy"></i><span>复制地址</span></a><a class="rightMenu-item" id="menu-commentBarrage" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-message"></i><span class="menu-commentBarrage-text">关闭热评</span></a><a class="rightMenu-item" id="menu-darkmode" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-circle-half-stroke"></i><span class="menu-darkmode-text">深色模式</span></a><a class="rightMenu-item" id="menu-translate" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-language"></i><span>轉為繁體</span></a></div></div><div id="rightmenu-mask"></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.cbd.int/@fancyapps/ui@5.0.28/dist/fancybox/fancybox.umd.js"></script><script src="https://cdn.cbd.int/instant.page@5.2.0/instantpage.js" type="module"></script><script src="https://cdn.cbd.int/vanilla-lazyload@17.8.5/dist/lazyload.iife.min.js"></script><script src="https://cdn.cbd.int/node-snackbar@0.1.16/dist/snackbar.min.js"></script><canvas id="universe"></canvas><script async src="https://npm.elemecdn.com/anzhiyu-theme-static@1.0.0/dark/dark.js"></script><script>// 消除控制台打印
+var HoldLog = console.log;
+console.log = function () {};
+let now1 = new Date();
+queueMicrotask(() => {
+  const Log = function () {
+    HoldLog.apply(console, arguments);
+  }; //在恢复前输出日志
+  const grt = new Date("04/01/2023 00:00:00"); //此处修改你的建站时间或者网站上线时间
+  now1.setTime(now1.getTime() + 250);
+  const days = (now1 - grt) / 1000 / 60 / 60 / 24;
+  const dnum = Math.floor(days);
+  const ascll = [
+    `欢迎使用安知鱼!`,
+    `生活明朗, 万物可爱`,
+    `
+        
+       █████╗ ███╗   ██╗███████╗██╗  ██╗██╗██╗   ██╗██╗   ██╗
+      ██╔══██╗████╗  ██║╚══███╔╝██║  ██║██║╚██╗ ██╔╝██║   ██║
+      ███████║██╔██╗ ██║  ███╔╝ ███████║██║ ╚████╔╝ ██║   ██║
+      ██╔══██║██║╚██╗██║ ███╔╝  ██╔══██║██║  ╚██╔╝  ██║   ██║
+      ██║  ██║██║ ╚████║███████╗██║  ██║██║   ██║   ╚██████╔╝
+      ╚═╝  ╚═╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝╚═╝   ╚═╝    ╚═════╝
+        
+        `,
+    "已上线",
+    dnum,
+    "天",
+    "©2023 By 安知鱼 V1.6.12",
+  ];
+  const ascll2 = [`NCC2-036`, `调用前置摄像头拍照成功，识别为【小笨蛋】.`, `Photo captured: `, `🤪`];
+
+  setTimeout(
+    Log.bind(
+      console,
+      `\n%c${ascll[0]} %c ${ascll[1]} %c ${ascll[2]} %c${ascll[3]}%c ${ascll[4]}%c ${ascll[5]}\n\n%c ${ascll[6]}\n`,
+      "color:#425AEF",
+      "",
+      "color:#425AEF",
+      "color:#425AEF",
+      "",
+      "color:#425AEF",
+      ""
+    )
+  );
+  setTimeout(
+    Log.bind(
+      console,
+      `%c ${ascll2[0]} %c ${ascll2[1]} %c \n${ascll2[2]} %c\n${ascll2[3]}\n`,
+      "color:white; background-color:#4fd953",
+      "",
+      "",
+      'background:url("https://npm.elemecdn.com/anzhiyu-blog@1.1.6/img/post/common/tinggge.gif") no-repeat;font-size:450%'
+    )
+  );
+
+  setTimeout(Log.bind(console, "%c WELCOME %c 你好，小笨蛋.", "color:white; background-color:#4f90d9", ""));
+
+  setTimeout(
+    console.warn.bind(
+      console,
+      "%c ⚡ Powered by 安知鱼 %c 你正在访问 foresta.yang 的博客.",
+      "color:white; background-color:#f0ad4e",
+      ""
+    )
+  );
+
+  setTimeout(Log.bind(console, "%c W23-12 %c 你已打开控制台.", "color:white; background-color:#4f90d9", ""));
+
+  setTimeout(
+    console.warn.bind(console, "%c S013-782 %c 你现在正处于监控中.", "color:white; background-color:#d9534f", "")
+  );
+});</script><script async src="/anzhiyu/random.js"></script><script src="/js/search/local-search.js"></script><div class="js-pjax"><script>if (!window.MathJax) {
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      tags: 'ams'
+    },
+    chtml: {
+      scale: 1.1
+    },
+    options: {
+      renderActions: {
+        findScript: [10, doc => {
+          for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+            const display = !!node.type.match(/; *mode=display/)
+            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+            const text = document.createTextNode('')
+            node.parentNode.replaceChild(text, node)
+            math.start = {node: text, delim: '', n: 0}
+            math.end = {node: text, delim: '', n: 0}
+            doc.math.push(math)
+          }
+        }, '']
+      }
+    }
+  }
+  
+  const script = document.createElement('script')
+  script.src = 'https://cdn.cbd.int/mathjax@3.2.2/es5/tex-mml-chtml.js'
+  script.id = 'MathJax-script'
+  script.async = true
+  document.head.appendChild(script)
+} else {
+  MathJax.startup.document.state(0)
+  MathJax.texReset()
+  MathJax.typesetPromise()
+}</script><link rel="stylesheet" type="text/css" href="https://cdn.cbd.int/katex@0.16.0/dist/katex.min.css"><script src="https://cdn.cbd.int/katex@0.16.0/dist/contrib/copy-tex.min.js"></script><script>(() => {
+  document.querySelectorAll('#article-container span.katex-display').forEach(item => {
+    anzhiyu.wrap(item, 'div', { class: 'katex-wrap'})
+  })
+})()</script><script>(() => {
+  const init = () => {
+    twikoo.init(Object.assign({
+      el: '#twikoo-wrap',
+      envId: 'https://mytwikoo-omega.vercel.app',
+      region: '',
+      onCommentLoaded: () => {
+        anzhiyu.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      }
+    }, null))
+  }
+
+  const loadTwikoo = () => {
+    if (typeof twikoo === 'object') setTimeout(runFn,0)
+    else getScript('https://cdn.cbd.int/twikoo@1.6.25/dist/twikoo.all.min.js').then(runFn)
+  }
+
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://mytwikoo-omega.vercel.app',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(res => {
+      countELement.textContent = res[0].count
+    }).catch(err => {
+      console.error(err)
+    })
+  }
+
+  const runFn = () => {
+    init();
+    GLOBAL_CONFIG_SITE.isPost && getCount()
+  }
+
+  if ('Twikoo' === 'Twikoo' || !false) {
+    if (false) anzhiyu.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else {
+      loadTwikoo()
+    }
+  } else {
+    window.loadOtherComment = loadTwikoo
+  }
+})()</script><input type="hidden" name="page-type" id="page-type" value="post"></div><script>window.addEventListener('load', () => {
+  const changeContent = (content) => {
+    if (content === '') return content
+
+    content = content.replace(/<img.*?src="(.*?)"?[^\>]+>/ig, '[图片]') // replace image link
+    content = content.replace(/<a[^>]+?href=["']?([^"']+)["']?[^>]*>([^<]+)<\/a>/gi, '[链接]') // replace url
+    content = content.replace(/<pre><code>.*?<\/pre>/gi, '[代码]') // replace code
+    content = content.replace(/<[^>]+>/g,"") // remove html tag
+
+    if (content.length > 150) {
+      content = content.substring(0,150) + '...'
+    }
+    return content
+  }
+
+  const getComment = () => {
+    const runTwikoo = () => {
+      twikoo.getRecentComments({
+        envId: 'https://mytwikoo-omega.vercel.app',
+        region: '',
+        pageSize: 6,
+        includeReply: true
+      }).then(function (res) {
+        const twikooArray = res.map(e => {
+          return {
+            'content': changeContent(e.comment),
+            'avatar': e.avatar,
+            'nick': e.nick,
+            'url': e.url + '#' + e.id,
+            'date': new Date(e.created).toISOString()
+          }
+        })
+
+        saveToLocal.set('twikoo-newest-comments', JSON.stringify(twikooArray), 10/(60*24))
+        generateHtml(twikooArray)
+      }).catch(function (err) {
+        const $dom = document.querySelector('#card-newest-comments .aside-list')
+        $dom.textContent= "无法获取评论，请确认相关配置是否正确"
+      })
+    }
+
+    if (typeof twikoo === 'object') {
+      runTwikoo()
+    } else {
+      getScript('https://cdn.cbd.int/twikoo@1.6.25/dist/twikoo.all.min.js').then(runTwikoo)
+    }
+  }
+
+  const generateHtml = array => {
+    let result = ''
+
+    if (array.length) {
+      for (let i = 0; i < array.length; i++) {
+        result += '<div class=\'aside-list-item\'>'
+
+        if (true) {
+          const name = 'data-lazy-src'
+          result += `<a href='${array[i].url}' class='thumbnail'><img ${name}='${array[i].avatar}' alt='${array[i].nick}'><div class='name'><span>${array[i].nick} </span></div></a>`
+        }
+        
+        result += `<div class='content'>
+        <a class='comment' href='${array[i].url}' title='${array[i].content}'>${array[i].content}</a>
+        <time datetime="${array[i].date}">${anzhiyu.diffDate(array[i].date, true)}</time></div>
+        </div>`
+      }
+    } else {
+      result += '没有评论'
+    }
+
+    let $dom = document.querySelector('#card-newest-comments .aside-list')
+    $dom && ($dom.innerHTML= result)
+    window.lazyLoadInstance && window.lazyLoadInstance.update()
+    window.pjax && window.pjax.refresh($dom)
+  }
+
+  const newestCommentInit = () => {
+    if (document.querySelector('#card-newest-comments .aside-list')) {
+      const data = saveToLocal.get('twikoo-newest-comments')
+      if (data) {
+        generateHtml(JSON.parse(data))
+      } else {
+        getComment()
+      }
+    }
+  }
+
+  newestCommentInit()
+  document.addEventListener('pjax:complete', newestCommentInit)
+})</script><script>var visitorMail = "";
+</script><script async data-pjax src="https://cdn.cbd.int/anzhiyu-theme-static@1.0.0/waterfall/waterfall.js"></script><script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/qrcodejs/1.0.0/qrcode.min.js"></script><script src="/js/anzhiyu/right_click_menu.js"></script><link rel="stylesheet" href="https://cdn.cbd.int/anzhiyu-theme-static@1.1.9/icon/ali_iconfont_css.css"><link rel="stylesheet" href="https://cdn.cbd.int/anzhiyu-theme-static@1.0.0/aplayer/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.cbd.int/anzhiyu-blog-static@1.0.1/js/APlayer.min.js"></script><script src="https://cdn.cbd.int/hexo-anzhiyu-music@1.0.1/assets/js/Meting2.min.js"></script><script src="https://cdn.cbd.int/pjax@0.2.8/pjax.min.js"></script><script>let pjaxSelectors = ["meta[property=\"og:image\"]","meta[property=\"og:title\"]","meta[property=\"og:url\"]","meta[property=\"og:type\"]","meta[property=\"og:site_name\"]","meta[property=\"og:description\"]","head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+  // removeEventListener scroll 
+  anzhiyu.removeGlobalFnEvent('pjax')
+  anzhiyu.removeGlobalFnEvent('themeChange')
+
+  document.getElementById('rightside').classList.remove('rightside-show')
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+})
+
+document.addEventListener('pjax:error', e => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/404.html')
+  }
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><script charset="UTF-8" src="https://cdn.cbd.int/anzhiyu-theme-static@1.1.5/accesskey/accesskey.js"></script></div><div id="popup-window"><div class="popup-window-title">通知</div><div class="popup-window-divider"></div><div class="popup-window-content"><div class="popup-tip">你好呀</div><div class="popup-link"><i class="anzhiyufont anzhiyu-icon-arrow-circle-right"></i></div></div></div></body></html>
