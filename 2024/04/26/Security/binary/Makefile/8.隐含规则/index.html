@@ -1,0 +1,778 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"><title>Makefile隐含规则 | foresta</title><meta name="keywords" content="Makefile"><meta name="author" content="foresta.yang"><meta name="copyright" content="foresta.yang"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#f7f9fe"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-touch-fullscreen" content="yes"><meta name="apple-mobile-web-app-title" content="Makefile隐含规则"><meta name="application-name" content="Makefile隐含规则"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="#f7f9fe"><meta property="og:type" content="article"><meta property="og:title" content="Makefile隐含规则"><meta property="og:url" content="https://foresta-yang.github.io/2024/04/26/Security/binary/Makefile/8.%E9%9A%90%E5%90%AB%E8%A7%84%E5%88%99/index.html"><meta property="og:site_name" content="foresta"><meta property="og:description" content="隐含规则¶ 在我们使用Makefile时，有一些我们会经常使用，而且使用频率非常高的东西，比如，我们编译C&amp;#x2F;C++的源程序为中间目标文件（Unix下是 .o 文件，Windows下是 .obj 文件）。本章讲述的就是一些在Makefile中的“隐含的”，早先约定了的，不需要我们再写出来的规则。 “"><meta property="og:locale" content="zh-CN"><meta property="og:image" content="https://foresta-yang.github.io/img/cover-default.webp"><meta property="article:author" content="foresta.yang"><meta property="article:tag"><meta name="twitter:card" content="summary"><meta name="twitter:image" content="https://foresta-yang.github.io/img/cover-default.webp"><meta name="description" content="隐含规则¶ 在我们使用Makefile时，有一些我们会经常使用，而且使用频率非常高的东西，比如，我们编译C&amp;#x2F;C++的源程序为中间目标文件（Unix下是 .o 文件，Windows下是 .obj 文件）。本章讲述的就是一些在Makefile中的“隐含的”，早先约定了的，不需要我们再写出来的规则。 “"><link rel="shortcut icon" href="/img/foresta.png"><link rel="canonical" href="https://foresta-yang.github.io/2024/04/26/Security/binary/Makefile/8.%E9%9A%90%E5%90%AB%E8%A7%84%E5%88%99/"><link rel="preconnect" href="//cdn.cbd.int"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="google-site-verification" content="xxx"/><meta name="baidu-site-verification" content="code-xxx"/><meta name="msvalidate.01" content="xxx"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.cbd.int/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.cbd.int/@fancyapps/ui@5.0.28/dist/fancybox/fancybox.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/anzhiyu-theme-static@1.0.0/swiper/swiper.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  linkPageTop: undefined,
+  peoplecanvas: undefined,
+  postHeadAiDescription: undefined,
+  diytitle: undefined,
+  LA51: undefined,
+  greetingBox: undefined,
+  twikooEnvId: 'https://mytwikoo-omega.vercel.app',
+  commentBarrageConfig:undefined,
+  root: '/',
+  preloader: {"source":3},
+  friends_vue_info: undefined,
+  navMusic: true,
+  mainTone: undefined,
+  authorStatus: undefined,
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"简","rightMenuMsgToTraditionalChinese":"转为繁体","rightMenuMsgToSimplifiedChinese":"转为简体"},
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":330},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    simplehomepage: true,
+    post: false
+  },
+  runtime: '天',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"copy":true,"copyrightEbable":false,"limitCount":66,"languages":{"author":"作者: foresta.yang","link":"链接: ","source":"来源: foresta","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。","copySuccess":"复制成功，复制和转载请标注本文地址"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#425AEF","bgDark":"#1f1f1f","position":"top-center"},
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.cbd.int/flickr-justified-gallery@2.1.2/dist/fjGallery.min.js',
+      css: 'https://cdn.cbd.int/flickr-justified-gallery@2.1.2/dist/fjGallery.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isAnchor: false,
+  shortcutKey: undefined,
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  configTitle: 'foresta',
+  title: 'Makefile隐含规则',
+  postAI: '',
+  pageFillDescription: ' 隐含规则,  使用隐含规则,  隐含规则一览,  隐含规则使用的变量,  关于命令的变量。,  关于命令参数的变量,  隐含规则链,  定义模式规则,  模式规则介绍,  模式规则示例,  自动化变量,  模式的匹配,  重载内建隐含规则,  老式风格的后缀规则,  隐含规则搜索算法隐含规则在我们使用时有一些我们会经常使用而且使用频率非常高的东西比如我们编译的源程序为中间目标文件下是文件下是文件本章讲述的就是一些在中的隐含的早先约定了的不需要我们再写出来的规则隐含规则也就是一种惯例会按照这种惯例心照不喧地来运行那怕我们的中没有书写这样的规则例如把文件编译成文件这一规则你根本就不用写出来会自动推导出这种规则并生成我们需要的文件隐含规则会使用一些我们系统变量我们可以改变这些系统变量的值来定制隐含规则的运行时的参数如系统变量可以控制编译时的编译器参数我们还可以通过模式规则的方式写下自己的隐含规则用后缀规则来定义隐含规则会有许多的限制使用模式规则会显得更智能和清楚但后缀规则可以用来保证我们的兼容性我们了解了隐含规则可以让其为我们更好的服务也会让我们知道一些约定俗成了的东西而不至于使得我们在运行时出现一些我们觉得莫名其妙的东西当然任何事物都是矛盾的水能载舟亦可覆舟所以有时候隐含规则也会给我们造成不小的麻烦只有了解了它我们才能更好地使用它使用隐含规则如果要使用隐含规则生成你需要的目标你所需要做的就是不要写出这个目标的规则那么会试图去自动推导产生这个目标的规则和命令如果可以自动推导生成这个目标的规则和命令那么这个行为就是隐含规则的自动推导当然隐含规则是事先约定好的一些东西例如我们有下面的一个我们可以注意到这个中并没有写下如何生成和这两目标的规则和命令因为的隐含规则功能会自动为我们自动去推导这两个目标的依赖目标和生成命令会在自己的隐含规则库中寻找可以用的规则如果找到那么就会使用如果找不到那么就会报错在上面的那个例子中调用的隐含规则是把的目标的依赖文件置成并使用的编译命令来生成的目标也就是说我们完全没有必要写下下面的两条规则因为这已经是约定好了的事了和我们约定好了用编译器生成文件的规则这就是隐含规则当然如果我们为文件书写了自己的规则那么就不会自动推导并调用隐含规则它会按照我们写好的规则忠实地执行还有在的隐含规则库中每一条隐含规则都在库中有其顺序越靠前的则是越被经常使用的所以这会导致我们有些时候即使我们显示地指定了目标依赖也不会管如下面这条规则没有命令依赖文件程序的源文件有可能变得没有意义如果目录下存在了文件那么我们的隐含规则一样会生效并会通过调用的编译器生成文件因为在隐含规则中的规则出现在的规则之后所以找到可以生成的的规则就不再寻找下一条规则了如果你确实不希望任何隐含规则推导那么你就不要只写出依赖规则而不写命令隐含规则一览这里我们将讲述所有预先设置也就是内建的隐含规则如果我们不明确地写下规则那么就会在这些规则中寻找所需要规则和命令当然我们也可以使用的参数或选项来取消所有的预设置的隐含规则当然即使是我们指定了参数某些隐含规则还是会生效因为有许多的隐含规则都是使用了后缀规则来定义的所以只要隐含规则中有后缀列表也就一系统定义在目标的依赖目标那么隐含规则就会生效默认的后缀列表是具体的细节我们会在后面讲述还是先来看一看常用的隐含规则吧编译程序的隐含规则的目标的依赖目标会自动推导为并且其生成命令是编译程序的隐含规则的目标的依赖目标会自动推导为或是并且其生成命令是建议使用作为源文件的后缀而不是编译程序的隐含规则的目标的依赖目标会自动推导为并且其生成命令是编译程序的隐含规则的目标的依赖目标会自动推导为或或并且其生成命令是预处理程序的隐含规则的目标的依赖目标会自动推导为或这个规则只是转换或有预处理的程序到一个标准的程序其使用的命令是编译程序的隐含规则的目标的依赖目标会自动推导为并且其生成命令是的目标的依赖目标会自动推导为并且其生成命令是汇编和汇编预处理的隐含规则的目标的依赖目标会自动推导为默认使用编译器并且其生成命令是的目标的依赖目标会自动推导为默认使用预编译器并且其生成命令是链接文件的隐含规则目标依赖于通过运行的编译器来运行链接程序生成一般是其生成命令是这个规则对于只有一个源文件的工程有效同时也对多个文件由不同的源文件生成的也有效例如如下规则并且和都存在时隐含规则将执行如下命令如果没有一个源文件如上例中的和你的目标名字如上例中的相关联那么你最好写出自己的生成规则不然隐含规则会报错的程序时的隐含规则的依赖文件被自动推导为生成的文件其生成命令是是一个语法分析器关于其细节请查看相关资料程序时的隐含规则的依赖文件被自动推导为生成的文件其生成命令是关于的细节请查看相关资料程序时的隐含规则的依赖文件被自动推导为生成的文件其生成命令是从程序文件或文件创建库的隐含规则生成的文件的依赖文件被自动推导为其生成命令是对于和也是同样的规则隐含规则使用的变量在隐含规则中的命令中基本上都是使用了一些预先设置的变量你可以在你的中改变这些变量的值或是在的命令行中传入这些值或是在你的环境变量中设置这些值无论怎么样只要设置了这些特定的变量那么其就会对隐含规则起作用当然你也可以利用的或参数来取消你所定义的变量对隐含规则的作用例如第一条隐含规则编译程序的隐含规则的命令是默认的编译命令是如果你把变量重定义成把变量重定义成那么隐含规则中的命令全部会以的样子来执行了我们可以把隐含规则中使用的变量分成两种一种是命令相关的如一种是参数相的关如下面是所有隐含规则中会用到的变量关于命令的变量函数库打包程序默认命令是汇编语言编译程序默认命令是语言编译程序默认命令是语言编译程序默认命令是从文件中扩展文件程序默认命令是程序的预处理器输出是标准输出设备默认命令是和的编译器和预处理程序默认命令是从文件中扩展文件的程序默认命令是方法分析器程序针对于或默认命令是语言编译程序默认命令是文法分析器针对于程序默认命令是文法分析器针对于程序默认命令是转换源文件到文件程序默认命令是从源文件创建文件的程序默认命令是从源文件创建军文件的程序默认命令是转换到的程序默认命令是转换到的程序默认命令是转换到语言的程序默认命令是转换到默认命令是删除文件命令默认命令是关于命令参数的变量下面的这些变量都是相关上面的命令的参数如果没有指明其默认值那么其默认值都是空函数库打包程序命令的参数默认值是汇编语言编译器参数当明显地调用或文件时语言编译器参数语言编译器参数命令参数预处理器参数和编译器也会用到语言编译器参数程序参数链接器参数如文法分析器参数语言编译器参数程序的编译器参数文法分析器参数隐含规则链有些时候一个目标可能被一系列的隐含规则所作用例如一个的文件生成可能会是先被的文件先成然后再被的编译器生成我们把这一系列的隐含规则叫做隐含规则链在上面的例子中如果文件存在那么就直接调用的编译器的隐含规则如果没有文件但有一个文件那么的隐含规则会被调用生成文件然后再调用编译的隐含规则最终由生成文件达到目标我们把这种的文件或是目标叫做中间目标不管怎么样会努力自动推导生成目标的一切方法不管中间目标有多少其都会执着地把所有的隐含规则和你书写的规则全部合起来分析努力达到目标所以有些时候可能会让你觉得奇怪怎么我的目标会这样生成怎么我的发疯了在默认情况下对于中间目标它和一般的目标有两个地方所不同第一个不同是除非中间的目标不存在才会引发中间规则第二个不同的是只要目标成功产生那么产生最终目标过程中所产生的中间目标文件会被以删除通常一个被指定成目标或是依赖目标的文件不能被当作中介然而你可以明显地说明一个文件或是目标是中介目标你可以使用伪目标来强制声明如你也可以阻止自动删除中间目标要做到这一点你可以使用伪目标来强制声明如你还可以把你的目标以模式的方式来指定如成伪目标的依赖目标以保存被隐含规则所生成的中间文件在隐含规则链中禁止同一个目标出现两次或两次以上这样一来就可防止在自动推导时出现无限递归的情况会优化一些特殊的隐含规则而不生成中间文件如从文件生成目标程序按道理会编译生成中间文件然后链接成但在实际情况下这一动作可以被一条的命令完成于是优化过的规则就不会生成中间文件定义模式规则你可以使用模式规则来定义一个隐含规则一个模式规则就好像一个一般的规则只是在规则中目标的定义需要有字符的意思是表示一个或多个任意字符在依赖目标中同样可以使用只是依赖目标中的的取值取决于其目标有一点需要注意的是的展开发生在变量和函数的展开之后变量和函数的展开发生在载入时而模式规则中的则发生在运行时模式规则介绍模式规则中至少在规则的目标定义中要包含否则就是一般的规则目标中的定义表示对文件名的匹配表示长度任意的非空字符串例如表示以结尾的文件名文件名的长度至少为而则表示以开头结尾的文件名文件名的长度至少为如果定义在目标中那么依赖中的的值决定了目标中的的值也就是说依赖中的模式的决定了目标中的样子例如有一个模式规则如下其含义是指出了怎么从所有的文件生成相应的文件的规则如果要生成的目标是那么就是一旦依赖目标中的模式被确定那么会被要求去匹配当前目录下所有的文件名一旦找到就会规则下的命令所以在模式规则中目标可能会是多个的如果有模式匹配出多个目标就会产生所有的模式目标此时关心的是依赖的文件名和生成目标的命令这两件事模式规则示例下面这个例子表示了把所有的文件都编译成文件其中表示所有的目标的挨个值表示了所有依赖目标的挨个值这些奇怪的变量我们叫自动化变量后面会详细讲述下面的这个例子中有两个目标是模式的这条规则告诉把所有的文件都以执行然后生成和文件其中表示一个任意字符串如果我们的执行程序依赖于文件和并且文件依赖于文件如果文件被更新了那么根据上述的规则就会被执行一次于是和的依赖文件就齐了假设由生成和由生成而由和链接生成而且和其文件的依赖关系也写好那么所有的目标都会得到满足自动化变量在上述的模式规则中目标和依赖文件都是一系例的文件那么我们如何书写一个命令来完成从不同的依赖文件生成相应的目标因为在每一次的对模式规则的解析时都会是不同的目标和依赖文件自动化变量就是完成这个功能的在前面我们已经对自动化变量有所提涉相信你看到这里已对它有一个感性认识了所谓自动化变量就是这种变量会把模式中所定义的一系列的文件自动地挨个取出直至所有的符合模式的文件都取完了这种自动化变量只应出现在规则的命令中下面是所有的自动化变量及其说明表示规则中的目标文件集在模式规则中如果有多个目标那么就是匹配于目标中模式定义的集合仅当目标是函数库文件中表示规则中的目标成员名例如如果一个目标是那么就是就是如果目标不是函数库文件下是下是那么其值为空依赖目标中的第一个目标名字如果依赖目标是以模式即定义的那么将是符合模式的一系列的文件集注意其是一个一个取出来的所有比目标新的依赖目标的集合以空格分隔所有的依赖目标的集合以空格分隔如果在依赖目标中有多个重复的那么这个变量会去除重复的依赖目标只保留一份这个变量很像也是所有依赖目标的集合只是它不去除重复的依赖目标这个变量表示目标模式中及其之前的部分如果目标是并且目标的模式是那么的值就是这个变量对于构造有关联的文件名是比较有效如果目标中没有模式的定义那么也就不能被推导出但是如果目标文件的后缀是所识别的那么就是除了后缀的那一部分例如如果目标是因为是所能识别的后缀名所以的值就是这个特性是的很有可能不兼容于其它版本的所以你应该尽量避免使用除非是在隐含规则或是静态模式中如果目标中的后缀是所不能识别的那么就是空值当你希望只对更新过的依赖文件进行操作时在显式规则中很有用例如假设有一个函数库文件叫其由其它几个文件更新那么把文件打包的比较有效率的规则是在上述所列出来的自动量变量中四个变量在扩展时只会有一个文件而另三个的值是一个文件列表这七个自动化变量还可以取得文件的目录名或是在当前目录下的符合模式的文件名只需要搭配上或字样这是中老版本的特性在新版本中我们使用函数或就可以做到了的含义就是就是目录的含义就是就是文件下面是对于上面的七个变量分别加上或是的含义表示的目录部分不以斜杠作为结尾如果值是那么就是而如果中没有包含斜杠的话其值就是当前目录表示的文件部分如果值是那么就是相当于函数和上面所述的同理也是取文件的目录部分和文件部分对于上面的那个例子返回而返回分别表示了函数包文件成员的目录部分和文件部分这对于形同形式的目标中的中包含了不同的目录很有用分别表示依赖文件的目录部分和文件部分分别表示所有依赖文件的目录部分和文件部分无相同的分别表示所有依赖文件的目录部分和文件部分可以有相同的分别表示被更新的依赖文件的目录部分和文件部分最后想提醒一下的是对于为了避免产生不必要的麻烦我们最好给后面的那个特定字符都加上圆括号比如就要比要好一些还得要注意的是这些变量只使用在规则的命令中而且一般都是显式规则和静态模式规则参见前面书写规则一章其在隐含规则中并没有意义模式的匹配一般来说一个目标的模式有一个有前缀或是后缀的或是没有前后缀直接就是一个因为代表一个或多个字符所以在定义好了的模式中我们把所匹配的内容叫做茎例如所匹配的文件中就是茎因为在目标和依赖目标中同时有时依赖目标的茎会传给目标当做目标中的茎当一个模式匹配包含有斜杠实际也不经常包含的文件时那么在进行模式匹配时目录部分会首先被移开然后进行匹配成功后再把目录加回去在进行茎的传递时我们需要知道这个步骤例如有一个模式文件匹配于该模式于是就是其茎如果这个模式定义在依赖目标中而被依赖于这个模式的目标中又有个模式那么目标就是茎被传递重载内建隐含规则你可以重载内建的隐含规则或是定义一个全新的例如你可以重新构造和内建隐含规则不同的命令如你可以取消内建的隐含规则只要不在后面写命令就行如同样你也可以重新定义一个全新的隐含规则其在隐含规则中的位置取决于你在哪里写下这个规则朝前的位置就靠前老式风格的后缀规则后缀规则是一个比较老式的定义隐含规则的方法后缀规则会被模式规则逐步地取代因为模式规则更强更清晰为了和老版本的兼容同样兼容于这些东西后缀规则有两种方式双后缀和单后缀双后缀规则定义了一对后缀目标文件的后缀和依赖目标源文件的后缀如相当于单后缀规则只定义一个后缀也就是源文件的后缀如相当于后缀规则中所定义的后缀应该是所认识的如果一个后缀是所认识的那么这个规则就是单后缀规则而如果两个连在一起的后缀都被所认识那就是双后缀规则例如和都是所知道因而如果你定义了一个规则是那么其就是双后缀规则意义就是是源文件的后缀是目标文件的后缀如下示例后缀规则不允许任何的依赖文件如果有依赖文件的话那就不是后缀规则那些后缀统统被认为是文件名如这个例子就是说文件依赖于文件而不是我们想要的这样后缀规则中如果没有命令那是毫无意义的因为他也不会移去内建的隐含规则而要让知道一些特定的后缀我们可以使用伪目标来定义或是删除如把后缀和加入后缀列表中的末尾删除默认的后缀定义自己的后缀先清除默认后缀后定义自己的后缀列表的参数或也会使用得默认的后缀列表为空而变量被用来定义默认的后缀列表你可以用来改变后缀列表但请不要改变变量的值隐含规则搜索算法比如我们有一个目标叫下面是搜索目标的规则的算法请注意在下面我们没有提到后缀规则原因是所有的后缀规则在被载入内存时会被转换成模式规则如果目标是的函数库文件模式那么这个算法会被运行两次第一次是找目标如果没有找到的话那么进入第二次第二次会把当作来搜索把的目录部分分离出来叫而剩余部分叫如如果是那么就是就是创建所有匹配于或是的模式规则列表如果在模式规则列表中有匹配所有文件的模式如那么从列表中移除其它的模式移除列表中没有命令的规则对于第一个在列表中的模式规则推导其茎应该是或是匹配于模式中非空的部分计算依赖文件把依赖文件中的都替换成茎如果目标模式中没有包含斜框字符而把加在第一个依赖文件的开头测试是否所有的依赖文件都存在或是理当存在如果有一个文件被定义成另外一个规则的目标文件或者是一个显式规则的依赖文件那么这个文件就叫理当存在如果所有的依赖文件存在或是理当存在或是就没有依赖文件那么这条规则将被采用退出该算法如果经过第步没有模式规则被找到那么就做更进一步的搜索对于存在于列表中的第一个模式规则如果规则是终止规则那就忽略它继续下一条模式规则计算依赖文件同第步测试所有的依赖文件是否存在或是理当存在对于不存在的依赖文件递归调用这个算法查找他是否可以被隐含规则找到如果所有的依赖文件存在或是理当存在或是就根本没有依赖文件那么这条规则被采用退出该算法如果没有隐含规则可以使用查看规则如果有采用把的命令给使用一旦规则被找到就会执行其相当的命令而此时我们的自动化变量的值才会生成',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-04-26 10:01:49',
+  postMainColor: '',
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#18171d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f7f9fe')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+          const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+          const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+          const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+          if (t === undefined) {
+            if (isLightMode) activateLightMode()
+            else if (isDarkMode) activateDarkMode()
+            else if (isNotSpecified || hasNoSupport) {
+              const now = new Date()
+              const hour = now.getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addListener(e => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else if (t === 'light') activateLightMode()
+          else activateDarkMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 7.0.0"></head><body data-type="anzhiyu"><div id="web_bg"></div><div id="an_music_bg"></div><div id="loading-box" onclick="document.getElementById(&quot;loading-box&quot;).classList.add(&quot;loaded&quot;)"><div class="loading-bg"><img class="loading-img nolazyload" alt="加载头像" src="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/head.jpg"/><div class="loading-image-dot"></div></div></div><script>const preloader = {
+  endLoading: () => {
+    document.getElementById('loading-box').classList.add("loaded");
+  },
+  initLoading: () => {
+    document.getElementById('loading-box').classList.remove("loaded")
+  }
+}
+window.addEventListener('load',()=> { preloader.endLoading() })
+setTimeout(function(){preloader.endLoading();},10000)
+
+if (true) {
+  document.addEventListener('pjax:send', () => { preloader.initLoading() })
+  document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+}</script><link rel="stylesheet" href="https://cdn.cbd.int/anzhiyu-theme-static@1.1.10/progress_bar/progress_bar.css"/><script async="async" src="https://cdn.cbd.int/pace-js@1.2.4/pace.min.js" data-pace-options="{ &quot;restartOnRequestAfter&quot;:false,&quot;eventLag&quot;:false}"></script><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><div id="nav-group"><span id="blog_name"><a id="site-name" href="/" accesskey="h"><div class="title">foresta</div><i class="anzhiyufont anzhiyu-icon-house-chimney"></i></a></span><div class="mask-name-container"><div id="name-container"><a id="page-name" href="javascript:anzhiyu.scrollToDest(0, 500)">PAGE_NAME</a></div></div><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 文章</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/archives/"><i class="anzhiyufont anzhiyu-icon-box-archive faa-tada" style="font-size: 0.9em;"></i><span> 隧道</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/categories/"><i class="anzhiyufont anzhiyu-icon-shapes faa-tada" style="font-size: 0.9em;"></i><span> 分类</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/tags/"><i class="anzhiyufont anzhiyu-icon-tags faa-tada" style="font-size: 0.9em;"></i><span> 标签</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 友链</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/link/"><i class="anzhiyufont anzhiyu-icon-link faa-tada" style="font-size: 0.9em;"></i><span> 友人帐</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/comments/"><i class="anzhiyufont anzhiyu-icon-envelope faa-tada" style="font-size: 0.9em;"></i><span> 留言板</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 我的</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/music/"><i class="anzhiyufont anzhiyu-icon-music faa-tada" style="font-size: 0.9em;"></i><span> 音乐</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/album/"><i class="anzhiyufont anzhiyu-icon-images faa-tada" style="font-size: 0.9em;"></i><span> 相册</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/essay/"><i class="anzhiyufont anzhiyu-icon-lightbulb faa-tada" style="font-size: 0.9em;"></i><span> 即刻emo</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 关于</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/about/"><i class="anzhiyufont anzhiyu-icon-paper-plane faa-tada" style="font-size: 0.9em;"></i><span> 关于本人</span></a></li></ul></div></div></div><div id="nav-right"><div class="nav-button" id="randomPost_button"><a class="site-page" onclick="toRandomPost()" title="随机前往一个文章" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-dice"></i></a></div><div class="nav-button" id="search-button"><a class="site-page social-icon search" href="javascript:void(0);" title="搜索🔍" accesskey="s"><i class="anzhiyufont anzhiyu-icon-magnifying-glass"></i><span> 搜索</span></a></div><input id="center-console" type="checkbox"/><label class="widget" for="center-console" title="中控台" onclick="anzhiyu.switchConsole();"><i class="left"></i><i class="widget center"></i><i class="widget right"></i></label><div id="console"><div class="console-card-group-reward"><ul class="reward-all console-card"><li class="reward-item"><a href="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/wechat.jpg" target="_blank"><img class="post-qr-code-img" alt="微信" src="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/wechat.jpg"/></a><div class="post-qr-code-desc">微信</div></li><li class="reward-item"><a href="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/alipay.jpg" target="_blank"><img class="post-qr-code-img" alt="支付宝" src="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/alipay.jpg"/></a><div class="post-qr-code-desc">支付宝</div></li></ul></div><div class="console-card-group"><div class="console-card-group-left"><div class="console-card" id="card-newest-comments"><div class="card-content"><div class="author-content-item-tips">互动</div><span class="author-content-item-title"> 最新评论</span></div><div class="aside-list"><span>正在加载中...</span></div></div></div><div class="console-card-group-right"><div class="console-card tags"><div class="card-content"><div class="author-content-item-tips">兴趣点</div><span class="author-content-item-title">寻找你感兴趣的领域</span><div class="card-tags"><div class="item-headline"></div><div class="card-tag-cloud"><a href="/tags/Activation/" style="font-size: 1.05rem;">Activation<sup>1</sup></a><a href="/tags/Attention/" style="font-size: 1.05rem;">Attention<sup>2</sup></a><a href="/tags/Binary/" style="font-size: 1.05rem;">Binary<sup>1</sup></a><a href="/tags/C-C/" style="font-size: 1.05rem;">C/C++<sup>2</sup></a><a href="/tags/CNN/" style="font-size: 1.05rem;">CNN<sup>2</sup></a><a href="/tags/DGL/" style="font-size: 1.05rem;">DGL<sup>2</sup></a><a href="/tags/DL/" style="font-size: 1.05rem;">DL<sup>3</sup></a><a href="/tags/DL%E7%9F%A5%E8%AF%86/" style="font-size: 1.05rem;">DL知识<sup>1</sup></a><a href="/tags/DL%E7%9F%A5%E8%AF%86%E7%82%B9/" style="font-size: 1.05rem;">DL知识点<sup>4</sup></a><a href="/tags/GNN/" style="font-size: 1.05rem;">GNN<sup>10</sup></a><a href="/tags/Hexo/" style="font-size: 1.05rem;">Hexo<sup>2</sup></a><a href="/tags/LLM/" style="font-size: 1.05rem;">LLM<sup>1</sup></a><a href="/tags/LaTex/" style="font-size: 1.05rem;">LaTex<sup>1</sup></a><a href="/tags/Loss/" style="font-size: 1.05rem;">Loss<sup>1</sup></a><a href="/tags/PowerShell/" style="font-size: 1.05rem;">PowerShell<sup>1</sup></a><a href="/tags/Python/" style="font-size: 1.05rem;">Python<sup>1</sup></a><a href="/tags/Pytorch/" style="font-size: 1.05rem;">Pytorch<sup>6</sup></a><a href="/tags/Term/" style="font-size: 1.05rem;">Term<sup>1</sup></a><a href="/tags/Terms/" style="font-size: 1.05rem;">Terms<sup>1</sup></a><a href="/tags/Vulnerabiliity/" style="font-size: 1.05rem;">Vulnerabiliity<sup>1</sup></a><a href="/tags/Vulnerabilities/" style="font-size: 1.05rem;">Vulnerabilities<sup>19</sup></a><a href="/tags/conda/" style="font-size: 1.05rem;">conda<sup>1</sup></a><a href="/tags/git/" style="font-size: 1.05rem;">git<sup>1</sup></a><a href="/tags/overleaf/" style="font-size: 1.05rem;">overleaf<sup>2</sup></a><a href="/tags/pip/" style="font-size: 1.05rem;">pip<sup>1</sup></a><a href="/tags/sci%E6%8A%95%E7%A8%BF/" style="font-size: 1.05rem;">sci投稿<sup>1</sup></a><a href="/tags/tensor/" style="font-size: 1.05rem;">tensor<sup>2</sup></a><a href="/tags/tree-sitter/" style="font-size: 1.05rem;">tree-sitter<sup>1</sup></a><a href="/tags/%E4%BB%A3%E7%A0%81%E8%A1%8C%E7%BA%A7%E6%A3%80%E6%B5%8B/" style="font-size: 1.05rem;">代码行级检测<sup>1</sup></a><a href="/tags/%E5%9F%BA%E6%9C%AC%E6%9C%AF%E8%AF%AD/" style="font-size: 1.05rem;">基本术语<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0%E7%8E%87/" style="font-size: 1.05rem;">学习率<sup>1</sup></a><a href="/tags/%E5%AE%A1%E7%A8%BF/" style="font-size: 1.05rem;">审稿<sup>1</sup></a><a href="/tags/%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/" style="font-size: 1.05rem;">漏洞分析<sup>1</sup></a><a href="/tags/%E7%8E%AF%E5%A2%83/" style="font-size: 1.05rem;">环境<sup>2</sup></a><a href="/tags/%E7%90%86%E8%AE%BA%E7%9F%A5%E8%AF%86/" style="font-size: 1.05rem;">理论知识<sup>3</sup></a><a href="/tags/%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90/" style="font-size: 1.05rem;">软件分析<sup>5</sup></a><a href="/tags/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8/" style="font-size: 1.05rem;">软件安全<sup>27</sup></a><a href="/tags/%E8%BF%87%E7%A8%8B%E9%97%B4%E5%88%86%E6%9E%90/" style="font-size: 1.05rem;">过程间分析<sup>1</sup></a><a href="/tags/%E9%80%86%E5%90%91/" style="font-size: 1.05rem;">逆向<sup>11</sup></a><a href="/tags/%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90/" style="font-size: 1.05rem;">静态分析<sup>2</sup></a></div></div><hr/></div></div><div class="console-card history"><div class="item-headline"><i class="anzhiyufont anzhiyu-icon-box-archiv"></i><span>文章</span></div><div class="card-archives"><div class="item-headline"><i class="anzhiyufont anzhiyu-icon-archive"></i><span>归档</span></div><ul class="card-archive-list"><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2024/04/"><span class="card-archive-list-date">四月 2024</span><div class="card-archive-list-count-group"><span class="card-archive-list-count">23</span><span>篇</span></div></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2023/12/"><span class="card-archive-list-date">十二月 2023</span><div class="card-archive-list-count-group"><span class="card-archive-list-count">82</span><span>篇</span></div></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2023/10/"><span class="card-archive-list-date">十月 2023</span><div class="card-archive-list-count-group"><span class="card-archive-list-count">19</span><span>篇</span></div></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2022/12/"><span class="card-archive-list-date">十二月 2022</span><div class="card-archive-list-count-group"><span class="card-archive-list-count">8</span><span>篇</span></div></a></li></ul></div><hr/></div></div></div><div class="button-group"><div class="console-btn-item"><a class="darkmode_switchbutton" title="显示模式切换" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-moon"></i></a></div><div class="console-btn-item" id="consoleHideAside" onclick="anzhiyu.hideAsideBtn()" title="边栏显示控制"><a class="asideSwitch"><i class="anzhiyufont anzhiyu-icon-arrows-left-right"></i></a></div><div class="console-btn-item" id="consoleMusic" onclick="anzhiyu.musicToggle()" title="音乐开关"><a class="music-switch"><i class="anzhiyufont anzhiyu-icon-music"></i></a></div></div><div class="console-mask" onclick="anzhiyu.hideConsole()" href="javascript:void(0);"></div></div><div class="nav-button" id="nav-totop"><a class="totopbtn" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-arrow-up"></i><span id="percent" onclick="anzhiyu.scrollToDest(0,500)">0</span></a></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);" title="切换"><i class="anzhiyufont anzhiyu-icon-bars"></i></a></div></div></div></nav><div id="post-info"><div id="post-firstinfo"><div class="meta-firstline"><a class="post-meta-original">原创</a><span class="post-meta-categories"><span class="post-meta-separator"></span><i class="anzhiyufont anzhiyu-icon-inbox post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%88%86%E6%9E%90/" itemprop="url">二进制分析</a></span><span class="article-meta tags"><a class="article-meta__tags" href="/tags/Makefile/" tabindex="-1" itemprop="url"> <span> <i class="anzhiyufont anzhiyu-icon-hashtag"></i>Makefile</span></a></span></div></div><h1 class="post-title" itemprop="name headline">Makefile隐含规则</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="anzhiyufont anzhiyu-icon-calendar-days post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" itemprop="dateCreated datePublished" datetime="2024-04-26T02:03:03.014Z" title="发表于 2024-04-26 10:03:03">2024-04-26</time><span class="post-meta-separator"></span><i class="anzhiyufont anzhiyu-icon-history post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" itemprop="dateCreated datePublished" datetime="2024-04-26T02:01:49.623Z" title="更新于 2024-04-26 10:01:49">2024-04-26</time></span></div><div class="meta-secondline"><span class="post-meta-separator"></span><span class="post-meta-pv-cv" id="" data-flag-title="Makefile隐含规则"><i class="anzhiyufont anzhiyu-icon-fw-eye post-meta-icon"></i><span class="post-meta-label" title="阅读量">阅读量:</span><span id="busuanzi_value_page_pv"><i class="anzhiyufont anzhiyu-icon-spinner anzhiyu-spin"></i></span></span><span class="post-meta-separator">       </span><span class="post-meta-position" title="作者IP属地为河北秦皇岛"><i class="anzhiyufont anzhiyu-icon-location-dot"></i>河北秦皇岛</span><span class="post-meta-separator"></span><span class="post-meta-commentcount"><i class="anzhiyufont anzhiyu-icon-comments post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/2024/04/26/Security/binary/Makefile/8.%E9%9A%90%E5%90%AB%E8%A7%84%E5%88%99/#post-comment" tabindex="-1"><span id="twikoo-count"><i class="anzhiyufont anzhiyu-icon-spinner anzhiyu-spin"></i></span></a></span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section><div id="post-top-cover"><img class="nolazyload" id="post-top-bg" src="/img/home.jpg"></div></header><main id="blog-container"><div class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container" itemscope itemtype="https://foresta-yang.github.io/2024/04/26/Security/binary/Makefile/8.%E9%9A%90%E5%90%AB%E8%A7%84%E5%88%99/"><header><a class="post-meta-categories" href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%88%86%E6%9E%90/" itemprop="url">二进制分析</a><a href="/tags/Makefile/" tabindex="-1" itemprop="url">Makefile</a><h1 id="CrawlerTitle" itemprop="name headline">Makefile隐含规则</h1><span itemprop="author" itemscope itemtype="http://schema.org/Person">foresta.yang</span><time itemprop="dateCreated datePublished" datetime="2024-04-26T02:03:03.014Z" title="发表于 2024-04-26 10:03:03">2024-04-26</time><time itemprop="dateCreated datePublished" datetime="2024-04-26T02:01:49.623Z" title="更新于 2024-04-26 10:01:49">2024-04-26</time></header><h1 id="隐含规则"><a class="markdownIt-Anchor" href="#隐含规则"></a> 隐含规则<a target="_blank" rel="noopener" href="https://seisman.github.io/how-to-write-makefile/implicit_rules.html#id1">¶</a></h1>
+<p>在我们使用Makefile时，有一些我们会经常使用，而且使用频率非常高的东西，比如，我们编译C/C++的源程序为中间目标文件（Unix下是 <code>.o</code> 文件，Windows下是 <code>.obj</code> 文件）。本章讲述的就是一些在Makefile中的“隐含的”，早先约定了的，不需要我们再写出来的规则。</p>
+<p>“隐含规则”也就是一种惯例，make会按照这种“惯例”心照不喧地来运行，那怕我们的Makefile中没有书写这样的规则。例如，把 <code>.c</code> 文件编译成 <code>.o</code> 文件这一规则，你根本就不用写出来，make会自动推导出这种规则，并生成我们需要的 <code>.o</code> 文件。</p>
+<p>“隐含规则”会使用一些我们系统变量，我们可以改变这些系统变量的值来定制隐含规则的运行时的参数。如系统变量 <code>CFLAGS</code> 可以控制编译时的编译器参数。</p>
+<p>我们还可以通过“模式规则”的方式写下自己的隐含规则。用“后缀规则”来定义隐含规则会有许多的限制。使用“模式规则”会显得更智能和清楚，但“后缀规则”可以用来保证我们Makefile的兼容性。我们了解了“隐含规则”，可以让其为我们更好的服务，也会让我们知道一些“约定俗成”了的东西，而不至于使得我们在运行Makefile时出现一些我们觉得莫名其妙的东西。当然，任何事物都是矛盾的，水能载舟，亦可覆舟，所以，有时候“隐含规则”也会给我们造成不小的麻烦。只有了解了它，我们才能更好地使用它。</p>
+<h2 id="使用隐含规则"><a class="markdownIt-Anchor" href="#使用隐含规则"></a> 使用隐含规则<a target="_blank" rel="noopener" href="https://seisman.github.io/how-to-write-makefile/implicit_rules.html#id2">¶</a></h2>
+<p>如果要使用隐含规则生成你需要的目标，你所需要做的就是不要写出这个目标的规则。那么，make会试图去自动推导产生这个目标的规则和命令，如果 make可以自动推导生成这个目标的规则和命令，那么这个行为就是隐含规则的自动推导。当然，隐含规则是make事先约定好的一些东西。例如，我们有下面的一个Makefile：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">foo : foo.o bar.o</span><br><span class="line">    cc –o foo foo.o bar.o $(CFLAGS) $(LDFLAGS)</span><br></pre></td></tr></table></figure>
+<p>我们可以注意到，这个Makefile中并没有写下如何生成 <code>foo.o</code> 和 <code>bar.o</code> 这两目标的规则和命令。因为make的“隐含规则”功能会自动为我们自动去推导这两个目标的依赖目标和生成命令。</p>
+<p>make会在自己的“隐含规则”库中寻找可以用的规则，如果找到，那么就会使用。如果找不到，那么就会报错。在上面的那个例子中，make调用的隐含规则是，把 <code>.o</code> 的目标的依赖文件置成 <code>.c</code> ，并使用C的编译命令 <code>cc –c $(CFLAGS) foo.c</code> 来生成 <code>foo.o</code> 的目标。也就是说，我们完全没有必要写下下面的两条规则：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">foo.o : foo.c</span><br><span class="line">    cc –c foo.c $(CFLAGS)</span><br><span class="line">bar.o : bar.c</span><br><span class="line">    cc –c bar.c $(CFLAGS)</span><br></pre></td></tr></table></figure>
+<p>因为，这已经是“约定”好了的事了，make和我们约定好了用C编译器 <code>cc</code> 生成 <code>.o</code> 文件的规则，这就是隐含规则。</p>
+<p>当然，如果我们为 <code>.o</code> 文件书写了自己的规则，那么make就不会自动推导并调用隐含规则，它会按照我们写好的规则忠实地执行。</p>
+<p>还有，在make的“隐含规则库”中，每一条隐含规则都在库中有其顺序，越靠前的则是越被经常使用的，所以，这会导致我们有些时候即使我们显示地指定了目标依赖，make也不会管。如下面这条规则（没有命令）：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">foo.o : foo.p</span><br></pre></td></tr></table></figure>
+<p>依赖文件 <code>foo.p</code> （Pascal程序的源文件）有可能变得没有意义。如果目录下存在了 <code>foo.c</code> 文件，那么我们的隐含规则一样会生效，并会通过 <code>foo.c</code> 调用C的编译器生成 <code>foo.o</code> 文件。因为，在隐含规则中，Pascal的规则出现在C的规则之后，所以，make找到可以生成 <code>foo.o</code> 的C的规则就不再寻找下一条规则了。如果你确实不希望任何隐含规则推导，那么，你就不要只写出“依赖规则”，而不写命令。</p>
+<h2 id="隐含规则一览"><a class="markdownIt-Anchor" href="#隐含规则一览"></a> 隐含规则一览<a target="_blank" rel="noopener" href="https://seisman.github.io/how-to-write-makefile/implicit_rules.html#id3">¶</a></h2>
+<p>这里我们将讲述所有预先设置（也就是make内建）的隐含规则，如果我们不明确地写下规则，那么，make就会在这些规则中寻找所需要规则和命令。当然，我们也可以使用make的参数 <code>-r</code> 或 <code>--no-builtin-rules</code> 选项来取消所有的预设置的隐含规则。</p>
+<p>当然，即使是我们指定了 <code>-r</code> 参数，某些隐含规则还是会生效，因为有许多的隐含规则都是使用了“后缀规则”来定义的，所以，只要隐含规则中有 “后缀列表”（也就一系统定义在目标 <code>.SUFFIXES</code> 的依赖目标），那么隐含规则就会生效。默认的后缀列表是：.out, .a, .ln, .o, .c, .cc, .C, .p, .f, .F, .r, .y, .l, .s, .S, .mod, .sym, .def, .h, .info, .dvi, .tex, .texinfo, .texi, .txinfo, .w, .ch .web, .sh, .elc, .el。具体的细节，我们会在后面讲述。</p>
+<p>还是先来看一看常用的隐含规则吧。</p>
+<ol>
+<li>
+<p>编译C程序的隐含规则。</p>
+<p><code>&lt;n&gt;.o</code> 的目标的依赖目标会自动推导为 <code>&lt;n&gt;.c</code> ，并且其生成命令是 <code>$(CC) –c $(CPPFLAGS) $(CFLAGS)</code></p>
+</li>
+<li>
+<p>编译C++程序的隐含规则。</p>
+<p><code>&lt;n&gt;.o</code> 的目标的依赖目标会自动推导为 <code>&lt;n&gt;.cc</code> 或是 <code>&lt;n&gt;.C</code> ，并且其生成命令是 <code>$(CXX) –c $(CPPFLAGS) $(CXXFLAGS)</code> 。（建议使用 <code>.cc</code> 作为C++源文件的后缀，而不是 <code>.C</code> ）</p>
+</li>
+<li>
+<p>编译Pascal程序的隐含规则。</p>
+<p><code>&lt;n&gt;.o</code> 的目标的依赖目标会自动推导为 <code>&lt;n&gt;.p</code> ，并且其生成命令是 <code>$(PC) –c $(PFLAGS)</code> 。</p>
+</li>
+<li>
+<p>编译Fortran/Ratfor程序的隐含规则。</p>
+<p><code>&lt;n&gt;.o</code> 的目标的依赖目标会自动推导为 <code>&lt;n&gt;.r</code> 或 <code>&lt;n&gt;.F</code> 或 <code>&lt;n&gt;.f</code> ，并且其生成命令是:</p>
+<ul>
+<li><code>.f</code> <code>$(FC) –c $(FFLAGS)</code></li>
+<li><code>.F</code> <code>$(FC) –c $(FFLAGS) $(CPPFLAGS)</code></li>
+<li><code>.f</code> <code>$(FC) –c $(FFLAGS) $(RFLAGS)</code></li>
+</ul>
+</li>
+<li>
+<p>预处理Fortran/Ratfor程序的隐含规则。</p>
+<p><code>&lt;n&gt;.f</code> 的目标的依赖目标会自动推导为 <code>&lt;n&gt;.r</code> 或 <code>&lt;n&gt;.F</code> 。这个规则只是转换Ratfor 或有预处理的Fortran程序到一个标准的Fortran程序。其使用的命令是：</p>
+<ul>
+<li><code>.F</code> <code>$(FC) –F $(CPPFLAGS) $(FFLAGS)</code></li>
+<li><code>.r</code> <code>$(FC) –F $(FFLAGS) $(RFLAGS)</code></li>
+</ul>
+</li>
+<li>
+<p>编译Modula-2程序的隐含规则。</p>
+<p><code>&lt;n&gt;.sym</code> 的目标的依赖目标会自动推导为 <code>&lt;n&gt;.def</code> ，并且其生成命令是： <code>$(M2C) $(M2FLAGS) $(DEFFLAGS)</code> 。 <code>&lt;n&gt;.o</code> 的目标的依赖目标会自动推导为 <code>&lt;n&gt;.mod</code> ，并且其生成命令是： <code>$(M2C) $(M2FLAGS) $(MODFLAGS)</code> 。</p>
+</li>
+<li>
+<p>汇编和汇编预处理的隐含规则。</p>
+<p><code>&lt;n&gt;.o</code> 的目标的依赖目标会自动推导为 <code>&lt;n&gt;.s</code> ，默认使用编译器 <code>as</code> ，并且其生成命令是： <code>$ (AS) $(ASFLAGS)</code> 。 <code>&lt;n&gt;.s</code> 的目标的依赖目标会自动推导为 <code>&lt;n&gt;.S</code> ，默认使用C预编译器 <code>cpp</code> ，并且其生成命令是： <code>$(AS) $(ASFLAGS)</code> 。</p>
+</li>
+<li>
+<p>链接Object文件的隐含规则。</p>
+<p><code>&lt;n&gt;</code> 目标依赖于 <code>&lt;n&gt;.o</code> ，通过运行C的编译器来运行链接程序生成（一般是 <code>ld</code> ），其生成命令是： <code>$(CC) $(LDFLAGS) &lt;n&gt;.o $(LOADLIBES) $(LDLIBS)</code> 。这个规则对于只有一个源文件的工程有效，同时也对多个Object文件（由不同的源文件生成）的也有效。例如如下规则:</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">x : y.o z.o</span><br></pre></td></tr></table></figure>
+<p>并且 <code>x.c</code> 、 <code>y.c</code> 和 <code>z.c</code> 都存在时，隐含规则将执行如下命令:</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cc -c x.c -o x.o</span><br><span class="line">cc -c y.c -o y.o</span><br><span class="line">cc -c z.c -o z.o</span><br><span class="line">cc x.o y.o z.o -o x</span><br><span class="line">rm -f x.o</span><br><span class="line">rm -f y.o</span><br><span class="line">rm -f z.o</span><br></pre></td></tr></table></figure>
+<p>如果没有一个源文件（如上例中的x.c）和你的目标名字（如上例中的x）相关联，那么，你最好写出自己的生成规则，不然，隐含规则会报错的。</p>
+</li>
+<li>
+<p>Yacc C程序时的隐含规则。</p>
+<p><code>&lt;n&gt;.c</code> 的依赖文件被自动推导为 <code>n.y</code> （Yacc生成的文件），其生成命令是： <code>$(YACC) $(YFALGS)</code> 。（“Yacc”是一个语法分析器，关于其细节请查看相关资料）</p>
+</li>
+<li>
+<p>Lex C程序时的隐含规则。</p>
+<p><code>&lt;n&gt;.c</code> 的依赖文件被自动推导为 <code>n.l</code> （Lex生成的文件），其生成命令是： <code>$(LEX) $(LFALGS)</code> 。（关于“Lex”的细节请查看相关资料）</p>
+</li>
+<li>
+<p>Lex Ratfor程序时的隐含规则。</p>
+<p><code>&lt;n&gt;.r</code> 的依赖文件被自动推导为 <code>n.l</code> （Lex生成的文件），其生成命令是： <code>$(LEX) $(LFALGS)</code> 。</p>
+</li>
+<li>
+<p>从C程序、Yacc文件或Lex文件创建Lint库的隐含规则。</p>
+<p><code>&lt;n&gt;.ln</code> （lint生成的文件）的依赖文件被自动推导为 <code>n.c</code> ，其生成命令是： <code>$(LINT) $(LINTFALGS) $(CPPFLAGS) -i</code> 。对于 <code>&lt;n&gt;.y</code> 和 <code>&lt;n&gt;.l</code> 也是同样的规则。</p>
+</li>
+</ol>
+<h2 id="隐含规则使用的变量"><a class="markdownIt-Anchor" href="#隐含规则使用的变量"></a> 隐含规则使用的变量<a target="_blank" rel="noopener" href="https://seisman.github.io/how-to-write-makefile/implicit_rules.html#id4">¶</a></h2>
+<p>在隐含规则中的命令中，基本上都是使用了一些预先设置的变量。你可以在你的makefile中改变这些变量的值，或是在make的命令行中传入这些值，或是在你的环境变量中设置这些值，无论怎么样，只要设置了这些特定的变量，那么其就会对隐含规则起作用。当然，你也可以利用make的 <code>-R</code> 或 <code>--no–builtin-variables</code> 参数来取消你所定义的变量对隐含规则的作用。</p>
+<p>例如，第一条隐含规则——编译C程序的隐含规则的命令是 <code>$(CC) –c $(CFLAGS) $(CPPFLAGS)</code> 。Make默认的编译命令是 <code>cc</code> ，如果你把变量 <code>$(CC)</code> 重定义成 <code>gcc</code> ，把变量 <code>$(CFLAGS)</code> 重定义成 <code>-g</code> ，那么，隐含规则中的命令全部会以 <code>gcc –c -g $(CPPFLAGS)</code> 的样子来执行了。</p>
+<p>我们可以把隐含规则中使用的变量分成两种：一种是命令相关的，如 <code>CC</code> ；一种是参数相的关，如 <code>CFLAGS</code> 。下面是所有隐含规则中会用到的变量：</p>
+<h3 id="关于命令的变量"><a class="markdownIt-Anchor" href="#关于命令的变量"></a> 关于命令的变量。<a target="_blank" rel="noopener" href="https://seisman.github.io/how-to-write-makefile/implicit_rules.html#id5">¶</a></h3>
+<ul>
+<li><code>AR</code> : 函数库打包程序。默认命令是 <code>ar</code></li>
+<li><code>AS</code> : 汇编语言编译程序。默认命令是 <code>as</code></li>
+<li><code>CC</code> : C语言编译程序。默认命令是 <code>cc</code></li>
+<li><code>CXX</code> : C++语言编译程序。默认命令是 <code>g++</code></li>
+<li><code>CO</code> : 从 RCS文件中扩展文件程序。默认命令是 <code>co</code></li>
+<li><code>CPP</code> : C程序的预处理器（输出是标准输出设备）。默认命令是 <code>$(CC) –E</code></li>
+<li><code>FC</code> : Fortran 和 Ratfor 的编译器和预处理程序。默认命令是 <code>f77</code></li>
+<li><code>GET</code> : 从SCCS文件中扩展文件的程序。默认命令是 <code>get</code></li>
+<li><code>LEX</code> : Lex方法分析器程序（针对于C或Ratfor）。默认命令是 <code>lex</code></li>
+<li><code>PC</code> : Pascal语言编译程序。默认命令是 <code>pc</code></li>
+<li><code>YACC</code> : Yacc文法分析器（针对于C程序）。默认命令是 <code>yacc</code></li>
+<li><code>YACCR</code> : Yacc文法分析器（针对于Ratfor程序）。默认命令是 <code>yacc –r</code></li>
+<li><code>MAKEINFO</code> : 转换Texinfo源文件（.texi）到Info文件程序。默认命令是 <code>makeinfo</code></li>
+<li><code>TEX</code> : 从TeX源文件创建TeX DVI文件的程序。默认命令是 <code>tex</code></li>
+<li><code>TEXI2DVI</code> : 从Texinfo源文件创建军TeX DVI 文件的程序。默认命令是 <code>texi2dvi</code></li>
+<li><code>WEAVE</code> : 转换Web到TeX的程序。默认命令是 <code>weave</code></li>
+<li><code>CWEAVE</code> : 转换C Web 到 TeX的程序。默认命令是 <code>cweave</code></li>
+<li><code>TANGLE</code> : 转换Web到Pascal语言的程序。默认命令是 <code>tangle</code></li>
+<li><code>CTANGLE</code> : 转换C Web 到 C。默认命令是 <code>ctangle</code></li>
+<li><code>RM</code> : 删除文件命令。默认命令是 <code>rm –f</code></li>
+</ul>
+<h3 id="关于命令参数的变量"><a class="markdownIt-Anchor" href="#关于命令参数的变量"></a> 关于命令参数的变量<a target="_blank" rel="noopener" href="https://seisman.github.io/how-to-write-makefile/implicit_rules.html#id6">¶</a></h3>
+<p>下面的这些变量都是相关上面的命令的参数。如果没有指明其默认值，那么其默认值都是空。</p>
+<ul>
+<li><code>ARFLAGS</code> : 函数库打包程序AR命令的参数。默认值是 <code>rv</code></li>
+<li><code>ASFLAGS</code> : 汇编语言编译器参数。（当明显地调用 <code>.s</code> 或 <code>.S</code> 文件时）</li>
+<li><code>CFLAGS</code> : C语言编译器参数。</li>
+<li><code>CXXFLAGS</code> : C++语言编译器参数。</li>
+<li><code>COFLAGS</code> : RCS命令参数。</li>
+<li><code>CPPFLAGS</code> : C预处理器参数。（ C 和 Fortran 编译器也会用到）。</li>
+<li><code>FFLAGS</code> : Fortran语言编译器参数。</li>
+<li><code>GFLAGS</code> : SCCS “get”程序参数。</li>
+<li><code>LDFLAGS</code> : 链接器参数。（如： <code>ld</code> ）</li>
+<li><code>LFLAGS</code> : Lex文法分析器参数。</li>
+<li><code>PFLAGS</code> : Pascal语言编译器参数。</li>
+<li><code>RFLAGS</code> : Ratfor 程序的Fortran 编译器参数。</li>
+<li><code>YFLAGS</code> : Yacc文法分析器参数。</li>
+</ul>
+<h2 id="隐含规则链"><a class="markdownIt-Anchor" href="#隐含规则链"></a> 隐含规则链<a target="_blank" rel="noopener" href="https://seisman.github.io/how-to-write-makefile/implicit_rules.html#id7">¶</a></h2>
+<p>有些时候，一个目标可能被一系列的隐含规则所作用。例如，一个 <code>.o</code> 的文件生成，可能会是先被 Yacc的[.y]文件先成 <code>.c</code> ，然后再被C的编译器生成。我们把这一系列的隐含规则叫做“隐含规则链”。</p>
+<p>在上面的例子中，如果文件 <code>.c</code> 存在，那么就直接调用C的编译器的隐含规则，如果没有 <code>.c</code> 文件，但有一个 <code>.y</code> 文件，那么Yacc的隐含规则会被调用，生成 <code>.c</code> 文件，然后，再调用C编译的隐含规则最终由 <code>.c</code> 生成 <code>.o</code> 文件，达到目标。</p>
+<p>我们把这种 <code>.c</code> 的文件（或是目标），叫做中间目标。不管怎么样，make会努力自动推导生成目标的一切方法，不管中间目标有多少，其都会执着地把所有的隐含规则和你书写的规则全部合起来分析，努力达到目标，所以，有些时候，可能会让你觉得奇怪，怎么我的目标会这样生成？怎么我的 makefile发疯了？</p>
+<p>在默认情况下，对于中间目标，它和一般的目标有两个地方所不同：第一个不同是除非中间的目标不存在，才会引发中间规则。第二个不同的是，只要目标成功产生，那么，产生最终目标过程中，所产生的中间目标文件会被以 <code>rm -f</code> 删除。</p>
+<p>通常，一个被makefile指定成目标或是依赖目标的文件不能被当作中介。然而，你可以明显地说明一个文件或是目标是中介目标，你可以使用伪目标 <code>.INTERMEDIATE</code> 来强制声明。（如： <code>.INTERMEDIATE : mid</code> ）</p>
+<p>你也可以阻止make自动删除中间目标，要做到这一点，你可以使用伪目标 <code>.SECONDARY</code> 来强制声明（如： <code>.SECONDARY : sec</code> ）。你还可以把你的目标，以模式的方式来指定（如： <code>%.o</code> ）成伪目标 <code>.PRECIOUS</code> 的依赖目标，以保存被隐含规则所生成的中间文件。</p>
+<p>在“隐含规则链”中，禁止同一个目标出现两次或两次以上，这样一来，就可防止在make自动推导时出现无限递归的情况。</p>
+<p>Make会优化一些特殊的隐含规则，而不生成中间文件。如，从文件 <code>foo.c</code> 生成目标程序 <code>foo</code> ，按道理，make会编译生成中间文件 <code>foo.o</code> ，然后链接成 <code>foo</code> ，但在实际情况下，这一动作可以被一条 <code>cc</code> 的命令完成（ <code>cc –o foo foo.c</code> ），于是优化过的规则就不会生成中间文件。</p>
+<h2 id="定义模式规则"><a class="markdownIt-Anchor" href="#定义模式规则"></a> 定义模式规则<a target="_blank" rel="noopener" href="https://seisman.github.io/how-to-write-makefile/implicit_rules.html#id8">¶</a></h2>
+<p>你可以使用模式规则来定义一个隐含规则。一个模式规则就好像一个一般的规则，只是在规则中，目标的定义需要有 <code>%</code> 字符。 <code>%</code> 的意思是表示一个或多个任意字符。在依赖目标中同样可以使用 <code>%</code> ，只是依赖目标中的 <code>%</code> 的取值，取决于其目标。</p>
+<p>有一点需要注意的是， <code>%</code> 的展开发生在变量和函数的展开之后，变量和函数的展开发生在make载入 Makefile时，而模式规则中的 <code>%</code> 则发生在运行时。</p>
+<h3 id="模式规则介绍"><a class="markdownIt-Anchor" href="#模式规则介绍"></a> 模式规则介绍<a target="_blank" rel="noopener" href="https://seisman.github.io/how-to-write-makefile/implicit_rules.html#id9">¶</a></h3>
+<p>模式规则中，至少在规则的目标定义中要包含 <code>%</code> ，否则，就是一般的规则。目标中的 <code>%</code> 定义表示对文件名的匹配， <code>%</code> 表示长度任意的非空字符串。例如： <code>%.c</code> 表示以 <code>.c</code> 结尾的文件名（文件名的长度至少为3），而 <code>s.%.c</code> 则表示以 <code>s.</code> 开头， <code>.c</code> 结尾的文件名（文件名的长度至少为5）。</p>
+<p>如果 <code>%</code> 定义在目标中，那么，依赖中的 <code>%</code> 的值决定了目标中的 <code>%</code> 的值，也就是说，依赖中的模式的 <code>%</code> 决定了目标中 <code>%</code> 的样子。例如有一个模式规则如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">%.o : %.c ; &lt;command ......&gt;;</span><br></pre></td></tr></table></figure>
+<p>其含义是，指出了怎么从所有的 <code>.c</code> 文件生成相应的 <code>.o</code> 文件的规则。如果要生成的目标是 <code>a.o b.o</code> ，那么 <code>%c</code> 就是 <code>a.c b.c</code> 。</p>
+<p>一旦依赖目标中的 <code>%</code> 模式被确定，那么，make会被要求去匹配当前目录下所有的文件名，一旦找到，make就会规则下的命令，所以，在模式规则中，目标可能会是多个的，如果有模式匹配出多个目标，make就会产生所有的模式目标，此时，make关心的是依赖的文件名和生成目标的命令这两件事。</p>
+<h3 id="模式规则示例"><a class="markdownIt-Anchor" href="#模式规则示例"></a> 模式规则示例<a target="_blank" rel="noopener" href="https://seisman.github.io/how-to-write-makefile/implicit_rules.html#id10">¶</a></h3>
+<p>下面这个例子表示了,把所有的 <code>.c</code> 文件都编译成 <code>.o</code> 文件.</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">%.o : %.c</span><br><span class="line">    $(CC) -c $(CFLAGS) $(CPPFLAGS) $&lt; -o $@</span><br></pre></td></tr></table></figure>
+<p>其中， <code>$@</code> 表示所有的目标的挨个值， <code>$&lt;</code> 表示了所有依赖目标的挨个值。这些奇怪的变量我们叫“自动化变量”，后面会详细讲述。</p>
+<p>下面的这个例子中有两个目标是模式的：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">%.tab.c %.tab.h: %.y</span><br><span class="line">    bison -d $&lt;</span><br></pre></td></tr></table></figure>
+<p>这条规则告诉make把所有的 <code>.y</code> 文件都以 <code>bison -d &lt;n&gt;.y</code> 执行，然后生成 <code>&lt;n&gt;.tab.c</code> 和 <code>&lt;n&gt;.tab.h</code> 文件。（其中， <code>&lt;n&gt;</code> 表示一个任意字符串）。如果我们的执行程序 <code>foo</code> 依赖于文件 <code>parse.tab.o</code> 和 <code>scan.o</code> ，并且文件 <code>scan.o</code> 依赖于文件 <code>parse.tab.h</code> ，如果 <code>parse.y</code> 文件被更新了，那么根据上述的规则， <code>bison -d parse.y</code> 就会被执行一次，于是， <code>parse.tab.o</code> 和 <code>scan.o</code> 的依赖文件就齐了。（假设， <code>parse.tab.o</code> 由 <code>parse.tab.c</code> 生成，和 <code>scan.o</code> 由 <code>scan.c</code> 生成，而 <code>foo</code> 由 <code>parse.tab.o</code> 和 <code>scan.o</code> 链接生成，而且 <code>foo</code> 和其 <code>.o</code> 文件的依赖关系也写好，那么，所有的目标都会得到满足）</p>
+<h3 id="自动化变量"><a class="markdownIt-Anchor" href="#自动化变量"></a> 自动化变量<a target="_blank" rel="noopener" href="https://seisman.github.io/how-to-write-makefile/implicit_rules.html#id11">¶</a></h3>
+<p>在上述的模式规则中，目标和依赖文件都是一系例的文件，那么我们如何书写一个命令来完成从不同的依赖文件生成相应的目标？因为在每一次的对模式规则的解析时，都会是不同的目标和依赖文件。</p>
+<p>自动化变量就是完成这个功能的。在前面，我们已经对自动化变量有所提涉，相信你看到这里已对它有一个感性认识了。所谓自动化变量，就是这种变量会把模式中所定义的一系列的文件自动地挨个取出，直至所有的符合模式的文件都取完了。这种自动化变量只应出现在规则的命令中。</p>
+<p>下面是所有的自动化变量及其说明：</p>
+<ul>
+<li><code>$@</code> : 表示规则中的目标文件集。在模式规则中，如果有多个目标，那么， <code>$@</code> 就是匹配于目标中模式定义的集合。</li>
+<li><code>$%</code> : 仅当目标是函数库文件中，表示规则中的目标成员名。例如，如果一个目标是 <code>foo.a(bar.o)</code> ，那么， <code>$%</code> 就是 <code>bar.o</code> ， <code>$@</code> 就是 <code>foo.a</code> 。如果目标不是函数库文件（Unix下是 <code>.a</code> ，Windows下是 <code>.lib</code> ），那么，其值为空。</li>
+<li><code>$&lt;</code> : 依赖目标中的第一个目标名字。如果依赖目标是以模式（即 <code>%</code> ）定义的，那么 <code>$&lt;</code> 将是符合模式的一系列的文件集。注意，其是一个一个取出来的。</li>
+<li><code>$?</code> : 所有比目标新的依赖目标的集合。以空格分隔。</li>
+<li><code>$^</code> : 所有的依赖目标的集合。以空格分隔。如果在依赖目标中有多个重复的，那么这个变量会去除重复的依赖目标，只保留一份。</li>
+<li><code>$+</code> : 这个变量很像 <code>$^</code> ，也是所有依赖目标的集合。只是它不去除重复的依赖目标。</li>
+<li><code>$*</code> : 这个变量表示目标模式中 <code>%</code> 及其之前的部分。如果目标是 <code>dir/a.foo.b</code> ，并且目标的模式是 <code>a.%.b</code> ，那么， <code>$*</code> 的值就是 <code>dir/foo</code> 。这个变量对于构造有关联的文件名是比较有效。如果目标中没有模式的定义，那么 <code>$*</code> 也就不能被推导出，但是，如果目标文件的后缀是make所识别的，那么 <code>$*</code> 就是除了后缀的那一部分。例如：如果目标是 <code>foo.c</code> ，因为 <code>.c</code> 是make所能识别的后缀名，所以， <code>$*</code> 的值就是 <code>foo</code> 。这个特性是GNU make的，很有可能不兼容于其它版本的make，所以，你应该尽量避免使用 <code>$*</code> ，除非是在隐含规则或是静态模式中。如果目标中的后缀是make所不能识别的，那么 <code>$*</code> 就是空值。</li>
+</ul>
+<p>当你希望只对更新过的依赖文件进行操作时， <code>$?</code> 在显式规则中很有用，例如，假设有一个函数库文件叫 <code>lib</code> ，其由其它几个object文件更新。那么把object文件打包的比较有效率的Makefile规则是：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">lib : foo.o bar.o lose.o win.o</span><br><span class="line">    ar r lib $?</span><br></pre></td></tr></table></figure>
+<p>在上述所列出来的自动量变量中。四个变量（ <code>$@</code> 、 <code>$&lt;</code> 、 <code>$%</code> 、 <code>$*</code> ）在扩展时只会有一个文件，而另三个的值是一个文件列表。这七个自动化变量还可以取得文件的目录名或是在当前目录下的符合模式的文件名，只需要搭配上 <code>D</code> 或 <code>F</code> 字样。这是GNU make中老版本的特性，在新版本中，我们使用函数 <code>dir</code> 或 <code>notdir</code> 就可以做到了。 <code>D</code> 的含义就是Directory，就是目录， <code>F</code> 的含义就是File，就是文件。</p>
+<p>下面是对于上面的七个变量分别加上 <code>D</code> 或是 <code>F</code> 的含义：</p>
+<ul>
+<li>
+<p><code>$(@D)</code></p>
+<p>表示 <code>$@</code> 的目录部分（不以斜杠作为结尾），如果 <code>$@</code> 值是 <code>dir/foo.o</code> ，那么 <code>$(@D)</code> 就是 <code>dir</code> ，而如果 <code>$@</code> 中没有包含斜杠的话，其值就是 <code>.</code> （当前目录）。</p>
+</li>
+<li>
+<p><code>$(@F)</code></p>
+<p>表示 <code>$@</code> 的文件部分，如果 <code>$@</code> 值是 <code>dir/foo.o</code> ，那么 <code>$(@F)</code> 就是 <code>foo.o</code> ， <code>$(@F)</code> 相当于函数 <code>$(notdir $@)</code> 。</p>
+</li>
+<li>
+<p><code>$(*D)</code>, <code>$(*F)</code></p>
+<p>和上面所述的同理，也是取文件的目录部分和文件部分。对于上面的那个例子， <code>$(*D)</code> 返回 <code>dir</code> ，而 <code>$(*F)</code> 返回 <code>foo</code></p>
+</li>
+<li>
+<p><code>$(%D)</code>, <code>$(%F)</code></p>
+<p>分别表示了函数包文件成员的目录部分和文件部分。这对于形同 <code>archive(member)</code> 形式的目标中的 <code>member</code> 中包含了不同的目录很有用。</p>
+</li>
+<li>
+<p><code>$(&lt;D)</code>, <code>$(&lt;F)</code></p>
+<p>分别表示依赖文件的目录部分和文件部分。</p>
+</li>
+<li>
+<p><code>$(^D)</code>, <code>$(^F)</code></p>
+<p>分别表示所有依赖文件的目录部分和文件部分。（无相同的）</p>
+</li>
+<li>
+<p><code>$(+D)</code>, <code>$(+F)</code></p>
+<p>分别表示所有依赖文件的目录部分和文件部分。（可以有相同的）</p>
+</li>
+<li>
+<p><code>$(?D)</code>, <code>$(?F)</code></p>
+<p>分别表示被更新的依赖文件的目录部分和文件部分。</p>
+</li>
+</ul>
+<p>最后想提醒一下的是，对于 <code>$&lt;</code> ，为了避免产生不必要的麻烦，我们最好给 <code>$</code> 后面的那个特定字符都加上圆括号，比如， <code>$(&lt;)</code> 就要比 <code>$&lt;</code> 要好一些。</p>
+<p>还得要注意的是，这些变量只使用在规则的命令中，而且一般都是“显式规则”和“静态模式规则”（参见前面“书写规则”一章）。其在隐含规则中并没有意义。</p>
+<h3 id="模式的匹配"><a class="markdownIt-Anchor" href="#模式的匹配"></a> 模式的匹配<a target="_blank" rel="noopener" href="https://seisman.github.io/how-to-write-makefile/implicit_rules.html#id12">¶</a></h3>
+<p>一般来说，一个目标的模式有一个有前缀或是后缀的 <code>%</code> ，或是没有前后缀，直接就是一个 <code>%</code> 。因为 <code>%</code> 代表一个或多个字符，所以在定义好了的模式中，我们把 <code>%</code> 所匹配的内容叫做“茎”，例如 <code>%.c</code> 所匹配的文件“test.c”中“test”就是“茎”。因为在目标和依赖目标中同时有 <code>%</code> 时，依赖目标的“茎”会传给目标，当做目标中的“茎”。</p>
+<p>当一个模式匹配包含有斜杠（实际也不经常包含）的文件时，那么在进行模式匹配时，目录部分会首先被移开，然后进行匹配，成功后，再把目录加回去。在进行“茎”的传递时，我们需要知道这个步骤。例如有一个模式 <code>e%t</code> ，文件 <code>src/eat</code> 匹配于该模式，于是 <code>src/a</code> 就是其“茎”，如果这个模式定义在依赖目标中，而被依赖于这个模式的目标中又有个模式 <code>c%r</code> ，那么，目标就是 <code>src/car</code> 。（“茎”被传递）</p>
+<h3 id="重载内建隐含规则"><a class="markdownIt-Anchor" href="#重载内建隐含规则"></a> 重载内建隐含规则<a target="_blank" rel="noopener" href="https://seisman.github.io/how-to-write-makefile/implicit_rules.html#id13">¶</a></h3>
+<p>你可以重载内建的隐含规则（或是定义一个全新的），例如你可以重新构造和内建隐含规则不同的命令，如：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">%.o : %.c</span><br><span class="line">    $(CC) -c $(CPPFLAGS) $(CFLAGS) -D$(date)</span><br></pre></td></tr></table></figure>
+<p>你可以取消内建的隐含规则，只要不在后面写命令就行。如：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">%.o : %.s</span><br></pre></td></tr></table></figure>
+<p>同样，你也可以重新定义一个全新的隐含规则，其在隐含规则中的位置取决于你在哪里写下这个规则。朝前的位置就靠前。</p>
+<h2 id="老式风格的后缀规则"><a class="markdownIt-Anchor" href="#老式风格的后缀规则"></a> 老式风格的“后缀规则”<a target="_blank" rel="noopener" href="https://seisman.github.io/how-to-write-makefile/implicit_rules.html#id14">¶</a></h2>
+<p>后缀规则是一个比较老式的定义隐含规则的方法。后缀规则会被模式规则逐步地取代。因为模式规则更强更清晰。为了和老版本的Makefile兼容，GNU make同样兼容于这些东西。后缀规则有两种方式：“双后缀”和“单后缀”。</p>
+<p>双后缀规则定义了一对后缀：目标文件的后缀和依赖目标（源文件）的后缀。如 <code>.c.o</code> 相当于 <code>%o : %c</code> 。单后缀规则只定义一个后缀，也就是源文件的后缀。如 <code>.c</code> 相当于 <code>% : %.c</code> 。</p>
+<p>后缀规则中所定义的后缀应该是make所认识的，如果一个后缀是make所认识的，那么这个规则就是单后缀规则，而如果两个连在一起的后缀都被make所认识，那就是双后缀规则。例如： <code>.c</code> 和 <code>.o</code> 都是make所知道。因而，如果你定义了一个规则是 <code>.c.o</code> 那么其就是双后缀规则，意义就是 <code>.c</code> 是源文件的后缀， <code>.o</code> 是目标文件的后缀。如下示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">.c.o:</span><br><span class="line">    $(CC) -c $(CFLAGS) $(CPPFLAGS) -o $@ $&lt;</span><br></pre></td></tr></table></figure>
+<p>后缀规则不允许任何的依赖文件，如果有依赖文件的话，那就不是后缀规则，那些后缀统统被认为是文件名，如：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">.c.o: foo.h</span><br><span class="line">    $(CC) -c $(CFLAGS) $(CPPFLAGS) -o $@ $&lt;</span><br></pre></td></tr></table></figure>
+<p>这个例子，就是说，文件 <code>.c.o</code> 依赖于文件 <code>foo.h</code> ，而不是我们想要的这样：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">%.o: %.c foo.h</span><br><span class="line">    $(CC) -c $(CFLAGS) $(CPPFLAGS) -o $@ $&lt;</span><br></pre></td></tr></table></figure>
+<p>后缀规则中，如果没有命令，那是毫无意义的。因为他也不会移去内建的隐含规则。</p>
+<p>而要让make知道一些特定的后缀，我们可以使用伪目标 <code>.SUFFIXES</code> 来定义或是删除，如：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">.SUFFIXES: .hack .win</span><br></pre></td></tr></table></figure>
+<p>把后缀 <code>.hack</code> 和 <code>.win</code> 加入后缀列表中的末尾。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">.SUFFIXES:              # 删除默认的后缀</span><br><span class="line">.SUFFIXES: .c .o .h   # 定义自己的后缀</span><br></pre></td></tr></table></figure>
+<p>先清除默认后缀，后定义自己的后缀列表。</p>
+<p>make的参数 <code>-r</code> 或 <code>-no-builtin-rules</code> 也会使用得默认的后缀列表为空。而变量 <code>SUFFIXE</code> 被用来定义默认的后缀列表，你可以用 <code>.SUFFIXES</code> 来改变后缀列表，但请不要改变变量 <code>SUFFIXE</code> 的值。</p>
+<h2 id="隐含规则搜索算法"><a class="markdownIt-Anchor" href="#隐含规则搜索算法"></a> 隐含规则搜索算法<a target="_blank" rel="noopener" href="https://seisman.github.io/how-to-write-makefile/implicit_rules.html#id15">¶</a></h2>
+<p>比如我们有一个目标叫 T。下面是搜索目标T的规则的算法。请注意，在下面，我们没有提到后缀规则，原因是，所有的后缀规则在Makefile被载入内存时，会被转换成模式规则。如果目标是 <code>archive(member)</code> 的函数库文件模式，那么这个算法会被运行两次，第一次是找目标T，如果没有找到的话，那么进入第二次，第二次会把 <code>member</code> 当作T来搜索。</p>
+<ol>
+<li>把T的目录部分分离出来。叫D，而剩余部分叫N。（如：如果T是 <code>src/foo.o</code> ，那么，D就是 <code>src/</code> ，N就是 <code>foo.o</code> ）</li>
+<li>创建所有匹配于T或是N的模式规则列表。</li>
+<li>如果在模式规则列表中有匹配所有文件的模式，如 <code>%</code> ，那么从列表中移除其它的模式。</li>
+<li>移除列表中没有命令的规则。</li>
+<li>对于第一个在列表中的模式规则：
+<ol>
+<li>推导其“茎”S，S应该是T或是N匹配于模式中 <code>%</code> 非空的部分。</li>
+<li>计算依赖文件。把依赖文件中的 <code>%</code> 都替换成“茎”S。如果目标模式中没有包含斜框字符，而把D加在第一个依赖文件的开头。</li>
+<li>测试是否所有的依赖文件都存在或是理当存在。（如果有一个文件被定义成另外一个规则的目标文件，或者是一个显式规则的依赖文件，那么这个文件就叫“理当存在”）</li>
+<li>如果所有的依赖文件存在或是理当存在，或是就没有依赖文件。那么这条规则将被采用，退出该算法。</li>
+</ol>
+</li>
+<li>如果经过第5步，没有模式规则被找到，那么就做更进一步的搜索。对于存在于列表中的第一个模式规则：
+<ol>
+<li>如果规则是终止规则，那就忽略它，继续下一条模式规则。</li>
+<li>计算依赖文件。（同第5步）</li>
+<li>测试所有的依赖文件是否存在或是理当存在。</li>
+<li>对于不存在的依赖文件，递归调用这个算法查找他是否可以被隐含规则找到。</li>
+<li>如果所有的依赖文件存在或是理当存在，或是就根本没有依赖文件。那么这条规则被采用，退出该算法。</li>
+<li>如果没有隐含规则可以使用，查看 <code>.DEFAULT</code> 规则，如果有，采用，把 <code>.DEFAULT</code> 的命令给T使用。</li>
+</ol>
+</li>
+</ol>
+<p>一旦规则被找到，就会执行其相当的命令，而此时，我们的自动化变量的值才会生成。</p>
+</article><div class="post-copyright"><div class="copyright-cc-box"><i class="anzhiyufont anzhiyu-icon-copyright"></i></div><div class="post-copyright__author_box"><a class="post-copyright__author_img" target="_blank" rel="noopener" href="https://github.com/foresta-yang.github.io" title="头像"><img class="post-copyright__author_img_back" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/head.jpg" title="头像" alt="头像"><img class="post-copyright__author_img_front" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/head.jpg" title="头像" alt="头像"></a><div class="post-copyright__author_name">foresta.yang</div><div class="post-copyright__author_desc"></div></div><div class="post-copyright__post__info"><a class="post-copyright__original" title="该文章为原创文章，注意版权协议" href="https://foresta-yang.github.io/2024/04/26/Security/binary/Makefile/8.%E9%9A%90%E5%90%AB%E8%A7%84%E5%88%99/">原创</a><a class="post-copyright-title"><span onclick="rm.copyPageUrl('https://foresta-yang.github.io/2024/04/26/Security/binary/Makefile/8.%E9%9A%90%E5%90%AB%E8%A7%84%E5%88%99/')">Makefile隐含规则</span></a></div><div class="post-tools" id="post-tools"><div class="post-tools-left"><div class="rewardLeftButton"><div class="post-reward" onclick="anzhiyu.addRewardMask()"><div class="reward-button button--animated" title="赞赏作者"><i class="anzhiyufont anzhiyu-icon-hand-heart-fill"></i>打赏作者</div><div class="reward-main"><div class="reward-all"><span class="reward-title">感谢你赐予我前进的力量</span><ul class="reward-group"><li class="reward-item"><a href="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/wechat.jpg" target="_blank"><img class="post-qr-code-img" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/wechat.jpg" alt="微信"/></a><div class="post-qr-code-desc">微信</div></li><li class="reward-item"><a href="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/alipay.jpg" target="_blank"><img class="post-qr-code-img" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/alipay.jpg" alt="支付宝"/></a><div class="post-qr-code-desc">支付宝</div></li></ul><a class="reward-main-btn" href="/about/#about-reward" target="_blank"><div class="reward-text">赞赏者名单</div><div class="reward-dec">因为你们的支持让我意识到写文章的价值🙏</div></a></div></div></div><div id="quit-box" onclick="anzhiyu.removeRewardMask()" style="display: none"></div></div><div class="shareRight"><div class="share-link mobile"><div class="share-qrcode"><div class="share-button" title="使用手机访问这篇文章"><i class="anzhiyufont anzhiyu-icon-qrcode"></i></div><div class="share-main"><div class="share-main-all"><div id="qrcode" title="https://foresta-yang.github.io/2024/04/26/Security/binary/Makefile/8.%E9%9A%90%E5%90%AB%E8%A7%84%E5%88%99/"></div><div class="reward-dec">使用手机访问这篇文章</div></div></div></div></div><script>function copyCurrentPageUrl() {
+  var currentPageUrl = window.location.href;
+  var input = document.createElement("input");
+  input.setAttribute("value", currentPageUrl);
+  document.body.appendChild(input);
+  input.select();
+  input.setSelectionRange(0, 99999);
+  document.execCommand("copy");
+  document.body.removeChild(input);
+}</script><div class="share-link copyurl"><div class="share-button" id="post-share-url" title="复制链接" onclick="copyCurrentPageUrl()"><i class="anzhiyufont anzhiyu-icon-link"></i></div></div></div></div></div><div class="post-copyright__notice"><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://foresta-yang.github.io" target="_blank">foresta</a>！</span></div></div><div class="post-tools-right"><div class="tag_share"><div class="post-meta__box"><div class="post-meta__box__tag-list"><a class="post-meta__box__tags" href="/tags/Makefile/"><span class="tags-punctuation"> <i class="anzhiyufont anzhiyu-icon-tag"></i></span>Makefile<span class="tagsPageCount">11</span></a></div></div></div><div class="post_share"><div class="social-share" data-image="/img/cover-default.webp" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.cbd.int/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"/><script src="https://cdn.cbd.int/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer="defer"></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2024/04/26/Security/binary/Makefile/7.make%E7%9A%84%E8%BF%90%E8%A1%8C/"><img class="prev-cover" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="/img/cover-default.webp" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">make运行</div></div></a></div><div class="next-post pull-right"><a href="/2024/04/26/Security/binary/Makefile/9.%E4%BD%BF%E7%94%A8make%E6%9B%B4%E6%96%B0%E5%87%BD%E6%95%B0%E5%BA%93%E6%96%87%E4%BB%B6/"><img class="next-cover" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="/img/cover-default.webp" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">使用make更新函数库文件</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="anzhiyufont anzhiyu-icon-thumbs-up fa-fw" style="font-size: 1.5rem; margin-right: 4px"></i><span>喜欢这篇文章的人也看了</span></div><div class="relatedPosts-list"><div><a href="/2024/04/26/Security/binary/Makefile/0.%E6%A6%82%E8%BF%B0/" title="Makefile概述"><img class="cover" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="/img/cover-default.webp" alt="cover"><div class="content is-center"><div class="date"><i class="anzhiyufont anzhiyu-icon-calendar-days fa-fw"></i> 2024-04-26</div><div class="title">Makefile概述</div></div></a></div><div><a href="/2024/04/26/Security/binary/Makefile/1.Makefile%E4%BB%8B%E7%BB%8D/" title="makefile介绍"><img class="cover" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="/img/cover-default.webp" alt="cover"><div class="content is-center"><div class="date"><i class="anzhiyufont anzhiyu-icon-calendar-days fa-fw"></i> 2024-04-26</div><div class="title">makefile介绍</div></div></a></div><div><a href="/2024/04/26/Security/binary/Makefile/2.%E4%B9%A6%E5%86%99%E8%A7%84%E5%88%99/" title="Makefile书写规则"><img class="cover" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="/img/cover-default.webp" alt="cover"><div class="content is-center"><div class="date"><i class="anzhiyufont anzhiyu-icon-calendar-days fa-fw"></i> 2024-04-26</div><div class="title">Makefile书写规则</div></div></a></div><div><a href="/2024/04/26/Security/binary/Makefile/3.%E4%B9%A6%E5%86%99%E5%91%BD%E4%BB%A4/" title="Make书写命令"><img class="cover" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="/img/cover-default.webp" alt="cover"><div class="content is-center"><div class="date"><i class="anzhiyufont anzhiyu-icon-calendar-days fa-fw"></i> 2024-04-26</div><div class="title">Make书写命令</div></div></a></div><div><a href="/2024/04/26/Security/binary/Makefile/5.%E4%BD%BF%E7%94%A8%E6%9D%A1%E4%BB%B6%E5%88%A4%E6%96%AD/" title="Makefile使用条件判断"><img class="cover" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="/img/cover-default.webp" alt="cover"><div class="content is-center"><div class="date"><i class="anzhiyufont anzhiyu-icon-calendar-days fa-fw"></i> 2024-04-26</div><div class="title">Makefile使用条件判断</div></div></a></div><div><a href="/2024/04/26/Security/binary/Makefile/4.%E4%BD%BF%E7%94%A8%E5%8F%98%E9%87%8F/" title="Makefile使用变量"><img class="cover" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="/img/cover-default.webp" alt="cover"><div class="content is-center"><div class="date"><i class="anzhiyufont anzhiyu-icon-calendar-days fa-fw"></i> 2024-04-26</div><div class="title">Makefile使用变量</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="anzhiyufont anzhiyu-icon-comments"></i><span> 评论</span></div><div class="comment-randomInfo"><a onclick="anzhiyu.addRandomCommentInfo()" href="javascript:void(0)">匿名评论</a><a href="/privacy" style="margin-left: 4px">隐私政策</a></div><div class="comment-tips" id="comment-tips"><span>✅ 你无需删除空行，直接评论以获取最佳展示效果</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div><div class="comment-barrage"></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="card-content"><div class="author-info-avatar"><img class="avatar-img" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://foresta.oss-cn-beijing.aliyuncs.com/imgs/head.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__description">享受孤独</div><div class="author-info__bottom-group"><a class="author-info__bottom-group-left" href="/"><h1 class="author-info__name">foresta.yang</h1><div class="author-info__desc"></div></a><div class="card-info-social-icons is-center"><a class="social-icon faa-parent animated-hover" href="https://github.com/foresta-yang.github.io" target="_blank" title="Github"><i class="anzhiyufont anzhiyu-icon-github"></i></a></div></div></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="anzhiyufont anzhiyu-icon-bars"></i><span>文章目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%9A%90%E5%90%AB%E8%A7%84%E5%88%99"><span class="toc-number">1.</span> <span class="toc-text"> 隐含规则</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E9%9A%90%E5%90%AB%E8%A7%84%E5%88%99"><span class="toc-number">1.1.</span> <span class="toc-text"> 使用隐含规则</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9A%90%E5%90%AB%E8%A7%84%E5%88%99%E4%B8%80%E8%A7%88"><span class="toc-number">1.2.</span> <span class="toc-text"> 隐含规则一览</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9A%90%E5%90%AB%E8%A7%84%E5%88%99%E4%BD%BF%E7%94%A8%E7%9A%84%E5%8F%98%E9%87%8F"><span class="toc-number">1.3.</span> <span class="toc-text"> 隐含规则使用的变量</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E4%BA%8E%E5%91%BD%E4%BB%A4%E7%9A%84%E5%8F%98%E9%87%8F"><span class="toc-number">1.3.1.</span> <span class="toc-text"> 关于命令的变量。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E4%BA%8E%E5%91%BD%E4%BB%A4%E5%8F%82%E6%95%B0%E7%9A%84%E5%8F%98%E9%87%8F"><span class="toc-number">1.3.2.</span> <span class="toc-text"> 关于命令参数的变量</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9A%90%E5%90%AB%E8%A7%84%E5%88%99%E9%93%BE"><span class="toc-number">1.4.</span> <span class="toc-text"> 隐含规则链</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89%E6%A8%A1%E5%BC%8F%E8%A7%84%E5%88%99"><span class="toc-number">1.5.</span> <span class="toc-text"> 定义模式规则</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A8%A1%E5%BC%8F%E8%A7%84%E5%88%99%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.5.1.</span> <span class="toc-text"> 模式规则介绍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A8%A1%E5%BC%8F%E8%A7%84%E5%88%99%E7%A4%BA%E4%BE%8B"><span class="toc-number">1.5.2.</span> <span class="toc-text"> 模式规则示例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%8A%A8%E5%8C%96%E5%8F%98%E9%87%8F"><span class="toc-number">1.5.3.</span> <span class="toc-text"> 自动化变量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%8C%B9%E9%85%8D"><span class="toc-number">1.5.4.</span> <span class="toc-text"> 模式的匹配</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%87%8D%E8%BD%BD%E5%86%85%E5%BB%BA%E9%9A%90%E5%90%AB%E8%A7%84%E5%88%99"><span class="toc-number">1.5.5.</span> <span class="toc-text"> 重载内建隐含规则</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%80%81%E5%BC%8F%E9%A3%8E%E6%A0%BC%E7%9A%84%E5%90%8E%E7%BC%80%E8%A7%84%E5%88%99"><span class="toc-number">1.6.</span> <span class="toc-text"> 老式风格的“后缀规则”</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9A%90%E5%90%AB%E8%A7%84%E5%88%99%E6%90%9C%E7%B4%A2%E7%AE%97%E6%B3%95"><span class="toc-number">1.7.</span> <span class="toc-text"> 隐含规则搜索算法</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="anzhiyufont anzhiyu-icon-history"></i><span>最近发布</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2024/04/26/Security/software%20security/%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86%E7%AE%80%E4%BB%8B/" title="软件的加密与解密"><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="/img/cover-default.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="软件的加密与解密"/></a><div class="content"><a class="title" href="/2024/04/26/Security/software%20security/%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86%E7%AE%80%E4%BB%8B/" title="软件的加密与解密">软件的加密与解密</a><time datetime="2024-04-26T02:34:31.425Z" title="发表于 2024-04-26 10:34:31">2024-04-26</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/04/26/Security/binary/%E5%BC%80%E6%BA%90%E5%BC%95%E6%93%8E%E6%A1%86%E6%9E%B6/" title="逆向工程中不得不说的优秀开源引擎框架Capstone, Keystone, Unicorn, Qemu 以及 QiLing 等工具"><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="/img/cover-default.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="逆向工程中不得不说的优秀开源引擎框架Capstone, Keystone, Unicorn, Qemu 以及 QiLing 等工具"/></a><div class="content"><a class="title" href="/2024/04/26/Security/binary/%E5%BC%80%E6%BA%90%E5%BC%95%E6%93%8E%E6%A1%86%E6%9E%B6/" title="逆向工程中不得不说的优秀开源引擎框架Capstone, Keystone, Unicorn, Qemu 以及 QiLing 等工具">逆向工程中不得不说的优秀开源引擎框架Capstone, Keystone, Unicorn, Qemu 以及 QiLing 等工具</a><time datetime="2024-04-26T02:05:47.274Z" title="发表于 2024-04-26 10:05:47">2024-04-26</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/04/26/Security/binary/Makefile/9.%E4%BD%BF%E7%94%A8make%E6%9B%B4%E6%96%B0%E5%87%BD%E6%95%B0%E5%BA%93%E6%96%87%E4%BB%B6/" title="使用make更新函数库文件"><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="/img/cover-default.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="使用make更新函数库文件"/></a><div class="content"><a class="title" href="/2024/04/26/Security/binary/Makefile/9.%E4%BD%BF%E7%94%A8make%E6%9B%B4%E6%96%B0%E5%87%BD%E6%95%B0%E5%BA%93%E6%96%87%E4%BB%B6/" title="使用make更新函数库文件">使用make更新函数库文件</a><time datetime="2024-04-26T02:03:05.092Z" title="发表于 2024-04-26 10:03:05">2024-04-26</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/04/26/Security/binary/Makefile/8.%E9%9A%90%E5%90%AB%E8%A7%84%E5%88%99/" title="Makefile隐含规则"><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="/img/cover-default.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Makefile隐含规则"/></a><div class="content"><a class="title" href="/2024/04/26/Security/binary/Makefile/8.%E9%9A%90%E5%90%AB%E8%A7%84%E5%88%99/" title="Makefile隐含规则">Makefile隐含规则</a><time datetime="2024-04-26T02:03:03.014Z" title="发表于 2024-04-26 10:03:03">2024-04-26</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/04/26/Security/binary/Makefile/7.make%E7%9A%84%E8%BF%90%E8%A1%8C/" title="make运行"><img src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="/img/cover-default.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="make运行"/></a><div class="content"><a class="title" href="/2024/04/26/Security/binary/Makefile/7.make%E7%9A%84%E8%BF%90%E8%A1%8C/" title="make运行">make运行</a><time datetime="2024-04-26T02:03:01.057Z" title="发表于 2024-04-26 10:03:01">2024-04-26</time></div></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2023 - 2024 By foresta.yang</div></div></footer></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="sidebar-site-data site-data is-center"><a href="/archives/" title="archive"><div class="headline">文章</div><div class="length-num">132</div></a><a href="/tags/" title="tag"><div class="headline">标签</div><div class="length-num">49</div></a><a href="/categories/" title="category"><div class="headline">分类</div><div class="length-num">18</div></a></div><span class="sidebar-menu-item-title">功能</span><div class="sidebar-menu-item"><a class="darkmode_switchbutton menu-child" href="javascript:void(0);" title="显示模式"><i class="anzhiyufont anzhiyu-icon-circle-half-stroke"></i><span>显示模式</span></a></div><div class="back-menu-list-groups"><div class="back-menu-list-group"><div class="back-menu-list-title">网页</div><div class="back-menu-list"><a class="back-menu-item" target="_blank" rel="noopener" href="https://blog.anheyu.com/" title="博客"><img class="back-menu-item-icon" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="/img/favicon.ico" alt="博客"/><span class="back-menu-item-text">博客</span></a></div></div><div class="back-menu-list-group"><div class="back-menu-list-title">项目</div><div class="back-menu-list"><a class="back-menu-item" target="_blank" rel="noopener" href="https://image.anheyu.com/" title="安知鱼图床"><img class="back-menu-item-icon" src= "/img/loading.gif" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://image.anheyu.com/favicon.ico" alt="安知鱼图床"/><span class="back-menu-item-text">安知鱼图床</span></a></div></div></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 文章</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/archives/"><i class="anzhiyufont anzhiyu-icon-box-archive faa-tada" style="font-size: 0.9em;"></i><span> 隧道</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/categories/"><i class="anzhiyufont anzhiyu-icon-shapes faa-tada" style="font-size: 0.9em;"></i><span> 分类</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/tags/"><i class="anzhiyufont anzhiyu-icon-tags faa-tada" style="font-size: 0.9em;"></i><span> 标签</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 友链</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/link/"><i class="anzhiyufont anzhiyu-icon-link faa-tada" style="font-size: 0.9em;"></i><span> 友人帐</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/comments/"><i class="anzhiyufont anzhiyu-icon-envelope faa-tada" style="font-size: 0.9em;"></i><span> 留言板</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 我的</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/music/"><i class="anzhiyufont anzhiyu-icon-music faa-tada" style="font-size: 0.9em;"></i><span> 音乐</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/album/"><i class="anzhiyufont anzhiyu-icon-images faa-tada" style="font-size: 0.9em;"></i><span> 相册</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/essay/"><i class="anzhiyufont anzhiyu-icon-lightbulb faa-tada" style="font-size: 0.9em;"></i><span> 即刻emo</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 关于</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/about/"><i class="anzhiyufont anzhiyu-icon-paper-plane faa-tada" style="font-size: 0.9em;"></i><span> 关于本人</span></a></li></ul></div></div><span class="sidebar-menu-item-title">标签</span><div class="card-tags"><div class="item-headline"></div><div class="card-tag-cloud"><a href="/tags/Activation/" style="font-size: 0.88rem;">Activation<sup>1</sup></a><a href="/tags/Attention/" style="font-size: 0.88rem;">Attention<sup>2</sup></a><a href="/tags/Binary/" style="font-size: 0.88rem;">Binary<sup>1</sup></a><a href="/tags/C-C/" style="font-size: 0.88rem;">C/C++<sup>2</sup></a><a href="/tags/CNN/" style="font-size: 0.88rem;">CNN<sup>2</sup></a><a href="/tags/DGL/" style="font-size: 0.88rem;">DGL<sup>2</sup></a><a href="/tags/DL/" style="font-size: 0.88rem;">DL<sup>3</sup></a><a href="/tags/DL%E7%9F%A5%E8%AF%86/" style="font-size: 0.88rem;">DL知识<sup>1</sup></a><a href="/tags/DL%E7%9F%A5%E8%AF%86%E7%82%B9/" style="font-size: 0.88rem;">DL知识点<sup>4</sup></a><a href="/tags/GNN/" style="font-size: 0.88rem;">GNN<sup>10</sup></a><a href="/tags/Hexo/" style="font-size: 0.88rem;">Hexo<sup>2</sup></a><a href="/tags/LLM/" style="font-size: 0.88rem;">LLM<sup>1</sup></a><a href="/tags/LaTex/" style="font-size: 0.88rem;">LaTex<sup>1</sup></a><a href="/tags/Loss/" style="font-size: 0.88rem;">Loss<sup>1</sup></a><a href="/tags/PowerShell/" style="font-size: 0.88rem;">PowerShell<sup>1</sup></a><a href="/tags/Python/" style="font-size: 0.88rem;">Python<sup>1</sup></a><a href="/tags/Pytorch/" style="font-size: 0.88rem;">Pytorch<sup>6</sup></a><a href="/tags/Term/" style="font-size: 0.88rem;">Term<sup>1</sup></a><a href="/tags/Terms/" style="font-size: 0.88rem;">Terms<sup>1</sup></a><a href="/tags/Vulnerabiliity/" style="font-size: 0.88rem;">Vulnerabiliity<sup>1</sup></a><a href="/tags/Vulnerabilities/" style="font-size: 0.88rem;">Vulnerabilities<sup>19</sup></a><a href="/tags/conda/" style="font-size: 0.88rem;">conda<sup>1</sup></a><a href="/tags/git/" style="font-size: 0.88rem;">git<sup>1</sup></a><a href="/tags/overleaf/" style="font-size: 0.88rem;">overleaf<sup>2</sup></a><a href="/tags/pip/" style="font-size: 0.88rem;">pip<sup>1</sup></a><a href="/tags/sci%E6%8A%95%E7%A8%BF/" style="font-size: 0.88rem;">sci投稿<sup>1</sup></a><a href="/tags/tensor/" style="font-size: 0.88rem;">tensor<sup>2</sup></a><a href="/tags/tree-sitter/" style="font-size: 0.88rem;">tree-sitter<sup>1</sup></a><a href="/tags/%E4%BB%A3%E7%A0%81%E8%A1%8C%E7%BA%A7%E6%A3%80%E6%B5%8B/" style="font-size: 0.88rem;">代码行级检测<sup>1</sup></a><a href="/tags/%E5%9F%BA%E6%9C%AC%E6%9C%AF%E8%AF%AD/" style="font-size: 0.88rem;">基本术语<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0%E7%8E%87/" style="font-size: 0.88rem;">学习率<sup>1</sup></a><a href="/tags/%E5%AE%A1%E7%A8%BF/" style="font-size: 0.88rem;">审稿<sup>1</sup></a><a href="/tags/%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/" style="font-size: 0.88rem;">漏洞分析<sup>1</sup></a><a href="/tags/%E7%8E%AF%E5%A2%83/" style="font-size: 0.88rem;">环境<sup>2</sup></a><a href="/tags/%E7%90%86%E8%AE%BA%E7%9F%A5%E8%AF%86/" style="font-size: 0.88rem;">理论知识<sup>3</sup></a><a href="/tags/%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90/" style="font-size: 0.88rem;">软件分析<sup>5</sup></a><a href="/tags/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8/" style="font-size: 0.88rem;">软件安全<sup>27</sup></a><a href="/tags/%E8%BF%87%E7%A8%8B%E9%97%B4%E5%88%86%E6%9E%90/" style="font-size: 0.88rem;">过程间分析<sup>1</sup></a><a href="/tags/%E9%80%86%E5%90%91/" style="font-size: 0.88rem;">逆向<sup>11</sup></a><a href="/tags/%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90/" style="font-size: 0.88rem;">静态分析<sup>2</sup></a></div></div><hr/></div></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="anzhiyufont anzhiyu-icon-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="anzhiyufont anzhiyu-icon-circle-half-stroke"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="anzhiyufont anzhiyu-icon-arrows-left-right"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="anzhiyufont anzhiyu-icon-gear"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="anzhiyufont anzhiyu-icon-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="anzhiyufont anzhiyu-icon-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="anzhiyufont anzhiyu-icon-arrow-up"></i></button></div></div><div id="nav-music"><a id="nav-music-hoverTips" onclick="anzhiyu.musicToggle()" accesskey="m">播放音乐</a><div id="console-music-bg"></div><meting-js id="8152976493" server="netease" type="playlist" mutex="true" preload="none" theme="var(--anzhiyu-main)" data-lrctype="0" order="random" volume="0.7"></meting-js></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="anzhiyufont anzhiyu-icon-xmark"></i></button></nav><div class="is-center" id="loading-database"><i class="anzhiyufont anzhiyu-icon-spinner anzhiyu-pulse-icon"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div id="rightMenu"><div class="rightMenu-group rightMenu-small"><div class="rightMenu-item" id="menu-backward"><i class="anzhiyufont anzhiyu-icon-arrow-left"></i></div><div class="rightMenu-item" id="menu-forward"><i class="anzhiyufont anzhiyu-icon-arrow-right"></i></div><div class="rightMenu-item" id="menu-refresh"><i class="anzhiyufont anzhiyu-icon-arrow-rotate-right" style="font-size: 1rem;"></i></div><div class="rightMenu-item" id="menu-top"><i class="anzhiyufont anzhiyu-icon-arrow-up"></i></div></div><div class="rightMenu-group rightMenu-line rightMenuPlugin"><div class="rightMenu-item" id="menu-copytext"><i class="anzhiyufont anzhiyu-icon-copy"></i><span>复制选中文本</span></div><div class="rightMenu-item" id="menu-pastetext"><i class="anzhiyufont anzhiyu-icon-paste"></i><span>粘贴文本</span></div><a class="rightMenu-item" id="menu-commenttext"><i class="anzhiyufont anzhiyu-icon-comment-medical"></i><span>引用到评论</span></a><div class="rightMenu-item" id="menu-newwindow"><i class="anzhiyufont anzhiyu-icon-window-restore"></i><span>新窗口打开</span></div><div class="rightMenu-item" id="menu-copylink"><i class="anzhiyufont anzhiyu-icon-link"></i><span>复制链接地址</span></div><div class="rightMenu-item" id="menu-copyimg"><i class="anzhiyufont anzhiyu-icon-images"></i><span>复制此图片</span></div><div class="rightMenu-item" id="menu-downloadimg"><i class="anzhiyufont anzhiyu-icon-download"></i><span>下载此图片</span></div><div class="rightMenu-item" id="menu-newwindowimg"><i class="anzhiyufont anzhiyu-icon-window-restore"></i><span>新窗口打开图片</span></div><div class="rightMenu-item" id="menu-search"><i class="anzhiyufont anzhiyu-icon-magnifying-glass"></i><span>站内搜索</span></div><div class="rightMenu-item" id="menu-searchBaidu"><i class="anzhiyufont anzhiyu-icon-magnifying-glass"></i><span>百度搜索</span></div><div class="rightMenu-item" id="menu-music-toggle"><i class="anzhiyufont anzhiyu-icon-play"></i><span>播放音乐</span></div><div class="rightMenu-item" id="menu-music-back"><i class="anzhiyufont anzhiyu-icon-backward"></i><span>切换到上一首</span></div><div class="rightMenu-item" id="menu-music-forward"><i class="anzhiyufont anzhiyu-icon-forward"></i><span>切换到下一首</span></div><div class="rightMenu-item" id="menu-music-playlist" onclick="window.open(&quot;https://y.qq.com/n/ryqq/playlist/8802438608&quot;, &quot;_blank&quot;);" style="display: none;"><i class="anzhiyufont anzhiyu-icon-radio"></i><span>查看所有歌曲</span></div><div class="rightMenu-item" id="menu-music-copyMusicName"><i class="anzhiyufont anzhiyu-icon-copy"></i><span>复制歌名</span></div></div><div class="rightMenu-group rightMenu-line rightMenuOther"><a class="rightMenu-item menu-link" id="menu-randomPost"><i class="anzhiyufont anzhiyu-icon-shuffle"></i><span>随便逛逛</span></a><a class="rightMenu-item menu-link" href="/categories/"><i class="anzhiyufont anzhiyu-icon-cube"></i><span>博客分类</span></a><a class="rightMenu-item menu-link" href="/tags/"><i class="anzhiyufont anzhiyu-icon-tags"></i><span>文章标签</span></a></div><div class="rightMenu-group rightMenu-line rightMenuOther"><a class="rightMenu-item" id="menu-copy" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-copy"></i><span>复制地址</span></a><a class="rightMenu-item" id="menu-commentBarrage" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-message"></i><span class="menu-commentBarrage-text">关闭热评</span></a><a class="rightMenu-item" id="menu-darkmode" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-circle-half-stroke"></i><span class="menu-darkmode-text">深色模式</span></a><a class="rightMenu-item" id="menu-translate" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-language"></i><span>轉為繁體</span></a></div></div><div id="rightmenu-mask"></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.cbd.int/@fancyapps/ui@5.0.28/dist/fancybox/fancybox.umd.js"></script><script src="https://cdn.cbd.int/instant.page@5.2.0/instantpage.js" type="module"></script><script src="https://cdn.cbd.int/vanilla-lazyload@17.8.5/dist/lazyload.iife.min.js"></script><script src="https://cdn.cbd.int/node-snackbar@0.1.16/dist/snackbar.min.js"></script><canvas id="universe"></canvas><script async src="https://npm.elemecdn.com/anzhiyu-theme-static@1.0.0/dark/dark.js"></script><script>// 消除控制台打印
+var HoldLog = console.log;
+console.log = function () {};
+let now1 = new Date();
+queueMicrotask(() => {
+  const Log = function () {
+    HoldLog.apply(console, arguments);
+  }; //在恢复前输出日志
+  const grt = new Date("04/01/2023 00:00:00"); //此处修改你的建站时间或者网站上线时间
+  now1.setTime(now1.getTime() + 250);
+  const days = (now1 - grt) / 1000 / 60 / 60 / 24;
+  const dnum = Math.floor(days);
+  const ascll = [
+    `欢迎使用安知鱼!`,
+    `生活明朗, 万物可爱`,
+    `
+        
+       █████╗ ███╗   ██╗███████╗██╗  ██╗██╗██╗   ██╗██╗   ██╗
+      ██╔══██╗████╗  ██║╚══███╔╝██║  ██║██║╚██╗ ██╔╝██║   ██║
+      ███████║██╔██╗ ██║  ███╔╝ ███████║██║ ╚████╔╝ ██║   ██║
+      ██╔══██║██║╚██╗██║ ███╔╝  ██╔══██║██║  ╚██╔╝  ██║   ██║
+      ██║  ██║██║ ╚████║███████╗██║  ██║██║   ██║   ╚██████╔╝
+      ╚═╝  ╚═╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝╚═╝   ╚═╝    ╚═════╝
+        
+        `,
+    "已上线",
+    dnum,
+    "天",
+    "©2023 By 安知鱼 V1.6.12",
+  ];
+  const ascll2 = [`NCC2-036`, `调用前置摄像头拍照成功，识别为【小笨蛋】.`, `Photo captured: `, `🤪`];
+
+  setTimeout(
+    Log.bind(
+      console,
+      `\n%c${ascll[0]} %c ${ascll[1]} %c ${ascll[2]} %c${ascll[3]}%c ${ascll[4]}%c ${ascll[5]}\n\n%c ${ascll[6]}\n`,
+      "color:#425AEF",
+      "",
+      "color:#425AEF",
+      "color:#425AEF",
+      "",
+      "color:#425AEF",
+      ""
+    )
+  );
+  setTimeout(
+    Log.bind(
+      console,
+      `%c ${ascll2[0]} %c ${ascll2[1]} %c \n${ascll2[2]} %c\n${ascll2[3]}\n`,
+      "color:white; background-color:#4fd953",
+      "",
+      "",
+      'background:url("https://npm.elemecdn.com/anzhiyu-blog@1.1.6/img/post/common/tinggge.gif") no-repeat;font-size:450%'
+    )
+  );
+
+  setTimeout(Log.bind(console, "%c WELCOME %c 你好，小笨蛋.", "color:white; background-color:#4f90d9", ""));
+
+  setTimeout(
+    console.warn.bind(
+      console,
+      "%c ⚡ Powered by 安知鱼 %c 你正在访问 foresta.yang 的博客.",
+      "color:white; background-color:#f0ad4e",
+      ""
+    )
+  );
+
+  setTimeout(Log.bind(console, "%c W23-12 %c 你已打开控制台.", "color:white; background-color:#4f90d9", ""));
+
+  setTimeout(
+    console.warn.bind(console, "%c S013-782 %c 你现在正处于监控中.", "color:white; background-color:#d9534f", "")
+  );
+});</script><script async src="/anzhiyu/random.js"></script><script src="/js/search/local-search.js"></script><div class="js-pjax"><script>if (!window.MathJax) {
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      tags: 'ams'
+    },
+    chtml: {
+      scale: 1.1
+    },
+    options: {
+      renderActions: {
+        findScript: [10, doc => {
+          for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+            const display = !!node.type.match(/; *mode=display/)
+            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+            const text = document.createTextNode('')
+            node.parentNode.replaceChild(text, node)
+            math.start = {node: text, delim: '', n: 0}
+            math.end = {node: text, delim: '', n: 0}
+            doc.math.push(math)
+          }
+        }, '']
+      }
+    }
+  }
+  
+  const script = document.createElement('script')
+  script.src = 'https://cdn.cbd.int/mathjax@3.2.2/es5/tex-mml-chtml.js'
+  script.id = 'MathJax-script'
+  script.async = true
+  document.head.appendChild(script)
+} else {
+  MathJax.startup.document.state(0)
+  MathJax.texReset()
+  MathJax.typesetPromise()
+}</script><link rel="stylesheet" type="text/css" href="https://cdn.cbd.int/katex@0.16.0/dist/katex.min.css"><script src="https://cdn.cbd.int/katex@0.16.0/dist/contrib/copy-tex.min.js"></script><script>(() => {
+  document.querySelectorAll('#article-container span.katex-display').forEach(item => {
+    anzhiyu.wrap(item, 'div', { class: 'katex-wrap'})
+  })
+})()</script><script>(() => {
+  const init = () => {
+    twikoo.init(Object.assign({
+      el: '#twikoo-wrap',
+      envId: 'https://mytwikoo-omega.vercel.app',
+      region: '',
+      onCommentLoaded: () => {
+        anzhiyu.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      }
+    }, null))
+  }
+
+  const loadTwikoo = () => {
+    if (typeof twikoo === 'object') setTimeout(runFn,0)
+    else getScript('https://cdn.cbd.int/twikoo@1.6.25/dist/twikoo.all.min.js').then(runFn)
+  }
+
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://mytwikoo-omega.vercel.app',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(res => {
+      countELement.textContent = res[0].count
+    }).catch(err => {
+      console.error(err)
+    })
+  }
+
+  const runFn = () => {
+    init();
+    GLOBAL_CONFIG_SITE.isPost && getCount()
+  }
+
+  if ('Twikoo' === 'Twikoo' || !false) {
+    if (false) anzhiyu.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else {
+      loadTwikoo()
+    }
+  } else {
+    window.loadOtherComment = loadTwikoo
+  }
+})()</script><input type="hidden" name="page-type" id="page-type" value="post"></div><script>window.addEventListener('load', () => {
+  const changeContent = (content) => {
+    if (content === '') return content
+
+    content = content.replace(/<img.*?src="(.*?)"?[^\>]+>/ig, '[图片]') // replace image link
+    content = content.replace(/<a[^>]+?href=["']?([^"']+)["']?[^>]*>([^<]+)<\/a>/gi, '[链接]') // replace url
+    content = content.replace(/<pre><code>.*?<\/pre>/gi, '[代码]') // replace code
+    content = content.replace(/<[^>]+>/g,"") // remove html tag
+
+    if (content.length > 150) {
+      content = content.substring(0,150) + '...'
+    }
+    return content
+  }
+
+  const getComment = () => {
+    const runTwikoo = () => {
+      twikoo.getRecentComments({
+        envId: 'https://mytwikoo-omega.vercel.app',
+        region: '',
+        pageSize: 6,
+        includeReply: true
+      }).then(function (res) {
+        const twikooArray = res.map(e => {
+          return {
+            'content': changeContent(e.comment),
+            'avatar': e.avatar,
+            'nick': e.nick,
+            'url': e.url + '#' + e.id,
+            'date': new Date(e.created).toISOString()
+          }
+        })
+
+        saveToLocal.set('twikoo-newest-comments', JSON.stringify(twikooArray), 10/(60*24))
+        generateHtml(twikooArray)
+      }).catch(function (err) {
+        const $dom = document.querySelector('#card-newest-comments .aside-list')
+        $dom.textContent= "无法获取评论，请确认相关配置是否正确"
+      })
+    }
+
+    if (typeof twikoo === 'object') {
+      runTwikoo()
+    } else {
+      getScript('https://cdn.cbd.int/twikoo@1.6.25/dist/twikoo.all.min.js').then(runTwikoo)
+    }
+  }
+
+  const generateHtml = array => {
+    let result = ''
+
+    if (array.length) {
+      for (let i = 0; i < array.length; i++) {
+        result += '<div class=\'aside-list-item\'>'
+
+        if (true) {
+          const name = 'data-lazy-src'
+          result += `<a href='${array[i].url}' class='thumbnail'><img ${name}='${array[i].avatar}' alt='${array[i].nick}'><div class='name'><span>${array[i].nick} </span></div></a>`
+        }
+        
+        result += `<div class='content'>
+        <a class='comment' href='${array[i].url}' title='${array[i].content}'>${array[i].content}</a>
+        <time datetime="${array[i].date}">${anzhiyu.diffDate(array[i].date, true)}</time></div>
+        </div>`
+      }
+    } else {
+      result += '没有评论'
+    }
+
+    let $dom = document.querySelector('#card-newest-comments .aside-list')
+    $dom && ($dom.innerHTML= result)
+    window.lazyLoadInstance && window.lazyLoadInstance.update()
+    window.pjax && window.pjax.refresh($dom)
+  }
+
+  const newestCommentInit = () => {
+    if (document.querySelector('#card-newest-comments .aside-list')) {
+      const data = saveToLocal.get('twikoo-newest-comments')
+      if (data) {
+        generateHtml(JSON.parse(data))
+      } else {
+        getComment()
+      }
+    }
+  }
+
+  newestCommentInit()
+  document.addEventListener('pjax:complete', newestCommentInit)
+})</script><script>var visitorMail = "";
+</script><script async data-pjax src="https://cdn.cbd.int/anzhiyu-theme-static@1.0.0/waterfall/waterfall.js"></script><script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/qrcodejs/1.0.0/qrcode.min.js"></script><script src="/js/anzhiyu/right_click_menu.js"></script><link rel="stylesheet" href="https://cdn.cbd.int/anzhiyu-theme-static@1.1.9/icon/ali_iconfont_css.css"><link rel="stylesheet" href="https://cdn.cbd.int/anzhiyu-theme-static@1.0.0/aplayer/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.cbd.int/anzhiyu-blog-static@1.0.1/js/APlayer.min.js"></script><script src="https://cdn.cbd.int/hexo-anzhiyu-music@1.0.1/assets/js/Meting2.min.js"></script><script src="https://cdn.cbd.int/pjax@0.2.8/pjax.min.js"></script><script>let pjaxSelectors = ["meta[property=\"og:image\"]","meta[property=\"og:title\"]","meta[property=\"og:url\"]","meta[property=\"og:type\"]","meta[property=\"og:site_name\"]","meta[property=\"og:description\"]","head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+  // removeEventListener scroll 
+  anzhiyu.removeGlobalFnEvent('pjax')
+  anzhiyu.removeGlobalFnEvent('themeChange')
+
+  document.getElementById('rightside').classList.remove('rightside-show')
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+})
+
+document.addEventListener('pjax:error', e => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/404.html')
+  }
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><script charset="UTF-8" src="https://cdn.cbd.int/anzhiyu-theme-static@1.1.5/accesskey/accesskey.js"></script></div><div id="popup-window"><div class="popup-window-title">通知</div><div class="popup-window-divider"></div><div class="popup-window-content"><div class="popup-tip">你好呀</div><div class="popup-link"><i class="anzhiyufont anzhiyu-icon-arrow-circle-right"></i></div></div></div></body></html>
