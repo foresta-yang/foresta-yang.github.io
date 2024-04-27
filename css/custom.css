@@ -2,3 +2,104 @@
 #page-header.full_page{
     height: 30vh;
 }
+
+/* 文章标题样式 */
+#content-inner.layout h1 {
+    padding-bottom: 0.4rem;
+    font-size: 2.2rem;
+    line-height: 1.3;
+    position: relative;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+  }
+  
+#content-inner.layout h1::before {
+  content: " ";
+  display: block;
+  background-color: #23a9f2;
+  width: 5px;
+  height: 28px;
+  position: absolute;
+  top: 10px;
+  left: -15px;
+  border-radius: 2px;
+  box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+#content-inner.layout h2 {
+  font-size: 1.75rem;
+  line-height: 1.225;
+  margin: 35px 0 15px;
+  padding-bottom: 0.5em;
+  border-bottom: 1px solid #ddd;
+  position: relative;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+  
+#content-inner.layout h2::before {
+  content: " ";
+  display: block;
+  background-color: #ffbd2e;
+  width: 5px;
+  height: 20px;
+  position: absolute;
+  top: 8px;
+  left: -15px;
+  border-radius: 2px;
+  box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+  
+#content-inner.layout h3 {
+  font-size: 1.4rem;
+  line-height: 1.43;
+  margin: 20px 0 7px;
+  position: relative;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+  /* text-decoration: underline;
+  text-decoration-color: #27c93f;
+  text-decoration-thickness: 5px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); */
+}
+  
+#content-inner.layout h3::after {
+  content: " ";
+  display: block;
+  background-color: #27c93f;
+  width: 5px;
+  height: 16px;
+  position: absolute;
+  top: 9px;
+  left: -15px;
+  border-radius: 2px;
+  box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+  
+/* #content-inner.layout h4 {
+  font-size: 1.2rem;
+}
+
+#content-inner.layout h4::after {
+  content: " ";
+  display: block;
+  background-color: #ff5f56;
+  width: 5px;
+  height: 10px;
+  position: absolute;
+  top: 8px;
+  left: -15px;
+  border-radius: 2px;
+  box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+} */
+
+
+#content-inner.layout blockquote {
+  /* border-left: 4px solid #42b983;
+  padding: 10px 15px;
+  color: #777;
+  background-color: rgba(66, 185, 131, 0.1); */
+  border-left: 3px solid #ca9b52;
+  padding: 10px 15px;
+  color: #5b5b5b;
+  background-color: #efefef;
+  border-radius: 3px;
+  font-size: 13px;
+}
