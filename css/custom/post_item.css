@@ -1,0 +1,62 @@
+.recent-post-item {
+    height: 200px;
+    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); /* 背景渐变 */
+    border-radius: 10px; /* 卡片圆角 */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+    overflow: hidden; /* 防止内容溢出 */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* 动态效果 */
+}
+  
+.recent-post-item:hover {
+    transform: translateY(-5px); /* 鼠标悬停向上移动 */
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2); /* 鼠标悬停阴影增强 */
+}
+
+.post_cover img {
+    width: 100%; /* 图片宽度填充父容器 */
+    height: auto; /* 自动调整高度 */
+    object-fit: cover; /* 图片裁剪以适应容器 */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2); /* 图片下边框 */
+    transition: transform 0.3s ease; /* 动态缩放效果 */
+  }
+  
+.post_cover img:hover {
+    transform: scale(1.05); /* 鼠标悬停放大 */
+}
+
+
+.article-title {
+    font-size: 1.5rem; /* 标题字体大小 */
+    /* color: #fff;  */
+    /* margin: 0.5rem 0;  */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* 字体阴影 */
+    transition: color 0.3s ease; /* 颜色动态效果 */
+}
+  
+.article-title:hover {
+    color: #ffbd2e; /* 鼠标悬停时的标题颜色 */
+}
+
+/* #recent-posts > .recent-post-item >.recent-post-info {
+    height: 150px;
+} */
+
+/* #recent-posts>.recent-post-item>.recent-post-info>.article-meta-wrap {
+    margin-bottom: 1rem;
+} */
+
+.article-meta-wrap {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center; 
+    font-size: 0.9rem; 
+    color: #ccc; 
+}
+  
+.article-meta-wrap .tags i {
+    /* height: 28px; */
+    margin-right: 5px; /* 图标与文字间距 */
+
+    color: #ffbd2e; /* 标签图标颜色 */
+}
+  

@@ -7518,14 +7518,11 @@ div#bannerGroup {
   -o-transition: all 0.3s ease 0s;
   -ms-transition: all 0.3s ease 0s;
   transition: all 0.3s ease 0s;
-  display: -webkit-box;
   overflow: hidden;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  line-height: 1.4;
+  line-height: 0;
   color: var(--anzhiyu-secondtext);
-  margin-top: 0.5rem;
-  font-size: 14px;
+  margin-top: 0rem;
+  font-size: 0px;
   opacity: 0;
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
   filter: alpha(opacity=0);
